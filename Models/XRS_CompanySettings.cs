@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XeniaRentalApi.Models
 {
-    [Table("XRS_EmailSmsSettings")]
-    public class XRS_EmailSmsSettings
+    [Table("XRS_CompanySettings")]
+    public class XRS_CompanySettings
     {
         [Key]
         public int Id { get; set; }
@@ -25,6 +25,9 @@ namespace XeniaRentalApi.Models
 
         public string? host { get; set; }
         public string? smsGateWay { get; set; }
+        public string? termandcondition { get; set; }
+        public string? privacyPolicy { get; set; }
+        public string? help { get; set; }
 
         public bool active { get; set; }
     }

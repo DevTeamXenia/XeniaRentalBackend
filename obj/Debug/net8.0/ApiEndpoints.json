@@ -272,6 +272,42 @@
   },
   {
     "ContainingType": "XeniaRentalApi.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "companyId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "otp",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "deviceToken",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "XeniaRentalApi.Controllers.AuthController",
     "Method": "GenerateForgotPasswordOTP",
     "RelativePath": "api/Auth/OTP/forgotPassword",
     "HttpMethod": "POST",
@@ -312,7 +348,7 @@
     "Parameters": [
       {
         "Name": "bedSpace",
-        "Type": "XeniaRentalApi.DTOs.BedSpaceDto",
+        "Type": "XeniaRentalApi.Dtos.BedSpaceDto",
         "IsRequired": true
       }
     ],
@@ -359,7 +395,7 @@
       },
       {
         "Name": "account",
-        "Type": "XeniaRentalApi.DTOs.BedSpaceDto",
+        "Type": "XeniaRentalApi.Dtos.BedSpaceDto",
         "IsRequired": true
       }
     ],
@@ -443,7 +479,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "XeniaRentalApi.DTOs.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Bedspace, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "XeniaRentalApi.Dtos.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Bedspace, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -558,7 +594,7 @@
     "Parameters": [
       {
         "Name": "category",
-        "Type": "XeniaRentalApi.DTOs.CategoryDto",
+        "Type": "XeniaRentalApi.Dtos.CategoryDto",
         "IsRequired": true
       }
     ],
@@ -605,7 +641,7 @@
       },
       {
         "Name": "category",
-        "Type": "XeniaRentalApi.DTOs.CategoryDto",
+        "Type": "XeniaRentalApi.Dtos.CategoryDto",
         "IsRequired": true
       }
     ],
@@ -678,7 +714,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "XeniaRentalApi.DTOs.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Categories, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "XeniaRentalApi.Dtos.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Categories, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -698,7 +734,7 @@
     "Parameters": [
       {
         "Name": "charges",
-        "Type": "XeniaRentalApi.DTOs.ChargesDto",
+        "Type": "XeniaRentalApi.Dtos.ChargesDto",
         "IsRequired": true
       }
     ],
@@ -767,7 +803,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[XeniaRentalApi.DTOs.ChargesDto, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[XeniaRentalApi.Dtos.ChargesDto, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -813,7 +849,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "XeniaRentalApi.DTOs.PagedResultDto\u00601[[XeniaRentalApi.DTOs.ChargesDto, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "XeniaRentalApi.Dtos.PagedResultDto\u00601[[XeniaRentalApi.Dtos.ChargesDto, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1142,7 +1178,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "XeniaRentalApi.DTOs.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Documents, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "XeniaRentalApi.Dtos.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Documents, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1462,6 +1498,16 @@
   },
   {
     "ContainingType": "XeniaRentalApi.Controllers.PropertiesController",
+    "Method": "GetPropertyForApp",
+    "RelativePath": "api/Properties/app/property",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "XeniaRentalApi.Controllers.PropertiesController",
     "Method": "GetPropertyByCompanyId",
     "RelativePath": "api/Properties/company/{companyId}",
     "HttpMethod": "GET",
@@ -1491,7 +1537,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "XeniaRentalApi.DTOs.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Properties, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "XeniaRentalApi.Dtos.PagedResultDto\u00601[[XeniaRentalApi.Models.XRS_Properties, XeniaRentalApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1960,7 +2006,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "XeniaRentalApi.DTOs.UnitDto",
+        "Type": "XeniaRentalApi.Dtos.UnitDto",
         "IsRequired": true
       }
     ],
@@ -1997,7 +2043,7 @@
       },
       {
         "Name": "model",
-        "Type": "XeniaRentalApi.DTOs.UnitDto",
+        "Type": "XeniaRentalApi.Dtos.UnitDto",
         "IsRequired": true
       }
     ],

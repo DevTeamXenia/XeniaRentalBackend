@@ -10,7 +10,7 @@ namespace XeniaRentalApi.Repositories.Auth
         Task<XRS_Users?> AuthenticateAdminUser(LoginRequest request);
         
         Task<IActionResult> GenerateLoginOTPAsync(LoginOTPDTO request);
-        Task<XRS_Tenant?> AuthenticateUser(string username, string password, int companyId, string otp, string? deviceToken);
+        Task<XRS_Tenant?> AuthenticateUser(string username, int companyId, string otp, string? deviceToken);
 
         Task<IActionResult> GenerateForgotPasswordOTP(ForgetPasswordOTPDTO request);
 

@@ -13,14 +13,14 @@ namespace XeniaRentalApi.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int tenantID { get; set; }
         public int companyID { get; set; }
-        public string tenantName { get; set; }
-        public string phoneNumber { get; set; }
+        public required string tenantName { get; set; }
+        public required string phoneNumber { get; set; }
         public string email { get; set; }
-        public string deviceToken { get; set; }
-        public string emergencyContactNo { get; set; }
+        public string? deviceToken { get; set; }
+        public string? emergencyContactNo { get; set; }
         public decimal concessionper { get; set; }
-        public string note { get; set; }
-        public string address { get; set; }
+        public string? note { get; set; }
+        public string? address { get; set; }
         public bool isActive { get; set; }
  
         [JsonIgnore] 

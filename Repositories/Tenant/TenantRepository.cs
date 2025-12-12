@@ -181,6 +181,27 @@ namespace XeniaRentalApi.Repositories.Tenant
             };
         }
 
+        public async Task<TenantProfileDto> GetProfileById(int tenantId)
+        {
+            var tenant = await _context.Tenants
+                .FirstOrDefaultAsync(t => t.tenantID == tenantId);
+
+            if (tenant == null)
+                return new TenantProfileDto();
+
+            return new TenantProfileDto
+            {
+                TenantID = tenant.tenantID,
+                TenantName = tenant.tenantName,
+                CompanyID = tenant.companyID,
+                Email = tenant.email,
+                PhoneNumber = tenant.phoneNumber,
+                EmergencyContactNo = tenant.emergencyContactNo,
+                Address = tenant.address,
+                Note = tenant.note
+            };
+        }
+
         public async Task<XRS_Tenant> CreateTenant(TenantCreateDto tenantDto)
         {
             var tenant = new XRS_Tenant

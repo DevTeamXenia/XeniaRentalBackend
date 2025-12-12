@@ -1,4 +1,4 @@
-﻿using XeniaRentalApi.DTOs;
+﻿using XeniaRentalApi.Dtos;
 
 namespace XeniaRentalApi.Repositories.Charges
 {

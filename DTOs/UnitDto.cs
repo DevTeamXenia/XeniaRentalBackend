@@ -1,11 +1,11 @@
-﻿namespace XeniaRentalApi.DTOs
+﻿namespace XeniaRentalApi.Dtos
 {
     public class UnitDto
     {
         public int UnitId { get; set; }
         public int CompanyId { get; set; }
         public int PropID { get; set; }
-        public string UnitName { get; set; }
+        public required string UnitName { get; set; }
         public string? UnitType { get; set; }
         public bool IsActive { get; set; }
         public string? FloorNo { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
-using XeniaRentalApi.DTOs;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Models;
 
 namespace XeniaRentalApi.Repositories.BedSpace

@@ -1,8 +1,6 @@
-﻿using XeniaRentalApi.Dtos;
-
-namespace XeniaRentalApi.DTOs
+﻿namespace XeniaRentalApi.Dtos
 {
-    public class TenantGetDto
+    public class TenantProfileDto
     {
         public int TenantID { get; set; }
         public string TenantName { get; set; }
@@ -14,10 +12,5 @@ namespace XeniaRentalApi.DTOs
         public string EmergencyContactNo { get; set; }
         public string Address { get; set; }
         public string Note { get; set; }
-        public decimal ConcessionPer { get; set; }
-        public bool IsActive { get; set; }
-        public string? PropName { get; set; }
-        public string? UnitName { get; set; }
-        public List<TenantDocumentDto> Documents { get; set; }
     }
 }

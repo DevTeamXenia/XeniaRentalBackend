@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.DTOs;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Models;
 using XeniaRentalApi.Repositories.Charges;
 
@@ -48,7 +48,7 @@ namespace XeniaRentalApi.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateCharges([FromBody] DTOs.ChargesDto charges)
+        public async Task<IActionResult> CreateCharges([FromBody] ChargesDto charges)
         {
             if (charges == null)
             {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
 using XeniaRentalApi.Models;
 
 
@@ -143,8 +142,58 @@ namespace XeniaRentalApi.Repositories.Dashboard
             return monthlyRevenue;
         }
 
+        public async Task<TenantPaymentBannerDto> GetTenantPaymentBannerAsync(int tenantId, int companyId)
+        {
+            var latestPayments = await _context.Vouchers
+                .Where(v => v.CompanyID == companyId && v.DrID == tenantId && v.VoucherType == "Pay Rent")
+                .OrderByDescending(v => v.VoucherDate)
+                .Take(3)
+                .Select(v => new PaymentInfoDto
+                {
+                    Amount = v.Amount,
+                    Date = v.VoucherDate
+                })
+                .ToListAsync();
+
+    
+            var upcomingPayments = await _context.TenantAssignemnts
+                .Where(t => t.companyID == companyId && t.tenantID == tenantId && !t.isClosure && t.rentDueDate > DateTime.Now)
+                .OrderBy(t => t.rentDueDate)
+                .Select(t => new PaymentInfoDto
+                {
+                    Amount = t.rentAmt,
+                    Date = t.rentDueDate
+                })
+                .Take(3)
+                .ToListAsync();
 
 
+            var activeBanners = await _context.Banners
+                .Where(b => b.companyID == companyId && b.bannerStatus)
+                .Select(b => new BannerDto
+                {
+                    bannerID = b.bannerID,
+                    bannerName = b.bannerName,
+                    bannerImage = b.bannerImage
+                })
+                .ToListAsync();
 
+            var activeTexts = await _context.AdvText
+             .Where(at => at.companyID == companyId && at.textStatus)
+             .Select(at => new AdvTextDto
+             {
+                 textID = at.textID,
+                 textContent = at.textContent
+             })
+             .ToListAsync();
+
+            return new TenantPaymentBannerDto
+            {
+                LatestPayments = latestPayments,
+                UpcomingPayments = upcomingPayments,
+                ActiveBanners = activeBanners,
+                ActiveTexts = activeTexts
+            };
+        }
     }
 }

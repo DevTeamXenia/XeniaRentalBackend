@@ -81,7 +81,7 @@ namespace XeniaRentalApi.Controllers
         {
             try
             {
-                var user = await _authRepository.AuthenticateUser(userName, password, companyId, otp, deviceToken);
+                var user = await _authRepository.AuthenticateUser(userName, companyId, otp, deviceToken);
 
                 if (user == null)
                 {

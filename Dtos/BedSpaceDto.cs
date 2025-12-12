@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.DTOs
+﻿namespace XeniaRentalApi.Dtos
 {
     public class BedSpaceDto
     {

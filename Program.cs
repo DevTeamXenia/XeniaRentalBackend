@@ -42,18 +42,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Xenia Rental API", Version = "v1" });
-    c.CustomSchemaIds(type =>
-    {
-        if (type.IsGenericType)
-        {
-            var genericTypeName = type.Name.Split('`')[0];
-            var genericArguments = type.GetGenericArguments().Select(t => t.Name);
-            return $"{genericTypeName}Of{string.Join("", genericArguments)}";
-        }
-        return type.FullName.Replace("+", ".");
-    });
-
-
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -120,7 +108,7 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IAccountLedgerRepository, AccountLedgerRepository>();
 builder.Services.AddScoped<IMessAttendancesRepository, MessAttendancesRepository>();
 builder.Services.AddScoped<IMessTypes, MessTypes>();
-builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<ITenantAssignmentRepository, TenantAssignmentRepository>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
@@ -206,8 +194,7 @@ var app = builder.Build();
 
 
 
-app.UseSwagger(options => options.OpenApiVersion =
-Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0);
+app.UseSwagger();
 app.UseSwaggerUI();
 
 

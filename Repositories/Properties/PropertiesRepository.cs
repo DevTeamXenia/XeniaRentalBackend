@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.DTOs;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Models;
 using XeniaRentalApi.Service.Common;
 
 
 namespace XeniaRentalApi.Repositories.Properties
 {
-    public class PropertiesRepository: IPropertiesRepository
+    public class PropertiesRepository : IPropertiesRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly JwtHelperService _jwtHelperService;
@@ -123,6 +123,42 @@ namespace XeniaRentalApi.Repositories.Properties
             return properties;
 
         }
+
+        public async Task<IEnumerable<PropertyWithUnitsDto>> GetPropertyForApp()
+        {
+            int tenantId = _jwtHelperService.GetCustomerId();
+
+            var assignedUnit = await _context.TenantAssignemnts
+                               .Where(t => t.tenantID == tenantId && t.isActive == true)
+                               .Select(t => t.unitID)
+                               .FirstOrDefaultAsync();
+
+            if (assignedUnit == 0)
+                return new List<PropertyWithUnitsDto>();
+    
+            var result =
+                from p in _context.Properties
+                join u in _context.Units on p.PropID equals u.PropID
+                where u.UnitId == assignedUnit
+                select new PropertyWithUnitsDto
+                {
+                    PropID = p.PropID,
+                    PropertyName = p.propertyName,
+
+                    Units = new List<UnitPropertyDto>
+                    {
+                new UnitPropertyDto
+                {
+                    UnitID = u.UnitId,
+                    UnitName = u.UnitName
+                }
+                    }
+                };
+
+            return await result.ToListAsync();
+        }
+
+
 
         public async Task<bool> UpDateProperties(int id, XRS_Properties properties)
         {

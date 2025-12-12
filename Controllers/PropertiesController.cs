@@ -1,24 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Dictionnary;
-using XeniaRentalApi.DTOs;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Models;
 using XeniaRentalApi.Repositories.Properties;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace XeniaRentalApi.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PropertiesController : ControllerBase
     {
-        private readonly IPropertiesRepository _propertyRepository;
+        private readonly IServiceRepository _propertyRepository;
 
 
-        public PropertiesController(IPropertiesRepository propertyRepository)
+        public PropertiesController(IServiceRepository propertyRepository)
         {
             _propertyRepository = propertyRepository;
         }
@@ -48,7 +45,7 @@ namespace XeniaRentalApi.Controllers
             return Ok(new { Status = "Success", Data = accounts });
         }
 
-        [HttpGet("FromJwt")]
+        [HttpGet("app/property")]
         public async Task<IActionResult> GetPropertyForApp()
         {
   

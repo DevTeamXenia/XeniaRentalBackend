@@ -126,7 +126,7 @@ namespace XeniaRentalApi.Repositories.Auth
             return new OkObjectResult("OTP sent successfully.");
         }
 
-        public async Task<XRS_Tenant?> AuthenticateUser(string username, string password, int companyId, string otp, string? deviceToken)
+        public async Task<XRS_Tenant?> AuthenticateUser(string username, int companyId, string otp, string? deviceToken)
         {
             var latestOtp = await _context.tblOTPLogs
                 .Where(o => o.MobileNo == username && o.CompanyId == companyId)

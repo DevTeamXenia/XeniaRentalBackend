@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿
 
-namespace XeniaRentalApi.DTOs
+namespace XeniaRentalApi.Dtos
 {
     public class ChargesDto
     {

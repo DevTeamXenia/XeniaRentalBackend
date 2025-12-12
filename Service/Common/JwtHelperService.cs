@@ -39,7 +39,7 @@
         public int GetCustomerId()
         {
             var customerIdClaim = _httpContextAccessor.HttpContext?.User.Claims
-                .FirstOrDefault(c => c.Type == "CustomerId");
+                .FirstOrDefault(c => c.Type == "TenantId");
 
             if (customerIdClaim != null && int.TryParse(customerIdClaim.Value, out int customerId))
             {

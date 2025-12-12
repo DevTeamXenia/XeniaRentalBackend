@@ -7,7 +7,9 @@ namespace XeniaRentalApi.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<XRS_Users> Users { get; set; }
+
         public DbSet<XRS_UserRole> UserRoles { get; set; }
+
         public DbSet<XRS_UserMapping> UserMapping { get; set; }
 
         public DbSet<XRS_AccountGroup> AccountGroups { get; set; }
@@ -42,10 +44,14 @@ namespace XeniaRentalApi.Models
 
         public DbSet<XRS_TenantChequeRegister> TenantChequeRegisters { get; set; }
 
-
         public DbSet<XRS_Units> Units { get; set; }
 
+        public DbSet<XRS_AdvText> AdvText { get; set; }
+
+        public DbSet<XRS_Banners> Banners { get; set; }
+
         public DbSet<XRS_Voucher> Vouchers { get; set; }
+
         public DbSet<XRS_VoucherDetails> VoucherDetails { get; set; }
 
         public DbSet<XRS_UnitChargesMapping> UnitChargesMappings { get; set; }
@@ -54,9 +60,11 @@ namespace XeniaRentalApi.Models
 
         public DbSet<XRS_NotificationSettings> tblNotifications { get; set; }
 
-        public DbSet<XRS_EmailSmsSettings> tblEmailSmsSettings {  get; set; }
+        public DbSet<XRS_CompanySettings> tblEmailSmsSettings {  get; set; }
 
         public DbSet<XRS_Categories> Category { get; set; }
+        public DbSet<XRS_Service> Services { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,11 +75,7 @@ namespace XeniaRentalApi.Models
           .HasForeignKey(u => u.UserType)
           .HasPrincipalKey(r => r.UserRoleId);
 
-
-
         }
-
-
 
     }
 

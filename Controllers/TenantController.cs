@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
 using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
 using XeniaRentalApi.Models;
 using XeniaRentalApi.Repositories.Tenant;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 
 namespace XeniaRentalApi.Controllers
 {
@@ -35,12 +34,14 @@ namespace XeniaRentalApi.Controllers
             return Ok(new { Status = "Success", Data = tenants });
         }
 
+
         [HttpGet("company/{companyId}")]
         public async Task<IActionResult> GetByCompany(int companyId, [FromQuery] bool? status, [FromQuery] string? search, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var tenants = await _tenantRepository.GetTenantsByCompanyId(companyId, status, search, pageNumber, pageSize);
             return Ok(tenants);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -50,6 +51,17 @@ namespace XeniaRentalApi.Controllers
                 return NotFound();
             return Ok(tenant);
         }
+
+
+        [HttpGet("profile/{id}")]
+        public async Task<IActionResult> GetProfileById(int id)
+        {
+            var tenant = await _tenantRepository.GetProfileById(id);
+            if (tenant == null)
+                return NotFound();
+            return Ok(tenant);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TenantCreateDto dto)
@@ -66,6 +78,7 @@ namespace XeniaRentalApi.Controllers
             });
         }
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] TenantCreateDto dto)
         {
@@ -79,6 +92,7 @@ namespace XeniaRentalApi.Controllers
             return NoContent();
         }
      
+
         [HttpPost("images")]
         [RequestSizeLimit(10_000_000)]
         public async Task<IActionResult> UploadImages([FromForm] List<IFormFile> files)
@@ -92,6 +106,7 @@ namespace XeniaRentalApi.Controllers
 
             return Ok(result);
         }
+
 
         [HttpGet("image/{fileName}")]
         public async Task<IActionResult> GetFtpImage(string fileName)

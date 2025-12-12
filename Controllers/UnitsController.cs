@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.DTOs;
+﻿
+using Microsoft.AspNetCore.Mvc;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Repositories.Units;
 
 namespace XeniaRentalApi.Controllers
@@ -22,12 +23,14 @@ namespace XeniaRentalApi.Controllers
             return Ok(result);
         }
 
+
         [HttpGet("company/{companyId}")]
         public async Task<IActionResult> GetUnitsByCompany(int companyId, string? search, int pageNumber = 1, int pageSize = 10)
         {
             var result = await _unitRepository.GetUnitByCompanyId(companyId, search, pageNumber, pageSize);
             return Ok(result);
         }
+
 
         [HttpGet("{unitId}")]
         public async Task<IActionResult> GetUnit(int unitId)
@@ -37,12 +40,14 @@ namespace XeniaRentalApi.Controllers
             return Ok(unit);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> CreateUnit([FromBody] UnitDto model)
         {
             var unit = await _unitRepository.CreateUnit(model);
             return CreatedAtAction(nameof(GetUnit), new { unitId = unit.UnitId }, unit);
         }
+
 
         [HttpPut("{unitId}")]
         public async Task<IActionResult> UpdateUnit(int unitId, [FromBody] UnitDto model)
@@ -52,6 +57,7 @@ namespace XeniaRentalApi.Controllers
             if (updated == null) return NotFound();
             return Ok(updated);
         }
+
 
         [HttpDelete("{unitId}")]
         public async Task<IActionResult> DeleteUnit(int unitId)

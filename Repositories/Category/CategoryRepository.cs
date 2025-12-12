@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.DTOs;
+using XeniaRentalApi.Dtos;
 using XeniaRentalApi.Models;
 
 namespace XeniaRentalApi.Repositories.Category

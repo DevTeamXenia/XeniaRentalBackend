@@ -18,7 +18,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               },
@@ -26,7 +26,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               },
@@ -34,7 +34,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               }
@@ -67,7 +67,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               },
@@ -75,7 +75,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               },
@@ -83,7 +83,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                    "$ref": "#/components/schemas/XRS_AccountGroup"
                   }
                 }
               }
@@ -114,17 +114,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                  "$ref": "#/components/schemas/XRS_AccountGroup"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                  "$ref": "#/components/schemas/XRS_AccountGroup"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                  "$ref": "#/components/schemas/XRS_AccountGroup"
                 }
               }
             }
@@ -150,17 +150,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             }
           }
@@ -202,17 +202,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountGroup"
+                "$ref": "#/components/schemas/XRS_AccountGroup"
               }
             }
           }
@@ -237,7 +237,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Accounts"
+                    "$ref": "#/components/schemas/XRS_Accounts"
                   }
                 }
               },
@@ -245,7 +245,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Accounts"
+                    "$ref": "#/components/schemas/XRS_Accounts"
                   }
                 }
               },
@@ -253,7 +253,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Accounts"
+                    "$ref": "#/components/schemas/XRS_Accounts"
                   }
                 }
               }
@@ -294,7 +294,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                    "$ref": "#/components/schemas/XRS_AccountLedger"
                   }
                 }
               },
@@ -302,7 +302,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                    "$ref": "#/components/schemas/XRS_AccountLedger"
                   }
                 }
               },
@@ -310,7 +310,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                    "$ref": "#/components/schemas/XRS_AccountLedger"
                   }
                 }
               }
@@ -341,17 +341,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                  "$ref": "#/components/schemas/XRS_AccountLedger"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                  "$ref": "#/components/schemas/XRS_AccountLedger"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                  "$ref": "#/components/schemas/XRS_AccountLedger"
                 }
               }
             }
@@ -377,17 +377,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             }
           }
@@ -408,17 +408,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_AccountLedger"
+                "$ref": "#/components/schemas/XRS_AccountLedger"
               }
             }
           }
@@ -439,17 +439,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             }
           }
@@ -470,21 +470,71 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginOTPDTO"
+                "$ref": "#/components/schemas/LoginOTPDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginOTPDTO"
+                "$ref": "#/components/schemas/LoginOTPDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.LoginOTPDTO"
+                "$ref": "#/components/schemas/LoginOTPDTO"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "companyId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "otp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceToken",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -501,17 +551,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForgetPasswordOTPDTO"
+                "$ref": "#/components/schemas/ForgetPasswordOTPDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForgetPasswordOTPDTO"
+                "$ref": "#/components/schemas/ForgetPasswordOTPDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForgetPasswordOTPDTO"
+                "$ref": "#/components/schemas/ForgetPasswordOTPDTO"
               }
             }
           }
@@ -532,17 +582,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForegtPasswordDTO"
+                "$ref": "#/components/schemas/ForegtPasswordDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForegtPasswordDTO"
+                "$ref": "#/components/schemas/ForegtPasswordDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ForegtPasswordDTO"
+                "$ref": "#/components/schemas/ForegtPasswordDTO"
               }
             }
           }
@@ -585,7 +635,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                    "$ref": "#/components/schemas/XRS_Bedspace"
                   }
                 }
               },
@@ -593,7 +643,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                    "$ref": "#/components/schemas/XRS_Bedspace"
                   }
                 }
               },
@@ -601,7 +651,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                    "$ref": "#/components/schemas/XRS_Bedspace"
                   }
                 }
               }
@@ -657,17 +707,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_BedspacePagedResultDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_BedspacePagedResultDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_BedspacePagedResultDto"
                 }
               }
             }
@@ -697,17 +747,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_Bedspace"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_Bedspace"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
+                  "$ref": "#/components/schemas/XRS_Bedspace"
                 }
               }
             }
@@ -733,17 +783,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             }
           }
@@ -785,17 +835,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.BedSpaceDto"
+                "$ref": "#/components/schemas/BedSpaceDto"
               }
             }
           }
@@ -826,17 +876,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             }
           }
@@ -889,17 +939,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedSpacePlan"
+                "$ref": "#/components/schemas/XRS_BedSpacePlan"
               }
             }
           }
@@ -968,7 +1018,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                    "$ref": "#/components/schemas/XRS_Categories"
                   }
                 }
               },
@@ -976,7 +1026,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                    "$ref": "#/components/schemas/XRS_Categories"
                   }
                 }
               },
@@ -984,7 +1034,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                    "$ref": "#/components/schemas/XRS_Categories"
                   }
                 }
               }
@@ -1040,17 +1090,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Categories"
+                  "$ref": "#/components/schemas/XRS_CategoriesPagedResultDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Categories"
+                  "$ref": "#/components/schemas/XRS_CategoriesPagedResultDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Categories"
+                  "$ref": "#/components/schemas/XRS_CategoriesPagedResultDto"
                 }
               }
             }
@@ -1080,17 +1130,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                  "$ref": "#/components/schemas/XRS_Categories"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                  "$ref": "#/components/schemas/XRS_Categories"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+                  "$ref": "#/components/schemas/XRS_Categories"
                 }
               }
             }
@@ -1116,17 +1166,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             }
           }
@@ -1168,17 +1218,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CategoryDto"
+                "$ref": "#/components/schemas/CategoryDto"
               }
             }
           }
@@ -1221,7 +1271,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                    "$ref": "#/components/schemas/ChargesDto"
                   }
                 }
               },
@@ -1229,7 +1279,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                    "$ref": "#/components/schemas/ChargesDto"
                   }
                 }
               },
@@ -1237,7 +1287,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                    "$ref": "#/components/schemas/ChargesDto"
                   }
                 }
               }
@@ -1301,17 +1351,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfChargesDto"
+                  "$ref": "#/components/schemas/ChargesDtoPagedResultDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfChargesDto"
+                  "$ref": "#/components/schemas/ChargesDtoPagedResultDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfChargesDto"
+                  "$ref": "#/components/schemas/ChargesDtoPagedResultDto"
                 }
               }
             }
@@ -1328,17 +1378,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                "$ref": "#/components/schemas/ChargesDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                "$ref": "#/components/schemas/ChargesDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
+                "$ref": "#/components/schemas/ChargesDto"
               }
             }
           }
@@ -1372,17 +1422,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                  "$ref": "#/components/schemas/XRS_Charges"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                  "$ref": "#/components/schemas/XRS_Charges"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                  "$ref": "#/components/schemas/XRS_Charges"
                 }
               }
             }
@@ -1431,17 +1481,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                "$ref": "#/components/schemas/XRS_Charges"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                "$ref": "#/components/schemas/XRS_Charges"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+                "$ref": "#/components/schemas/XRS_Charges"
               }
             }
           }
@@ -1486,7 +1536,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                    "$ref": "#/components/schemas/XRS_Company"
                   }
                 }
               },
@@ -1494,7 +1544,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                    "$ref": "#/components/schemas/XRS_Company"
                   }
                 }
               },
@@ -1502,7 +1552,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                    "$ref": "#/components/schemas/XRS_Company"
                   }
                 }
               }
@@ -1520,17 +1570,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             }
           }
@@ -1564,17 +1614,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                  "$ref": "#/components/schemas/XRS_Company"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                  "$ref": "#/components/schemas/XRS_Company"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                  "$ref": "#/components/schemas/XRS_Company"
                 }
               }
             }
@@ -1623,17 +1673,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Company"
+                "$ref": "#/components/schemas/XRS_Company"
               }
             }
           }
@@ -1736,7 +1786,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                    "$ref": "#/components/schemas/XRS_Documents"
                   }
                 }
               },
@@ -1744,7 +1794,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                    "$ref": "#/components/schemas/XRS_Documents"
                   }
                 }
               },
@@ -1752,7 +1802,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                    "$ref": "#/components/schemas/XRS_Documents"
                   }
                 }
               }
@@ -1815,17 +1865,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Documents"
+                  "$ref": "#/components/schemas/XRS_DocumentsPagedResultDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Documents"
+                  "$ref": "#/components/schemas/XRS_DocumentsPagedResultDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Documents"
+                  "$ref": "#/components/schemas/XRS_DocumentsPagedResultDto"
                 }
               }
             }
@@ -1842,17 +1892,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             }
           }
@@ -1886,17 +1936,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                  "$ref": "#/components/schemas/XRS_Documents"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                  "$ref": "#/components/schemas/XRS_Documents"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                  "$ref": "#/components/schemas/XRS_Documents"
                 }
               }
             }
@@ -1922,17 +1972,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
+                "$ref": "#/components/schemas/XRS_Documents"
               }
             }
           }
@@ -2043,17 +2093,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.MarkAttendanceDto"
+                "$ref": "#/components/schemas/MarkAttendanceDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.MarkAttendanceDto"
+                "$ref": "#/components/schemas/MarkAttendanceDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.MarkAttendanceDto"
+                "$ref": "#/components/schemas/MarkAttendanceDto"
               }
             }
           }
@@ -2088,7 +2138,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               },
@@ -2096,7 +2146,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               },
@@ -2104,7 +2154,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               }
@@ -2155,7 +2205,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               },
@@ -2163,7 +2213,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               },
@@ -2171,7 +2221,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                    "$ref": "#/components/schemas/XRS_Messtypes"
                   }
                 }
               }
@@ -2202,17 +2252,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                  "$ref": "#/components/schemas/XRS_Messtypes"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                  "$ref": "#/components/schemas/XRS_Messtypes"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                  "$ref": "#/components/schemas/XRS_Messtypes"
                 }
               }
             }
@@ -2238,17 +2288,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             }
           }
@@ -2290,17 +2340,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Messtypes"
+                "$ref": "#/components/schemas/XRS_Messtypes"
               }
             }
           }
@@ -2336,7 +2386,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                    "$ref": "#/components/schemas/XRS_Properties"
                   }
                 }
               },
@@ -2344,7 +2394,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                    "$ref": "#/components/schemas/XRS_Properties"
                   }
                 }
               },
@@ -2352,7 +2402,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                    "$ref": "#/components/schemas/XRS_Properties"
                   }
                 }
               }
@@ -2408,20 +2458,32 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Properties"
+                  "$ref": "#/components/schemas/XRS_PropertiesPagedResultDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Properties"
+                  "$ref": "#/components/schemas/XRS_PropertiesPagedResultDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResultDtoOfXRS_Properties"
+                  "$ref": "#/components/schemas/XRS_PropertiesPagedResultDto"
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/Properties/app/property": {
+      "get": {
+        "tags": [
+          "Properties"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -2435,17 +2497,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             }
           }
@@ -2479,17 +2541,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                  "$ref": "#/components/schemas/XRS_Properties"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                  "$ref": "#/components/schemas/XRS_Properties"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                  "$ref": "#/components/schemas/XRS_Properties"
                 }
               }
             }
@@ -2515,17 +2577,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+                "$ref": "#/components/schemas/XRS_Properties"
               }
             }
           }
@@ -2590,7 +2652,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Tenant"
+                    "$ref": "#/components/schemas/XRS_Tenant"
                   }
                 }
               },
@@ -2598,7 +2660,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Tenant"
+                    "$ref": "#/components/schemas/XRS_Tenant"
                   }
                 }
               },
@@ -2606,7 +2668,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Tenant"
+                    "$ref": "#/components/schemas/XRS_Tenant"
                   }
                 }
               }
@@ -2711,17 +2773,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             }
           }
@@ -2763,17 +2825,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDto"
+                "$ref": "#/components/schemas/TenantCreateDto"
               }
             }
           }
@@ -2984,17 +3046,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             }
           }
@@ -3036,17 +3098,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentCreateDto"
+                "$ref": "#/components/schemas/TenantAssignmentCreateDto"
               }
             }
           }
@@ -3142,17 +3204,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentGetDto"
+                  "$ref": "#/components/schemas/TenantAssignmentGetDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentGetDto"
+                  "$ref": "#/components/schemas/TenantAssignmentGetDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantAssignmentGetDto"
+                  "$ref": "#/components/schemas/TenantAssignmentGetDto"
                 }
               }
             }
@@ -3180,17 +3242,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantClosureCreateDto"
+                "$ref": "#/components/schemas/TenantClosureCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantClosureCreateDto"
+                "$ref": "#/components/schemas/TenantClosureCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantClosureCreateDto"
+                "$ref": "#/components/schemas/TenantClosureCreateDto"
               }
             }
           }
@@ -3405,17 +3467,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             }
           }
@@ -3457,17 +3519,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitDto"
+                "$ref": "#/components/schemas/UnitDto"
               }
             }
           }
@@ -3503,7 +3565,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                    "$ref": "#/components/schemas/XRS_Users"
                   }
                 }
               },
@@ -3511,7 +3573,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                    "$ref": "#/components/schemas/XRS_Users"
                   }
                 }
               },
@@ -3519,7 +3581,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                    "$ref": "#/components/schemas/XRS_Users"
                   }
                 }
               }
@@ -3550,17 +3612,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                  "$ref": "#/components/schemas/XRS_Users"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                  "$ref": "#/components/schemas/XRS_Users"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                  "$ref": "#/components/schemas/XRS_Users"
                 }
               }
             }
@@ -3586,17 +3648,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                "$ref": "#/components/schemas/XRS_Users"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                "$ref": "#/components/schemas/XRS_Users"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Users"
+                "$ref": "#/components/schemas/XRS_Users"
               }
             }
           }
@@ -3638,17 +3700,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CreateUser"
+                "$ref": "#/components/schemas/CreateUser"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CreateUser"
+                "$ref": "#/components/schemas/CreateUser"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.DTOs.CreateUser"
+                "$ref": "#/components/schemas/CreateUser"
               }
             }
           }
@@ -3681,17 +3743,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             }
           }
@@ -3702,17 +3764,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               }
             }
@@ -3742,17 +3804,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               }
             }
@@ -3778,17 +3840,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDto"
+                "$ref": "#/components/schemas/VoucherDto"
               }
             }
           }
@@ -3799,17 +3861,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                  "$ref": "#/components/schemas/XRS_Voucher"
                 }
               }
             }
@@ -3869,7 +3931,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                    "$ref": "#/components/schemas/XRS_Voucher"
                   }
                 }
               },
@@ -3877,7 +3939,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                    "$ref": "#/components/schemas/XRS_Voucher"
                   }
                 }
               },
@@ -3885,7 +3947,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Voucher"
+                    "$ref": "#/components/schemas/XRS_Voucher"
                   }
                 }
               }
@@ -3935,17 +3997,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherCreateRequest"
+                "$ref": "#/components/schemas/VoucherCreateRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherCreateRequest"
+                "$ref": "#/components/schemas/VoucherCreateRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherCreateRequest"
+                "$ref": "#/components/schemas/VoucherCreateRequest"
               }
             }
           }
@@ -3960,197 +4022,7 @@
   },
   "components": {
     "schemas": {
-      "PagedResultDtoOfChargesDto": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.DTOs.ChargesDto"
-            },
-            "nullable": true
-          },
-          "PageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalRecords": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "HasPreviousPage": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "HasNextPage": {
-            "type": "boolean",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PagedResultDtoOfXRS_Bedspace": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Bedspace"
-            },
-            "nullable": true
-          },
-          "PageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalRecords": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "HasPreviousPage": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "HasNextPage": {
-            "type": "boolean",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PagedResultDtoOfXRS_Categories": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
-            },
-            "nullable": true
-          },
-          "PageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalRecords": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "HasPreviousPage": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "HasNextPage": {
-            "type": "boolean",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PagedResultDtoOfXRS_Documents": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Documents"
-            },
-            "nullable": true
-          },
-          "PageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalRecords": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "HasPreviousPage": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "HasNextPage": {
-            "type": "boolean",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PagedResultDtoOfXRS_Properties": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
-            },
-            "nullable": true
-          },
-          "PageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalRecords": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "HasPreviousPage": {
-            "type": "boolean",
-            "readOnly": true
-          },
-          "HasNextPage": {
-            "type": "boolean",
-            "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "XeniaRentalApi.DTOs.BedSpaceDto": {
+      "BedSpaceDto": {
         "type": "object",
         "properties": {
           "companyID": {
@@ -4183,7 +4055,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.CategoryDto": {
+      "CategoryDto": {
         "type": "object",
         "properties": {
           "CompanyID": {
@@ -4200,7 +4072,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.ChargesDto": {
+      "ChargesDto": {
         "type": "object",
         "properties": {
           "chargeID": {
@@ -4236,7 +4108,45 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.CreateUser": {
+      "ChargesDtoPagedResultDto": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargesDto"
+            },
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "HasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "HasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateUser": {
         "required": [
           "Password",
           "UserName"
@@ -4283,7 +4193,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.ForegtPasswordDTO": {
+      "ForegtPasswordDTO": {
         "type": "object",
         "properties": {
           "PhoneNumber": {
@@ -4305,7 +4215,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.ForgetPasswordOTPDTO": {
+      "ForgetPasswordOTPDTO": {
         "type": "object",
         "properties": {
           "CompanyID": {
@@ -4323,7 +4233,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.LoginOTPDTO": {
+      "LoginOTPDTO": {
         "type": "object",
         "properties": {
           "CompanyID": {
@@ -4341,7 +4251,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.LoginRequest": {
+      "LoginRequest": {
         "type": "object",
         "properties": {
           "Username": {
@@ -4355,109 +4265,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.DTOs.UnitChargeDto": {
-        "type": "object",
-        "properties": {
-          "unitMapID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "chargeID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "frequency": {
-            "type": "string",
-            "nullable": true
-          },
-          "isActive": {
-            "type": "boolean"
-          },
-          "ChargeName": {
-            "type": "string",
-            "nullable": true
-          },
-          "ChargeType": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "XeniaRentalApi.DTOs.UnitDto": {
-        "type": "object",
-        "properties": {
-          "UnitId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "CompanyId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PropID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "UnitName": {
-            "type": "string",
-            "nullable": true
-          },
-          "UnitType": {
-            "type": "string",
-            "nullable": true
-          },
-          "IsActive": {
-            "type": "boolean"
-          },
-          "FloorNo": {
-            "type": "string",
-            "nullable": true
-          },
-          "Area": {
-            "type": "string",
-            "nullable": true
-          },
-          "Remarks": {
-            "type": "string",
-            "nullable": true
-          },
-          "DefaultRent": {
-            "type": "number",
-            "format": "double"
-          },
-          "escalationper": {
-            "type": "number",
-            "format": "double"
-          },
-          "CatID": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "PropName": {
-            "type": "string",
-            "nullable": true
-          },
-          "CategoryName": {
-            "type": "string",
-            "nullable": true
-          },
-          "UnitCharges": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.DTOs.UnitChargeDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "XeniaRentalApi.Dtos.MarkAttendanceDto": {
+      "MarkAttendanceDto": {
         "type": "object",
         "properties": {
           "TenantId": {
@@ -4490,7 +4298,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantAssignmentCreateDto": {
+      "TenantAssignmentCreateDto": {
         "type": "object",
         "properties": {
           "propID": {
@@ -4594,21 +4402,21 @@
           "Documents": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDocumentDto"
+              "$ref": "#/components/schemas/TenantCreateDocumentDto"
             },
             "nullable": true
           },
           "Cheques": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantChequeRegisterDto"
+              "$ref": "#/components/schemas/TenantChequeRegisterDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantAssignmentGetDto": {
+      "TenantAssignmentGetDto": {
         "type": "object",
         "properties": {
           "tenantAssignId": {
@@ -4746,21 +4554,21 @@
           "Documents": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantDocumentDto"
+              "$ref": "#/components/schemas/TenantDocumentDto"
             },
             "nullable": true
           },
           "Cheques": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantChequeRegisterDto"
+              "$ref": "#/components/schemas/TenantChequeRegisterDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantChequeRegisterDto": {
+      "TenantChequeRegisterDto": {
         "type": "object",
         "properties": {
           "propID": {
@@ -4806,7 +4614,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantClosureCreateDto": {
+      "TenantClosureCreateDto": {
         "type": "object",
         "properties": {
           "isClosure": {
@@ -4831,7 +4639,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantCreateDocumentDto": {
+      "TenantCreateDocumentDto": {
         "type": "object",
         "properties": {
           "docTypeId": {
@@ -4852,7 +4660,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantCreateDto": {
+      "TenantCreateDto": {
         "type": "object",
         "properties": {
           "companyID": {
@@ -4893,14 +4701,14 @@
           "Documents": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.TenantCreateDocumentDto"
+              "$ref": "#/components/schemas/TenantCreateDocumentDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.TenantDocumentDto": {
+      "TenantDocumentDto": {
         "type": "object",
         "properties": {
           "TenantID": {
@@ -4951,7 +4759,112 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.VoucherCreateRequest": {
+      "UnitChargeDto": {
+        "type": "object",
+        "properties": {
+          "unitMapID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "chargeID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "frequency": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "ChargeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ChargeType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UnitDto": {
+        "required": [
+          "UnitName"
+        ],
+        "type": "object",
+        "properties": {
+          "UnitId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CompanyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PropID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitName": {
+            "type": "string",
+            "nullable": true
+          },
+          "UnitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsActive": {
+            "type": "boolean"
+          },
+          "FloorNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "Area": {
+            "type": "string",
+            "nullable": true
+          },
+          "Remarks": {
+            "type": "string",
+            "nullable": true
+          },
+          "DefaultRent": {
+            "type": "number",
+            "format": "double"
+          },
+          "escalationper": {
+            "type": "number",
+            "format": "double"
+          },
+          "CatID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PropName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CategoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "UnitCharges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnitChargeDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VoucherCreateRequest": {
         "type": "object",
         "properties": {
           "UnitID": {
@@ -5012,14 +4925,14 @@
           "VoucherDetails": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Dtos.VoucherDetailCreateRequest"
+              "$ref": "#/components/schemas/VoucherDetailCreateRequest"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.VoucherDetailCreateRequest": {
+      "VoucherDetailCreateRequest": {
         "type": "object",
         "properties": {
           "ChargeId": {
@@ -5033,7 +4946,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Dtos.VoucherDto": {
+      "VoucherDto": {
         "type": "object",
         "properties": {
           "UnitID": {
@@ -5126,7 +5039,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_AccountGroup": {
+      "XRS_AccountGroup": {
         "type": "object",
         "properties": {
           "groupID": {
@@ -5163,7 +5076,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_AccountLedger": {
+      "XRS_AccountLedger": {
         "type": "object",
         "properties": {
           "ledgerID": {
@@ -5208,7 +5121,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Accounts": {
+      "XRS_Accounts": {
         "type": "object",
         "properties": {
           "accID": {
@@ -5281,7 +5194,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_BedSpacePlan": {
+      "XRS_BedSpacePlan": {
         "type": "object",
         "properties": {
           "bedPlanID": {
@@ -5338,14 +5251,14 @@
           "BedspacePlanMessMappings": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_BedspacePlanMessMapping"
+              "$ref": "#/components/schemas/XRS_BedspacePlanMessMapping"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Bedspace": {
+      "XRS_Bedspace": {
         "type": "object",
         "properties": {
           "bedID": {
@@ -5390,7 +5303,45 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_BedspacePlanMessMapping": {
+      "XRS_BedspacePagedResultDto": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/XRS_Bedspace"
+            },
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "HasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "HasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "XRS_BedspacePlanMessMapping": {
         "type": "object",
         "properties": {
           "bpmID": {
@@ -5415,7 +5366,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Categories": {
+      "XRS_Categories": {
         "type": "object",
         "properties": {
           "CatID": {
@@ -5436,14 +5387,52 @@
           "Units": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Units"
+              "$ref": "#/components/schemas/XRS_Units"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Charges": {
+      "XRS_CategoriesPagedResultDto": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/XRS_Categories"
+            },
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "HasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "HasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "XRS_Charges": {
         "type": "object",
         "properties": {
           "chargeID": {
@@ -5473,12 +5462,12 @@
             "type": "boolean"
           },
           "Property": {
-            "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+            "$ref": "#/components/schemas/XRS_Properties"
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Company": {
+      "XRS_Company": {
         "required": [
           "companyName"
         ],
@@ -5518,7 +5507,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Documents": {
+      "XRS_Documents": {
         "type": "object",
         "properties": {
           "docTypeId": {
@@ -5557,7 +5546,45 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Messtypes": {
+      "XRS_DocumentsPagedResultDto": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/XRS_Documents"
+            },
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "HasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "HasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "XRS_Messtypes": {
         "required": [
           "MessCode",
           "MessName"
@@ -5587,7 +5614,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Properties": {
+      "XRS_Properties": {
         "required": [
           "propertyName"
         ],
@@ -5616,7 +5643,49 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Tenant": {
+      "XRS_PropertiesPagedResultDto": {
+        "type": "object",
+        "properties": {
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/XRS_Properties"
+            },
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "HasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "HasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "XRS_Tenant": {
+        "required": [
+          "phoneNumber",
+          "tenantName"
+        ],
         "type": "object",
         "properties": {
           "tenantID": {
@@ -5636,6 +5705,10 @@
             "nullable": true
           },
           "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceToken": {
             "type": "string",
             "nullable": true
           },
@@ -5661,7 +5734,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_UnitChargesMapping": {
+      "XRS_UnitChargesMapping": {
         "type": "object",
         "properties": {
           "unitMapID": {
@@ -5696,15 +5769,15 @@
             "type": "boolean"
           },
           "Unit": {
-            "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Units"
+            "$ref": "#/components/schemas/XRS_Units"
           },
           "Charges": {
-            "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Charges"
+            "$ref": "#/components/schemas/XRS_Charges"
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Units": {
+      "XRS_Units": {
         "required": [
           "UnitName"
         ],
@@ -5760,10 +5833,10 @@
             "nullable": true
           },
           "Property": {
-            "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Properties"
+            "$ref": "#/components/schemas/XRS_Properties"
           },
           "Category": {
-            "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_Categories"
+            "$ref": "#/components/schemas/XRS_Categories"
           },
           "PropName": {
             "type": "string",
@@ -5776,14 +5849,14 @@
           "UnitCharges": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/XeniaRentalApi.Models.XRS_UnitChargesMapping"
+              "$ref": "#/components/schemas/XRS_UnitChargesMapping"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Users": {
+      "XRS_Users": {
         "required": [
           "Password",
           "UserName"
@@ -5841,7 +5914,7 @@
         },
         "additionalProperties": false
       },
-      "XeniaRentalApi.Models.XRS_Voucher": {
+      "XRS_Voucher": {
         "type": "object",
         "properties": {
           "VoucherID": {
