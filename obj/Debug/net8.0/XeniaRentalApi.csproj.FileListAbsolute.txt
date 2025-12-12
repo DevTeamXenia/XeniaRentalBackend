@@ -83,3 +83,15 @@ D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalApi\obj\Debug\net8.0\staticwebassets.u
 D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalApi\obj\Debug\net8.0\XeniaRen.33E6EE66.Up2Date
 D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalApi\obj\Debug\net8.0\XeniaRentalApi.genruntimeconfig.cache
 D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalApi\obj\Debug\net8.0\ref\XeniaRentalApi.dll
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.csproj.AssemblyReference.cache
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\rpswa.dswa.cache.json
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.GeneratedMSBuildEditorConfig.editorconfig
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.AssemblyInfoInputs.cache
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.AssemblyInfo.cs
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.csproj.CoreCompileInputs.cache
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.MvcApplicationPartsAssemblyInfo.cs
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.MvcApplicationPartsAssemblyInfo.cache
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.sourcelink.json
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.dll
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\refint\XeniaRentalApi.dll
+D:\XENIA\GITHUB\WEBAPI\ASP.NET\XeniaRentalBackend\obj\Debug\net8.0\XeniaRentalApi.pdb

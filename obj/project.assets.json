@@ -2867,11 +2867,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalApi\\XeniaRentalApi.csproj",
+      "projectUniqueName": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalBackend\\XeniaRentalApi.csproj",
       "projectName": "XeniaRentalApi",
-      "projectPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalApi\\XeniaRentalApi.csproj",
+      "projectPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalBackend\\XeniaRentalApi.csproj",
       "packagesPath": "C:\\Users\\Xenia\\.nuget\\packages\\",
-      "outputPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalApi\\obj\\",
+      "outputPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalBackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

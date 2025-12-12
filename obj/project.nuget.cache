@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u4QgWp6w1cc=",
+  "dgSpecHash": "U4ySaRIxXEQ=",
   "success": true,
-  "projectFilePath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalApi\\XeniaRentalApi.csproj",
+  "projectFilePath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\XeniaRentalBackend\\XeniaRentalApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Xenia\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Xenia\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

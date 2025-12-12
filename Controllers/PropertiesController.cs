@@ -12,10 +12,10 @@ namespace XeniaRentalApi.Controllers
     [ApiController]
     public class PropertiesController : ControllerBase
     {
-        private readonly IServiceRepository _propertyRepository;
+        private readonly IPropertiesRepository _propertyRepository;
 
 
-        public PropertiesController(IServiceRepository propertyRepository)
+        public PropertiesController(IPropertiesRepository propertyRepository)
         {
             _propertyRepository = propertyRepository;
         }
