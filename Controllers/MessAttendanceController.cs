@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Repositories.MessDetails;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Repositories.MessDetails;
 
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]

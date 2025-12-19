@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Repositories.Ledger;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Repositories.Ledger;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]

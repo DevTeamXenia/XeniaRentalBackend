@@ -1,6 +1,6 @@
-﻿using XeniaRentalApi.Dtos;
+﻿using XeniaRentalBackend.Dtos;
 
-namespace XeniaRentalApi.Repositories.Charges
+namespace XeniaRentalBackend.Repositories.Charges
 {
     public interface IChargesRepository
     {

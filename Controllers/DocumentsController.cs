@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Repositories.Documents;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Repositories.Documents;
 
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]

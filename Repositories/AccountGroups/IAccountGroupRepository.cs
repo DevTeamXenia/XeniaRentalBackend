@@ -1,7 +1,7 @@
 ﻿
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.AccountGroups
+namespace XeniaRentalBackend.Repositories.AccountGroups
 {
     public interface IAccountGroupRepository
     {

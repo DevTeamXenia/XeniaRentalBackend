@@ -1,9 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Auth
+namespace XeniaRentalBackend.Repositories.Auth
 {
     public interface IAuthRepository
     {

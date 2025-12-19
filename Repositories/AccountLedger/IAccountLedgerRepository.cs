@@ -1,6 +1,6 @@
-﻿using XeniaRentalApi.Models;
+﻿using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Ledger
+namespace XeniaRentalBackend.Repositories.Ledger
 {
     public interface IAccountLedgerRepository
     {

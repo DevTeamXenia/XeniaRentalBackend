@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XeniaRentalApi.Models
+namespace XeniaRentalBackend.Models
 {
     [Table("XRS_Banners")]
     public class XRS_Banners

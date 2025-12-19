@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.BedSpace
+namespace XeniaRentalBackend.Repositories.BedSpace
 {
     public class BedSpaceRepository: IBedSpaceRepository
     {

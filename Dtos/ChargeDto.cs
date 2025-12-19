@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.Dtos
+﻿namespace XeniaRentalBackend.Dtos
 {
     public class ChargeDto
     {

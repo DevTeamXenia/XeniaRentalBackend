@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-namespace XeniaRentalApi.Models
+namespace XeniaRentalBackend.Models
 {
     [Table("XRS_Charges")]
     public class XRS_Charges

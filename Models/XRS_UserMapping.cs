@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace XeniaRentalApi.Models
+namespace XeniaRentalBackend.Models
 {
     public class XRS_UserMapping
     {

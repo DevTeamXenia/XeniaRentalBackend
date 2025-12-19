@@ -3,9 +3,9 @@ using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
 using Stripe.Checkout;
-//using XeniaRentalApi.Repositories.Order;
+//using XeniaRentalBackend.Repositories.Order;
 
-namespace XeniaRentalApi.Service.Payment
+namespace XeniaRentalBackend.Service.Payment
 {
     public class PaymentService : IPaymentService
     {

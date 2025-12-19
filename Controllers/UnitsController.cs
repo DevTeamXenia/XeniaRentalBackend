@@ -1,9 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Repositories.Units;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Repositories.Units;
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

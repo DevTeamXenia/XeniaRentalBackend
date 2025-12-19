@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace XeniaRentalApi.Models
+namespace XeniaRentalBackend.Models
 {
     [Table("XRS_Properties")]
     public class XRS_Properties

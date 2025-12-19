@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Net;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Service.Common;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Service.Common;
 
-namespace XeniaRentalApi.Repositories.Tenant
+namespace XeniaRentalBackend.Repositories.Tenant
 {
     public class TenantRepository : ITenantRepository
     {

@@ -1,7 +1,7 @@
-﻿using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
+﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
 
-namespace XeniaRentalApi.Repositories.MessDetails
+namespace XeniaRentalBackend.Repositories.MessDetails
 {
     public interface IMessAttendancesRepository
     {

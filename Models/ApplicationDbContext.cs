@@ -1,6 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-namespace XeniaRentalApi.Models
+namespace XeniaRentalBackend.Models
 {
     public class ApplicationDbContext : DbContext
     {

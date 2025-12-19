@@ -1,8 +1,8 @@
 ﻿using Stripe;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Service
+namespace XeniaRentalBackend.Repositories.Service
 {
     public interface IServiceRepository
     {

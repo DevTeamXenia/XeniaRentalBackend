@@ -1,6 +1,6 @@
-﻿using XeniaRentalApi.Models;
+﻿using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.UserRole
+namespace XeniaRentalBackend.Repositories.UserRole
 {
     public interface IUserRepository
     {

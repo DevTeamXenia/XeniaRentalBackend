@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Voucher
+namespace XeniaRentalBackend.Repositories.Voucher
 {
     public interface IVoucherRepository
     {

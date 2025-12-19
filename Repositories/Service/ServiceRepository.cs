@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Stripe;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Service.Common;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Service.Common;
 
 
-namespace XeniaRentalApi.Repositories.Service
+namespace XeniaRentalBackend.Repositories.Service
 {
     public class ServiceRepository: IServiceRepository
     {

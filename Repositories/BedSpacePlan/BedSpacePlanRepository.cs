@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.BedSpacePlan
+namespace XeniaRentalBackend.Repositories.BedSpacePlan
 {
     public class BedSpacePlanRepository:IBedSpacePlanRepository
     {

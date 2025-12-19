@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.DTOs
+namespace XeniaRentalBackend.DTOs
 {
     public class CreateTenantDocuments
     {

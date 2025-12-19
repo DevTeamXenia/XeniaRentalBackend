@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design;
 using System.Numerics;
-using XeniaRentalApi.Models;
-namespace XeniaRentalApi.Repositories.UserRole
+using XeniaRentalBackend.Models;
+namespace XeniaRentalBackend.Repositories.UserRole
 {
     public class UserRepository: IUserRepository
     {

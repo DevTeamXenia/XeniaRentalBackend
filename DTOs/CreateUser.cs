@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace XeniaRentalApi.DTOs
+namespace XeniaRentalBackend.DTOs
 {
     public class CreateUser
     {

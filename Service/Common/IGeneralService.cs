@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.Service.Common
+﻿namespace XeniaRentalBackend.Service.Common
 {
     public interface IGeneralService
     {

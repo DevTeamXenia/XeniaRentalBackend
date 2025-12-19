@@ -1,6 +1,6 @@
-﻿using XeniaRentalApi.Dtos;
+﻿using XeniaRentalBackend.Dtos;
 
-namespace XeniaRentalApi.DTOs
+namespace XeniaRentalBackend.DTOs
 {
     public class TenantGetDto
     {

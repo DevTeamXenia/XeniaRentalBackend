@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
 
-namespace XeniaRentalApi.Repositories.Dashboard
+namespace XeniaRentalBackend.Repositories.Dashboard
 {
     public class DashboardRepository : IDashboardRepsitory
     {

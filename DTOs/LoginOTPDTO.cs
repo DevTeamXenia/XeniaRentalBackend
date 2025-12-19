@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.DTOs
+﻿namespace XeniaRentalBackend.DTOs
 {
     public class LoginOTPDTO
     {

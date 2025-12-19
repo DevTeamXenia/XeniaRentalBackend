@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Repositories.Service;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Repositories.Service;
 
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
@@ -101,7 +101,7 @@ namespace XeniaRentalApi.Controllers
             return Ok(new { Status = "Success", Message = "service deleted successfully." });
         }
 
-
+/*
         [HttpGet("{propertyId}")]
         public async Task<IActionResult> GetChargesByPropertyId(int propertyId)
         {
@@ -110,7 +110,7 @@ namespace XeniaRentalApi.Controllers
                 return NotFound("No charges found for this property.");
 
             return Ok(charges);
-        }
+        }*/
 
 
         [HttpGet("{propertyId}")]

@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace XeniaRentalApi.Service.Common
+namespace XeniaRentalBackend.Service.Common
 {
     public class AesEncryptionService
     {

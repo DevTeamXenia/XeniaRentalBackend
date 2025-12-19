@@ -1,9 +1,9 @@
 ﻿
 using System.Net.Mail;
 using System.Net;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Service.Notification
+namespace XeniaRentalBackend.Service.Notification
 {
     public class OTPService : INotificationService
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XeniaRentalApi.Dtos
+namespace XeniaRentalBackend.Dtos
 {
     public class CategoryDto
     {

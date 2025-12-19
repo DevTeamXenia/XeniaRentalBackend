@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Charges
+namespace XeniaRentalBackend.Repositories.Charges
 {
     public class ChargesRepository:IChargesRepository
     {

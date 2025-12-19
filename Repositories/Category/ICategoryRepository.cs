@@ -1,7 +1,7 @@
-﻿using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Category
+namespace XeniaRentalBackend.Repositories.Category
 {
     public interface ICategoryRepository
     {

@@ -1,7 +1,7 @@
-﻿using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
+﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
 
-namespace XeniaRentalApi.Repositories.Dashboard
+namespace XeniaRentalBackend.Repositories.Dashboard
 {
     public interface IDashboardRepsitory
     {

@@ -1,7 +1,7 @@
 ﻿
-using XeniaRentalApi.Dtos;
+using XeniaRentalBackend.Dtos;
 
-namespace XeniaRentalApi.Repositories.Units
+namespace XeniaRentalBackend.Repositories.Units
 {
     public interface IUnitRepository
     {

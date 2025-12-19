@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.Service.Notification
+﻿namespace XeniaRentalBackend.Service.Notification
 {
     public interface INotificationService
     {

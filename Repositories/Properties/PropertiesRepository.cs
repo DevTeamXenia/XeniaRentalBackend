@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Service.Common;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Service.Common;
 
 
-namespace XeniaRentalApi.Repositories.Properties
+namespace XeniaRentalBackend.Repositories.Properties
 {
     public class PropertiesRepository : IPropertiesRepository
     {

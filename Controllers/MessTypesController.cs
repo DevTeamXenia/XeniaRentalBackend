@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Repositories.MessTypes;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Repositories.MessTypes;
 
 
-namespace XeniaRentalApi.Controllers
+namespace XeniaRentalBackend.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]

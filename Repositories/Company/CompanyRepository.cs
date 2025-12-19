@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
 
 
-namespace XeniaRentalApi.Repositories.Company
+namespace XeniaRentalBackend.Repositories.Company
 {
     public class CompanyRepository:ICompanyRepsitory
     {

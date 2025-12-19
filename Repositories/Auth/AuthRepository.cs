@@ -5,11 +5,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using XeniaCatalogueApi.Dictionary;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Service.Notification;
-using XeniaRentalApi.DTOs;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Service.Notification;
+using XeniaRentalBackend.DTOs;
 
-namespace XeniaRentalApi.Repositories.Auth
+namespace XeniaRentalBackend.Repositories.Auth
 {
     public class AuthRepository : IAuthRepository
     {

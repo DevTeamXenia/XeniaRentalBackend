@@ -1,8 +1,8 @@
-﻿using XeniaRentalApi.Dtos;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
+﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Tenant
+namespace XeniaRentalBackend.Repositories.Tenant
 {
     public interface ITenantRepository
     {

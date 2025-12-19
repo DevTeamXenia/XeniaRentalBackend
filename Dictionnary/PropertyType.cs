@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalApi.Dictionnary
+﻿namespace XeniaRentalBackend.Dictionnary
 {
     public static class PropertyTypeProvider
     {

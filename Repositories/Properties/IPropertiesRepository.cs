@@ -1,7 +1,7 @@
-﻿using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
+﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Properties
+namespace XeniaRentalBackend.Repositories.Properties
 {
     public interface IPropertiesRepository
     {

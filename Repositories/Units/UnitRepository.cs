@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.Dtos;
-using XeniaRentalApi.Models;
-using XeniaRentalApi.Repositories.Units;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Repositories.Units;
 
-namespace XeniaRentalApi.Repositories.Unit
+namespace XeniaRentalBackend.Repositories.Unit
 {
     public class UnitRepository : IUnitRepository
     {

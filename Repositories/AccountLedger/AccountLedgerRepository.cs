@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XeniaRentalApi.DTOs;
-using XeniaRentalApi.Models;
+using XeniaRentalBackend.DTOs;
+using XeniaRentalBackend.Models;
 
-namespace XeniaRentalApi.Repositories.Ledger
+namespace XeniaRentalBackend.Repositories.Ledger
 {
     public class AccountLedgerRepository:IAccountLedgerRepository
     {
