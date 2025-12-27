@@ -4,6 +4,7 @@
     {
         public int PropertyId { get; set; }
         public string PropertyName { get; set; }
+
         public List<UnitReportDto> Units { get; set; } = new();
     }
 
@@ -12,8 +13,11 @@
         public int UnitId { get; set; }
         public string UnitName { get; set; }
 
+        public int TotalBedSpaces { get; set; }
+        public int OccupiedBedSpaces { get; set; }
+        public int VacantBedSpaces => TotalBedSpaces - OccupiedBedSpaces;
+
         public List<TenantRowDto>? Tenants { get; set; }
-       
         public List<BedSpaceReportDto>? BedSpaces { get; set; }
     }
 
@@ -33,6 +37,7 @@
         public decimal Rent { get; set; }
         public decimal Balance { get; set; }
         public DateTime JoinDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Status { get; set; }
     }
 }
