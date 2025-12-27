@@ -466,33 +466,39 @@ namespace XeniaRentalBackend.Repositories.Voucher
         }
 
 
-        private DateTime CalculateNextRentDueDate(DateTime agreementStart, int dueDay, string frequency)
+        private DateTime CalculateNextRentDueDate(DateTime agreementStart,int dueDay,string frequency)
         {
-            DateTime nextDate;
+            if (agreementStart == DateTime.MinValue)
+                agreementStart = DateTime.Today;
 
-            switch (frequency.ToLower())
+            if (dueDay <= 0)
+                dueDay = 1;
+
+            DateTime baseDate;
+
+            switch (frequency?.ToLower())
             {
                 case "monthly":
-                    nextDate = agreementStart.AddMonths(1);
+                    baseDate = agreementStart.AddMonths(1);
                     break;
 
                 case "quarterly":
-                    nextDate = agreementStart.AddMonths(3);
+                    baseDate = agreementStart.AddMonths(3);
                     break;
 
                 case "yearly":
-                    nextDate = agreementStart.AddYears(1);
+                    baseDate = agreementStart.AddYears(1);
                     break;
 
                 default:
-                    throw new ArgumentException("Invalid frequency type");
+                    baseDate = agreementStart.AddMonths(1);
+                    break;
             }
 
-          
-            int daysInMonth = DateTime.DaysInMonth(nextDate.Year, nextDate.Month);
-            int day = Math.Min(dueDay, daysInMonth);
+            int daysInMonth = DateTime.DaysInMonth(baseDate.Year, baseDate.Month);
+            int validDay = Math.Min(dueDay, daysInMonth);
 
-            return new DateTime(nextDate.Year, nextDate.Month, day);
+            return new DateTime(baseDate.Year, baseDate.Month, validDay);
         }
 
 

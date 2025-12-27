@@ -77,10 +77,12 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
 
             if (startDate.HasValue && endDate.HasValue)
             {
-                query = query.Where(t =>
-                    t.agreementStartDate >= startDate.Value &&
-                    t.agreementEndDate <= endDate.Value);
+                var start = startDate.Value.Date;
+                var end = endDate.Value.Date;
+
+                query = query.Where(t => t.agreementStartDate <= end && t.agreementEndDate >= start);
             }
+
 
             if (propertyId.HasValue && propertyId.Value > 0)
             {

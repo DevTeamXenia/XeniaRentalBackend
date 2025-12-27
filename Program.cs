@@ -28,6 +28,7 @@ using XeniaRentalBackend.Repositories.Category;
 using XeniaRentalBackend.Repositories.Unit;
 using XeniaRentalBackend.Repositories.Dashboard;
 using XeniaRentalBackend.Repositories.Service;
+using XeniaRentalBackend.Repositories.Report;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -117,7 +118,8 @@ builder.Services.AddScoped<IVoucherRepository, VoucherRepository>();
 builder.Services.AddScoped<INotificationService, OTPService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IDashboardRepsitory, DashboardRepository>();
-
+builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 
 
@@ -127,21 +129,6 @@ builder.Services.Configure<FtpSettings>(builder.Configuration.GetSection("FtpSet
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<JwtHelperService>();
 
-
-builder.Services.AddScoped<AesEncryptionService>(provider =>
-{
-    var configuration = provider.GetRequiredService<IConfiguration>();
-    string secretKey = configuration["EncryptionSettings:SecretKey"];
-    string secretIv = configuration["EncryptionSettings:SecretIv"];
-
-    if (string.IsNullOrEmpty(secretKey))
-        throw new ArgumentNullException(nameof(secretKey), "Secret Key cannot be null. Check your appsettings.json.");
-
-    if (string.IsNullOrEmpty(secretIv))
-        throw new ArgumentNullException(nameof(secretIv), "Secret IV cannot be null. Check your appsettings.json.");
-
-    return new AesEncryptionService(secretKey, secretIv);
-});
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
