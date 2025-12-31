@@ -13,182 +13,179 @@ namespace XeniaRentalBackend.Repositories.Report
         }
 
 
-        public async Task<List<TenantOccupancyReportDto>> GetTenantOccupancyReportAsync(int companyId, int? propertyId,int? unitId,  bool isBedSpace, DateTime? month)
+        public async Task<List<TenantOccupancyReportDto>> GetTenantOccupancyReportAsync(int companyId, int? propertyId, int? unitId, int? bedSpaceId, bool isBedSpace, string? search)
         {
+            var today = DateTime.Today;
 
-            var voucherQuery = _context.Vouchers
+            var tenantPaidAmounts = await _context.Vouchers
                 .AsNoTracking()
                 .Where(v =>
                     v.CompanyID == companyId &&
                     v.isActive &&
                     !v.Cancelled &&
-                    v.VoucherType == "RECEIPT");
-
-            DateTime rentCalcEndDate = month.HasValue
-                ? new DateTime(month.Value.Year, month.Value.Month, 1)
-                    .AddMonths(1)
-                    .AddDays(-1)
-                : DateTime.Today;
-
-            voucherQuery = voucherQuery.Where(v => v.VoucherDate <= rentCalcEndDate);
-
-            var tenantPaidAmounts = await voucherQuery
+                    v.VoucherType == "RECEIPT")
                 .GroupBy(v => v.CrID)
-                .Select(g => new
-                {
-                    TenantId = g.Key,
-                    Paid = g.Sum(x => x.Amount)
-                })
+                .Select(g => new { TenantId = g.Key, Paid = g.Sum(x => x.Amount) })
                 .ToDictionaryAsync(x => x.TenantId, x => x.Paid);
 
+            List<XRS_Bedspace> bedSpaces;
 
-            var totalBedSpacesByUnit = await _context.BedSpaces
+            if (isBedSpace)
+            {
+                bedSpaces = await _context.BedSpaces
+                    .AsNoTracking()
+                    .Where(b => b.companyID == companyId && b.isActive)
+                    .ToListAsync();
+            }
+            else
+            {
+                bedSpaces = new List<XRS_Bedspace>();
+            }
+
+ 
+            var unitIdsWithBedSpaces = await _context.BedSpaces
                 .AsNoTracking()
-                .Where(b => b.companyID == companyId)
-                .GroupBy(b => b.unitID)
-                .Select(g => new
-                {
-                    UnitId = g.Key,
-                    Total = g.Count()
-                })
-                .ToDictionaryAsync(x => x.UnitId, x => x.Total);
+                .Where(b => b.companyID == companyId && b.isActive)
+                .Select(b => b.unitID)
+                .Distinct()
+                .ToListAsync();
 
-            var baseQuery =
+      
+            var tenantQuery =
                 from ta in _context.TenantAssignemnts.AsNoTracking()
-                join p in _context.Properties on ta.propID equals p.PropID
-                join u in _context.Units on ta.unitID equals u.UnitId
                 join t in _context.Tenants on ta.tenantID equals t.tenantID
-                join b in _context.BedSpaces on ta.bedSpaceID equals b.bedID into bs
-                from bed in bs.DefaultIfEmpty()
-                where ta.companyID == companyId
-                      && !ta.isClosure
+                where ta.companyID == companyId && !ta.isClosure
                 select new
                 {
-                    p.PropID,
-                    PropertyName = p.propertyName,
-
-                    u.UnitId,
-                    UnitName = u.UnitName,
-
-                    BedSpaceId = ta.bedSpaceID > 0 ? ta.bedSpaceID : null,
-                    BedSpaceName = ta.bedSpaceID > 0 ? bed.bedSpaceName : null,
-
+                    ta.propID,
+                    ta.unitID,
+                    BedSpaceId = ta.bedSpaceID > 0 ? ta.bedSpaceID : (int?)null,
                     t.tenantID,
                     TenantName = t.tenantName,
                     Phone = t.phoneNumber,
-
                     Rent = ta.rentAmt,
                     Deposit = ta.securityAmt,
-
                     JoinDate = ta.agreementStartDate,
                     EndDate = ta.agreementEndDate
                 };
 
+            if (bedSpaceId.HasValue)
+                tenantQuery = tenantQuery.Where(x => x.BedSpaceId == bedSpaceId);
+
+            if (!string.IsNullOrWhiteSpace(search))
+                tenantQuery = tenantQuery.Where(x =>
+                    x.TenantName.Contains(search) ||
+                    x.Phone.Contains(search));
+
+            var tenants = await tenantQuery.ToListAsync();
+      
+            var properties = await (
+                from p in _context.Properties
+                join u in _context.Units on p.PropID equals u.PropID
+                where p.CompanyId == companyId
+                      && (
+                            isBedSpace
+                                ? unitIdsWithBedSpaces.Contains(u.UnitId)
+                                : !unitIdsWithBedSpaces.Contains(u.UnitId)
+                         )
+                select new
+                {
+                    p.PropID,
+                    PropertyName = p.propertyName,
+                    u.UnitId,
+                    UnitName = u.UnitName
+                }).ToListAsync();
+
             if (propertyId.HasValue)
-                baseQuery = baseQuery.Where(x => x.PropID == propertyId.Value);
+                properties = properties.Where(x => x.PropID == propertyId).ToList();
 
             if (unitId.HasValue)
-                baseQuery = baseQuery.Where(x => x.UnitId == unitId.Value);
+                properties = properties.Where(x => x.UnitId == unitId).ToList();
 
-            if (isBedSpace)
-                baseQuery = baseQuery.Where(x => x.BedSpaceId != null);
-
-            if (month.HasValue)
-            {
-                var start = new DateTime(month.Value.Year, month.Value.Month, 1);
-                var end = start.AddMonths(1).AddDays(-1);
-
-                baseQuery = baseQuery.Where(x =>
-                    x.JoinDate <= end &&
-                    x.EndDate >= start);
-            }
-
-            var data = await baseQuery.ToListAsync();
-
-            var occupiedBedSpacesByUnit = data
-                .Where(x => x.BedSpaceId != null)
-                .GroupBy(x => x.UnitId)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(x => x.BedSpaceId).Distinct().Count()
-                );
-
-            return data
+  
+            return properties
                 .GroupBy(p => new { p.PropID, p.PropertyName })
                 .Select(prop => new TenantOccupancyReportDto
                 {
                     PropertyId = prop.Key.PropID,
                     PropertyName = prop.Key.PropertyName,
 
-                    Units = prop
-                        .GroupBy(u => new { u.UnitId, u.UnitName })
+                    Units = prop.GroupBy(u => new { u.UnitId, u.UnitName })
                         .Select(unit =>
                         {
+                            var unitTenants = tenants
+                                .Where(t => t.unitID == unit.Key.UnitId)
+                                .ToList();
+
                             var unitDto = new UnitReportDto
                             {
                                 UnitId = unit.Key.UnitId,
                                 UnitName = unit.Key.UnitName,
-
-                                TotalBedSpaces =
-                                    totalBedSpacesByUnit.TryGetValue(unit.Key.UnitId, out var total)
-                                        ? total
-                                        : 0,
-
-                                OccupiedBedSpaces =
-                                    occupiedBedSpacesByUnit.TryGetValue(unit.Key.UnitId, out var occ)
-                                        ? occ
-                                        : 0
+                                TotalBedSpaces = isBedSpace
+                                    ? bedSpaces
+                                        .Where(b => b.unitID == unit.Key.UnitId && b.propID == prop.Key.PropID)
+                                        .Sum(b => b.bedSpaceCount)
+                                    : 0
                             };
 
-                            var fullUnitTenants = unit
-                                .Where(x => x.BedSpaceId == null)
-                                .Select(t => CreateTenantRow(t, tenantPaidAmounts, rentCalcEndDate))
-                                .ToList();
+                            if (isBedSpace)
+                            {
+                                var unitBedSpaces = bedSpaces
+                                    .Where(b => b.unitID == unit.Key.UnitId && b.propID == prop.Key.PropID)
+                                    .ToList();
 
-                            if (fullUnitTenants.Any())
-                                unitDto.Tenants = fullUnitTenants;
-                
-                            var bedSpaces = unit
-                                .Where(x => x.BedSpaceId != null)
-                                .GroupBy(b => new { b.BedSpaceId, b.BedSpaceName })
-                                .Select(bs => new BedSpaceReportDto
+                                unitDto.BedSpaces = unitBedSpaces.Select(bs =>
                                 {
-                                    BedSpaceId = bs.Key.BedSpaceId,
-                                    BedSpaceName = bs.Key.BedSpaceName,
-                                    Tenants = bs
-                                        .Select(t => CreateTenantRow(t, tenantPaidAmounts, rentCalcEndDate))
-                                        .ToList()
-                                })
-                                .ToList();
+                                    var tenantsInBedSpace = unitTenants
+                                        .Where(t => t.BedSpaceId == bs.bedID)
+                                        .ToList();
 
-                            if (bedSpaces.Any())
-                                unitDto.BedSpaces = bedSpaces;
+                                    return new BedSpaceReportDto
+                                    {
+                                        BedSpaceId = bs.bedID,
+                                        BedSpaceName = bs.bedSpaceName,
+                                        TotalBedSpaces = bs.bedSpaceCount,
+                                        OccupiedBedSpaces = tenantsInBedSpace.Count,
+                                        Tenants = tenantsInBedSpace
+                                            .Select(t => CreateTenantRow(t, tenantPaidAmounts))
+                                            .ToList()
+                                    };
+                                }).ToList();
+                            }                    
+                            else
+                            {
+                                unitDto.Tenants = unitTenants
+                                    .Select(t => CreateTenantRow(t, tenantPaidAmounts))
+                                    .ToList();
+
+                                unitDto.BedSpaces = null;
+                            }
 
                             return unitDto;
-                        })
-                        .ToList()
-                })
-                .ToList();
+                        }).ToList()
+                }).ToList();
         }
+
+
 
 
         private int GetMonthsBetween(DateTime start, DateTime end)
         {
-            if (end < start)
-                return 0;
-
-            return ((end.Year - start.Year) * 12) + end.Month - start.Month + 1;
+            if (end < start) return 0;
+            int months = (end.Year - start.Year) * 12 + (end.Month - start.Month);
+            if (end.Day >= start.Day) months++;
+            return months;
         }
 
-
-        private TenantRowDto CreateTenantRow( dynamic t, Dictionary<int, decimal> tenantPaidAmounts, DateTime rentCalcEndDate)
+        private TenantRowDto CreateTenantRow(dynamic t, Dictionary<int, decimal> tenantPaidAmounts)
         {
-            var months = GetMonthsBetween(t.JoinDate, rentCalcEndDate);
-            var expectedRent = months * t.Rent;
+            var today = DateTime.Today;
 
-            var paid = tenantPaidAmounts.ContainsKey(t.tenantID)
-                ? tenantPaidAmounts[t.tenantID]
-                : 0;
+            DateTime rentEndDate = t.EndDate != null && t.EndDate < today ? t.EndDate : today;
+            int months = GetMonthsBetween(t.JoinDate, rentEndDate);
+            decimal expectedRent = months * t.Rent;
+
+            decimal paid = tenantPaidAmounts.TryGetValue(t.tenantID, out decimal amount) ? amount : 0m;
 
             return new TenantRowDto
             {
@@ -200,7 +197,7 @@ namespace XeniaRentalBackend.Repositories.Report
                 Balance = expectedRent - paid,
                 JoinDate = t.JoinDate,
                 EndDate = t.EndDate,
-                Status = t.Deposit > 0 ? "New" : "Set Off"
+                Status = (expectedRent - paid) > 0 ? "Pending" : "Clear"
             };
         }
 

@@ -16,6 +16,8 @@ namespace XeniaRentalBackend.Models
 
         public DbSet<XRS_Accounts> Accounts { get; set; }
 
+        public DbSet<XRS_Agent> Agent { get; set; }
+
         public DbSet<XRS_Bedspace> BedSpaces { get; set; }
 
         public DbSet<XRS_BedSpacePlan> BedSpacePlans { get; set; }

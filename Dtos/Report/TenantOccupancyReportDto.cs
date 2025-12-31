@@ -14,8 +14,6 @@
         public string UnitName { get; set; }
 
         public int TotalBedSpaces { get; set; }
-        public int OccupiedBedSpaces { get; set; }
-        public int VacantBedSpaces => TotalBedSpaces - OccupiedBedSpaces;
 
         public List<TenantRowDto>? Tenants { get; set; }
         public List<BedSpaceReportDto>? BedSpaces { get; set; }
@@ -25,6 +23,9 @@
     {
         public int? BedSpaceId { get; set; }
         public string? BedSpaceName { get; set; }
+        public int TotalBedSpaces { get; set; }   
+        public int OccupiedBedSpaces { get; set; } 
+        public int VacantBedSpaces => TotalBedSpaces - OccupiedBedSpaces;
         public List<TenantRowDto> Tenants { get; set; } = new();
     }
 

@@ -47,6 +47,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
                 {
                     bedID = b.bedID,
                     bedSpaceName = b.bedSpaceName,
+                    bedSpaceCount = b.bedSpaceCount,
                     companyID = b.companyID,
                     planID = b.planID,
                     propID = b.propID,
@@ -76,6 +77,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
                 {
                     bedID = b.bedID,
                     bedSpaceName = b.bedSpaceName,
+                    bedSpaceCount = b.bedSpaceCount,
                     companyID = b.companyID,
                     planID = b.planID,
                     propID = b.propID,
@@ -101,6 +103,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
                unitID = dtoBedSpace.unitID,
                planID = dtoBedSpace.planID,
                bedSpaceName = dtoBedSpace.bedSpaceName,
+               bedSpaceCount = dtoBedSpace.bedSpaceCount,
                rentAmt = dtoBedSpace.rentAmt,
                isActive=dtoBedSpace.isActive
 
@@ -117,6 +120,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
             if (updatebedSpace == null) return false;
 
             updatebedSpace.bedSpaceName = bedSpace.bedSpaceName ?? bedSpace.bedSpaceName;
+            updatebedSpace.bedSpaceCount = bedSpace.bedSpaceCount;
             updatebedSpace.companyID = bedSpace.companyID;
             updatebedSpace.planID = bedSpace.planID;
             updatebedSpace.propID = bedSpace.propID;

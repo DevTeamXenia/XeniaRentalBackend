@@ -10,8 +10,9 @@ namespace XeniaRentalBackend.Repositories.Report
                     int companyId,
                     int? propertyId,
                     int? unitId,
+                    int? bedSpaceId,
                     bool isBedSpace,
-                    DateTime? month
+                    string? search
                 );
 
     }

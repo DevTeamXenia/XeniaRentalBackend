@@ -11,6 +11,7 @@
         public int planID { get; set; }
 
         public string bedSpaceName { get; set; }
+        public int bedSpaceCount { get; set; }
 
         public decimal rentAmt { get; set; }
 
