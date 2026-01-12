@@ -12,6 +12,7 @@ namespace XeniaRentalBackend.Controllers
         private readonly IDashboardRepsitory _dashboardRepsitory;
 
 
+
         public DashBoardController(IDashboardRepsitory dashboardRepsitory)
         {
             _dashboardRepsitory = dashboardRepsitory;
@@ -30,6 +31,13 @@ namespace XeniaRentalBackend.Controllers
         {
             var revenue = await _dashboardRepsitory.GetMonthlyRentRevenueAsync(companyid,year);
             return Ok(revenue);
+        }
+
+        [HttpGet("home/{unitId}")]
+        public async Task<IActionResult> GetTenantPayments(int unitId)
+        {
+            var result = await _dashboardRepsitory.GetTenantPaymentsAsync(unitId);
+            return Ok(result);
         }
 
     }

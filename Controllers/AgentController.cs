@@ -56,7 +56,7 @@ public class AgentController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> CreateCategories([FromBody] XRS_Agent agent)
+    public async Task<IActionResult> CreateAgent([FromBody] XRS_Agent agent)
     {
         if (agent == null)
         {

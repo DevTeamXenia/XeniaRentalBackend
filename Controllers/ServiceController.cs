@@ -45,7 +45,18 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = accounts });
         }
 
-     
+        [HttpGet("app/service")]
+        public async Task<IActionResult> GetServiceForApp()
+        {
+
+            var property = await _serviceRepository.GetServiceForApp();
+            if (property == null)
+                return NotFound("No property found for this user.");
+
+            return Ok(property);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CreateServices([FromBody] XRS_Service service)
         {

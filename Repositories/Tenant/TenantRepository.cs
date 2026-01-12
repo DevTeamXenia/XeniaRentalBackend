@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.CodeDom.Compiler;
 using System.Net;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.DTOs;
@@ -12,10 +13,12 @@ namespace XeniaRentalBackend.Repositories.Tenant
     {
         private readonly ApplicationDbContext _context;
         private readonly FtpSettings _ftp;
-        public TenantRepository(ApplicationDbContext context, IOptions<FtpSettings> ftpOptions)
+        private readonly JwtHelperService _jwtHelperService;
+        public TenantRepository(ApplicationDbContext context, IOptions<FtpSettings> ftpOptions, JwtHelperService jwtHelperService)
         {
             _context = context;
             _ftp = ftpOptions.Value;
+            _jwtHelperService = jwtHelperService;
         }
 
         public async Task<IEnumerable<XRS_Tenant>> GetTenants(int companyId, int? unitId = null)
@@ -181,8 +184,10 @@ namespace XeniaRentalBackend.Repositories.Tenant
             };
         }
 
-        public async Task<TenantProfileDto> GetProfileById(int tenantId)
+        public async Task<TenantProfileDto> GetProfileById()
         {
+            int tenantId = _jwtHelperService.GetCustomerId();
+
             var tenant = await _context.Tenants
                 .FirstOrDefaultAsync(t => t.tenantID == tenantId);
 

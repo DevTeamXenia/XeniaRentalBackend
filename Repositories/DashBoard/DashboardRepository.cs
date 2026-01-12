@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
+using XeniaRentalBackend.Service.Common;
 
 
 namespace XeniaRentalBackend.Repositories.Dashboard
@@ -9,10 +10,11 @@ namespace XeniaRentalBackend.Repositories.Dashboard
     {
 
         private readonly ApplicationDbContext _context;
-        public DashboardRepository(ApplicationDbContext context)
+        private readonly JwtHelperService _jwtHelperService;
+        public DashboardRepository(ApplicationDbContext context, JwtHelperService jwtHelperService)
         {
             _context = context;
-
+            _jwtHelperService = jwtHelperService;
         }
 
         public async Task<RentDashboardDto> GetRentDashboardAsync(int companyId, DateTime fromDate, DateTime toDate)
@@ -195,5 +197,115 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 ActiveTexts = activeTexts
             };
         }
+
+        public async Task<TenantPaymentSummaryDto> GetTenantPaymentsAsync(int unitId)
+        {
+            var today = DateTime.Today;
+            int tenantId = _jwtHelperService.GetCustomerId();
+
+
+            var assignment = await _context.TenantAssignemnts
+                .Where(x =>
+                    x.tenantID == tenantId &&
+                    x.unitID == unitId &&
+                    x.isActive)
+                .FirstOrDefaultAsync();
+
+            if (assignment == null)
+            {
+                return new TenantPaymentSummaryDto
+                {
+                    PreviousUnpaidPayments = new List<UpcomingPaymentDto>(),
+                    PreviousPaidPayments = new List<PaidPaymentDto>(),
+                    NextUpcomingPayment = null
+                };
+            }
+
+
+            var rentSchedule = new List<(DateTime DueDate, decimal Amount)>();
+            var start = assignment.agreementStartDate;
+            var end = assignment.agreementEndDate;
+
+            while (start <= end)
+            {
+                rentSchedule.Add((start, assignment.rentAmt));
+                start = start.AddMonths(1);
+            }
+
+
+            var paidMonths = await _context.Vouchers
+                .Where(v =>
+                    v.CrID == tenantId &&
+                    v.unitID == unitId &&
+                    v.VoucherStatus == "PAID" &&
+                    !v.Cancelled)
+                .Select(v => new
+                {
+                    v.VoucherDate.Year,
+                    v.VoucherDate.Month
+                })
+                .ToListAsync();
+
+
+            var unpaidRents = rentSchedule
+                .Where(r => !paidMonths.Any(p =>
+                    p.Year == r.DueDate.Year &&
+                    p.Month == r.DueDate.Month))
+                .OrderBy(r => r.DueDate)
+                .ToList();
+
+
+            var previousUnpaidPayments = unpaidRents
+                .Where(x => x.DueDate < today)
+                .Select(x => new UpcomingPaymentDto
+                {
+                    RentDueDate = x.DueDate.ToString("dd MMM yyyy"),
+                    RentAmount = x.Amount
+                })
+                .ToList();
+
+
+            var nextMonthDueDate = new DateTime(today.Year, today.Month, 1).AddMonths(1);
+
+            UpcomingPaymentDto? nextUpcoming = null;
+
+            if (nextMonthDueDate >= assignment.agreementStartDate &&
+                nextMonthDueDate <= assignment.agreementEndDate)
+            {
+                nextUpcoming = new UpcomingPaymentDto
+                {
+                    RentDueDate = nextMonthDueDate.ToString("dd MMM yyyy"),
+                    RentAmount = assignment.rentAmt
+                };
+            }
+
+
+            var paidPayments = await _context.Vouchers
+                .Where(v =>
+                    v.CrID == tenantId &&
+                    v.unitID == unitId &&
+                    v.VoucherStatus == "PAID" &&
+                    !v.Cancelled)
+                .OrderByDescending(v => v.VoucherDate)
+                .Take(2)
+                .Select(v => new PaidPaymentDto
+                {
+                    VoucherId = v.VoucherID,
+                    VoucherDate = v.VoucherDate,
+                    Amount = v.Amount
+                })
+                .ToListAsync();
+
+    
+            return new TenantPaymentSummaryDto
+            {
+                PreviousUnpaidPayments = previousUnpaidPayments,
+                NextUpcomingPayment = nextUpcoming,
+                PreviousPaidPayments = paidPayments
+            };
+        }
+
+
+
     }
 }

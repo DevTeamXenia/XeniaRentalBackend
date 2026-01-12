@@ -8,5 +8,6 @@ namespace XeniaRentalBackend.Repositories.Dashboard
         Task<RentDashboardDto> GetRentDashboardAsync(int companyid, DateTime fromDate, DateTime toDate);
         Task<List<MonthlyRevenueDto>> GetMonthlyRentRevenueAsync(int companyid, int year);
         Task<TenantPaymentBannerDto> GetTenantPaymentBannerAsync(int tenantId, int companyId);
+        Task<TenantPaymentSummaryDto> GetTenantPaymentsAsync(int unitId);
     }
 }

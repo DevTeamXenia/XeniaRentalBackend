@@ -53,10 +53,10 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-        [HttpGet("profile/{id}")]
-        public async Task<IActionResult> GetProfileById(int id)
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfileById()
         {
-            var tenant = await _tenantRepository.GetProfileById(id);
+            var tenant = await _tenantRepository.GetProfileById();
             if (tenant == null)
                 return NotFound();
             return Ok(tenant);

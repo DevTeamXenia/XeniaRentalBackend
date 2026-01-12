@@ -128,34 +128,33 @@ namespace XeniaRentalBackend.Repositories.Properties
         {
             int tenantId = _jwtHelperService.GetCustomerId();
 
-            var assignedUnit = await _context.TenantAssignemnts
-                               .Where(t => t.tenantID == tenantId && t.isActive == true)
-                               .Select(t => t.unitID)
-                               .FirstOrDefaultAsync();
 
-            if (assignedUnit == 0)
+            var assignedUnitIds = await _context.TenantAssignemnts
+                .Where(t => t.tenantID == tenantId && t.isActive == true)
+                .Select(t => t.unitID)
+                .ToListAsync();
+
+            if (!assignedUnitIds.Any())
                 return new List<PropertyWithUnitsDto>();
-    
-            var result =
+
+            var result = await (
                 from p in _context.Properties
                 join u in _context.Units on p.PropID equals u.PropID
-                where u.UnitId == assignedUnit
+                where assignedUnitIds.Contains(u.UnitId)
+                group u by new { p.PropID, p.propertyName } into g
                 select new PropertyWithUnitsDto
                 {
-                    PropID = p.PropID,
-                    PropertyName = p.propertyName,
-
-                    Units = new List<UnitPropertyDto>
+                    PropID = g.Key.PropID,
+                    PropertyName = g.Key.propertyName,
+                    Units = g.Select(u => new UnitPropertyDto
                     {
-                new UnitPropertyDto
-                {
-                    UnitID = u.UnitId,
-                    UnitName = u.UnitName
+                        UnitID = u.UnitId,
+                        UnitName = u.UnitName
+                    }).ToList()
                 }
-                    }
-                };
+            ).ToListAsync();
 
-            return await result.ToListAsync();
+            return result;
         }
 
 

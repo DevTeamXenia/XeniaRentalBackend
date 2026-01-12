@@ -65,6 +65,15 @@ namespace XeniaRentalBackend.Repositories.Service
             };
         }
 
+        public async Task<IEnumerable<XRS_Service>> GetServiceForApp()
+        {
+            int companyId =  _jwtHelperService.GetCompanyId();
+
+            return await _context.Services
+                .Where(p => p.serviceCompanyID == companyId && p.ServiceStatus)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<XRS_Service>> GetServicesbyId(int serviceId)
         {
 

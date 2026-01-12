@@ -8,6 +8,7 @@ namespace XeniaRentalBackend.Repositories.Service
     {
         Task<IEnumerable<XRS_Service>> GetServices(int companyId);
         Task<PagedResultDto<XRS_Service>> GetServiceByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10);
+        Task<IEnumerable<XRS_Service>> GetServiceForApp();
         Task<IEnumerable<XRS_Service>> GetServicesbyId(int propertyId);
         Task<bool> UpdateServices(int id, XRS_Service service);
         Task<XRS_Service> CreateServices(XRS_Service service);
