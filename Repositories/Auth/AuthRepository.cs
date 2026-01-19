@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using XeniaCatalogueApi.Dictionary;
+using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Notification;
-using XeniaRentalBackend.DTOs;
 
 namespace XeniaRentalBackend.Repositories.Auth
 {
@@ -94,6 +94,18 @@ namespace XeniaRentalBackend.Repositories.Auth
 
         public async Task<IActionResult> GenerateLoginOTPAsync(LoginOTPDTO request)
         {
+
+            var user = await _context.Tenants
+                .Where(u => u.phoneNumber == request.MobileNo && u.companyID == request.CompanyID)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult(new
+                {
+                    message = "Phone number is not registered"
+                });
+            }
             var otpLog = new XRS_OTPLog
             {
                 Type = (int)OTPType.REGISTRATION,
