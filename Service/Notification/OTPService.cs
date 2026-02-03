@@ -1,6 +1,7 @@
 ﻿
-using System.Net.Mail;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Net.Mail;
 using XeniaRentalBackend.Models;
 
 namespace XeniaRentalBackend.Service.Notification
@@ -33,71 +34,95 @@ namespace XeniaRentalBackend.Service.Notification
         }
 
 
-        public async Task<string> SendSMS(int companyId, int? branchId, string mobileNo, string templateId, string template, Dictionary<string, string> parameters)
+        public async Task<string> SendSMS( int companyId, int? branchId, string mobileNo, string templateId, string template, Dictionary<string, string> parameters)
         {
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return "0";
 
-            var tblEmailSmsSettings = _context.tblEmailSmsSettings.FirstOrDefault(e => e.companyID == companyId);
-            if (tblEmailSmsSettings?.smsGateWay == null || string.IsNullOrWhiteSpace(tblEmailSmsSettings.smsGateWay))
+    
+            var smsGatewaySetting = await _context.Set<XRS_CompanySettings>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s =>
+                    s.CompanyId == companyId &&
+                    s.KeyCode == "SMS_GATEWAY" &&
+                    s.Active);
+
+            if (smsGatewaySetting == null || string.IsNullOrWhiteSpace(smsGatewaySetting.Value))
                 return "0";
 
             try
             {
-                string url = tblEmailSmsSettings.smsGateWay;
+                string url = smsGatewaySetting.Value;
+
                 url = url.Replace("{mobileNo}", mobileNo)
-                         .Replace("{templateId}", templateId ?? "")
+                         .Replace("{templateId}", templateId ?? string.Empty)
                          .Replace("{message}", ReplaceVariables(template, parameters));
 
                 var request = WebRequest.CreateHttp(url);
-                using var response = await request.GetResponseAsync();
-                using var sr = new StreamReader(response.GetResponseStream());
-                string results = await sr.ReadToEndAsync();
+                request.Method = "GET";
 
+                using var response = await request.GetResponseAsync();
+                using var sr = new StreamReader(response.GetResponseStream()!);
+
+                string results = await sr.ReadToEndAsync();
                 return results;
             }
-            catch
+            catch (Exception ex)
             {
                 return "0";
             }
-            return "success";
         }
 
-        public async Task<string> SendEmail(int companyId, string email, string subject, string template, Dictionary<string, string> parameters)
+        public async Task<string> SendEmail( int companyId, string email,  string subject, string template,  Dictionary<string, string> parameters)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return "0";
 
-            var settings = _context.tblEmailSmsSettings.FirstOrDefault(e => e.companyID == companyId);
-            if (settings == null || string.IsNullOrWhiteSpace(settings.emailSender) || string.IsNullOrWhiteSpace(settings.password) ||
-                string.IsNullOrWhiteSpace(settings.host) || string.IsNullOrWhiteSpace(settings.port))
+            var settings = await _context.Set<XRS_CompanySettings>()
+                .AsNoTracking()
+                .Where(s => s.CompanyId == companyId && s.Active)
+                .ToDictionaryAsync(s => s.KeyCode, s => s.Value);
+
+            if (!settings.TryGetValue("EMAIL_HOST", out var host) ||
+                !settings.TryGetValue("EMAIL_PORT", out var portStr) ||
+                !settings.TryGetValue("EMAIL_SENDER", out var sender) ||
+                !settings.TryGetValue("EMAIL_PASSWORD", out var password))
+            {
+                return "0";
+            }
+
+            bool enableSsl = false;
+            if (settings.TryGetValue("EMAIL_SSL", out var sslValue))
+                bool.TryParse(sslValue, out enableSsl);
+
+            if (!int.TryParse(portStr, out int port))
                 return "0";
 
             try
             {
-                using var client = new SmtpClient(settings.host, int.Parse(settings.port))
+                using var client = new SmtpClient(host, port)
                 {
-                    Credentials = new NetworkCredential(settings.emailSender, settings.password),
-                    EnableSsl = settings.enableSsl ?? false
+                    Credentials = new NetworkCredential(sender, password),
+                    EnableSsl = enableSsl
                 };
 
                 var message = new MailMessage
                 {
-                    From = new MailAddress(settings.emailSender),
+                    From = new MailAddress(sender),
                     Subject = subject,
                     Body = ReplaceVariables(template, parameters),
                     IsBodyHtml = true
                 };
+
                 message.To.Add(email);
 
                 await client.SendMailAsync(message);
                 return "success";
             }
-            catch
+            catch (Exception ex)
             {
                 return "0";
             }
-            return "success";
         }
 
 

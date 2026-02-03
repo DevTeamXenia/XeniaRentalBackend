@@ -309,6 +309,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 messConcession = assignment.messConcession,
                 agreementStartDate = assignment.agreementStartDate,
                 agreementEndDate = assignment.agreementEndDate,
+                closureDate = assignment.closureDate,
                 isActive = assignment.isActive,
                 isClosure = assignment.isClosure,
                 paymentMode = assignment.paymentMode,
@@ -369,6 +370,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 messConcession = dto.messConcession,            
                 collectionType = dto.collectionType,
                 agreementStartDate = dto.agreementStartDate,
+                closureDate = dto.closureDate,
                 agreementEndDate = dto.agreementEndDate,
                 rentCollection = dto.rentCollection,
                 escalationPer = dto.escalationPer,
@@ -439,6 +441,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             entity.collectionType = dto.collectionType;
             entity.agreementStartDate = dto.agreementStartDate;
             entity.agreementEndDate = dto.agreementEndDate;
+            entity.closureDate = dto.closureDate;
             entity.rentCollection = dto.rentCollection;
             entity.escalationPer = dto.escalationPer;
             entity.nextescalationDate = dto.nextescalationDate;

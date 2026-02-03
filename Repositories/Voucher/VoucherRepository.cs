@@ -88,7 +88,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
             return await query.AsNoTracking().FirstOrDefaultAsync();
         }
 
-
         public async Task<XRS_Voucher> CreateVoucherAsync(VoucherDto dto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -109,12 +108,29 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 var now = DateTime.Now;
 
+             
+                int nextVoucherNo = 1;
+                var lastVoucher = await _context.Vouchers
+                    .Where(v => v.CompanyID == dto.CompanyID)
+                    .OrderByDescending(v => v.VoucherNo)
+                    .FirstOrDefaultAsync();
+
+                if (lastVoucher != null)
+                {
+                    if (int.TryParse(lastVoucher.VoucherNo, out int lastNo))
+                    {
+                        nextVoucherNo = lastNo + 1;
+                    }
+                }
+
+                string voucherNo = nextVoucherNo.ToString("D5"); 
+
                 var voucher = new XRS_Voucher
                 {
                     unitID = dto.UnitID,
                     CompanyID = dto.CompanyID,
                     PropID = dto.PropID,
-                    VoucherNo = dto.VoucherNo,
+                    VoucherNo = voucherNo,
                     VoucherDate = dto.VoucherDate,
                     VoucherType = dto.VoucherType,
                     DrID = drLedger.ledgerID,
@@ -160,7 +176,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     isActive = true
                 };
 
-
                 var creditEntry = new XRS_Accounts
                 {
                     companyID = dto.CompanyID,
@@ -168,7 +183,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     GroupId = indirectExpensesGroup.groupID,
                     invType = voucher.VoucherType,
                     invNo = voucher.VoucherNo,
-                    invDate =voucher.VoucherDate,
+                    invDate = voucher.VoucherDate,
                     ledgerDr = dto.CrID,
                     ledgerCr = drLedger.ledgerID,
                     amountDr = voucher.Amount,
@@ -194,7 +209,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
             }
         }
 
-
         public async Task<XRS_Voucher?> UpdateVoucherAsync(int voucherId, VoucherDto dto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -209,7 +223,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 var drLedger = await _context.Ledgers
                                .FirstOrDefaultAsync(g => g.ledgerName == dto.DrID && g.companyID == dto.CompanyID);
 
-                voucher.VoucherNo = dto.VoucherNo ?? voucher.VoucherNo;
+                voucher.VoucherNo = voucher.VoucherNo;
                 voucher.VoucherDate = dto.VoucherDate;
                 voucher.VoucherType = dto.VoucherType;
                 voucher.DrID = drLedger.ledgerID;
@@ -268,7 +282,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 throw;
             }
         }
-
 
         public async Task<XRS_Voucher> CreateIntiateAsync(VoucherCreateRequest request)
         {
@@ -344,7 +357,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
             await _context.SaveChangesAsync();
             return true;
         }
-
 
         public async Task<object> GetTenantChargesByMonthAsync(int month, int year)
         {
@@ -464,7 +476,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
             return result;
         }
-
 
         private DateTime CalculateNextRentDueDate(DateTime agreementStart,int dueDay,string frequency)
         {

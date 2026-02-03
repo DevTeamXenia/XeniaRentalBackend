@@ -52,6 +52,7 @@ namespace XeniaRentalBackend.Repositories.Service
                     serviceWhatappNumber = u.serviceWhatappNumber,
                     serviceCompanyID = u.serviceCompanyID,
                     servicePropertyID = u.servicePropertyID,
+                    serviceType = u.serviceType,
                     ServiceStatus = u.ServiceStatus
                 })
                 .ToListAsync();
@@ -93,6 +94,7 @@ namespace XeniaRentalBackend.Repositories.Service
                 serviceWhatappNumber = dtoServices.serviceWhatappNumber,
                 serviceCompanyID = dtoServices.serviceCompanyID,
                 servicePropertyID = dtoServices.servicePropertyID,
+                serviceType = dtoServices.serviceType,
                 ServiceStatus = dtoServices.ServiceStatus,
 
             };
@@ -111,6 +113,7 @@ namespace XeniaRentalBackend.Repositories.Service
             updateServices.serviceName = service.serviceName;
             updateServices.serviceWhatappNumber = service.serviceWhatappNumber;
             updateServices.servicePhoneNumber = service.servicePhoneNumber;
+            updateServices.serviceType = service.serviceType;
             updateServices.ServiceStatus = service.ServiceStatus;
 
             await _context.SaveChangesAsync();

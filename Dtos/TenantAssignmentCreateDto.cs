@@ -16,6 +16,7 @@
         public string? collectionType { get; set; }
         public DateTime agreementStartDate { get; set; }
         public DateTime agreementEndDate { get; set; }
+        public DateTime closureDate { get; set; }
         public int rentCollection { get; set; }
         public int escalationPer { get; set; }
         public DateTime? nextescalationDate { get; set; }

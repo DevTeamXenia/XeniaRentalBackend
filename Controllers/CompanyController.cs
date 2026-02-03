@@ -11,45 +11,19 @@ namespace XeniaRentalBackend.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private readonly ICompanyRepsitory _companyRepository;
+        private readonly ICompanyRepository _companyRepository;
 
 
-        public CompanyController(ICompanyRepsitory companyRepository)
+        public CompanyController(ICompanyRepository companyRepository)
         {
             _companyRepository = companyRepository;
         }
 
-
-        [HttpGet("all/companies")]
-        public async Task<ActionResult<IEnumerable<XRS_Company>>> Get(int pageNumber = 1, int pageSize = 10)
+       
+        [HttpGet("{companyId}")]
+        public async Task<ActionResult<XRS_Company>> GetCompanyById(int companyId)
         {
-            var companies = await _companyRepository.GetCompanies(pageNumber, pageSize);
-            if (companies == null || !companies.Any())
-            {
-                return NotFound(new { Status = "Error", Message = "No companies found." });
-            }
-            return Ok(new { Status = "Success", Data = companies });
-        }
-
-      
-
-        [HttpPost]
-        public async Task<IActionResult> CreateCompanies([FromBody] XRS_Company company)
-        {
-            if (company == null)
-            {
-                return BadRequest(new { Status = "Error", Message = "Invalid company." });
-            }
-
-            var createdCompany = await _companyRepository.CreateCompany(company);
-            return CreatedAtAction(nameof(GetCompanyById), new { id = createdCompany }, new { Status = "Success", Data = createdCompany });
-        }
-
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<XRS_Company>> GetCompanyById(int id)
-        {
-            var company = await _companyRepository.GetCompanybyId(id);
+            var company = await _companyRepository.GetCompanyWithSubscriptionAsync(companyId);
             if (company == null)
             {
                 return NotFound(new { Status = "Error", Message = "company not found." });
@@ -77,18 +51,6 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Message = "Company updated successfully." });
         }
 
-  
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBranch(int id)
-        {
-            var deleted = await _companyRepository.DeleteCompany(id);
-            if (!deleted)
-            {
-                return NotFound(new { Status = "Error", Message = "company not found or delete failed." });
-            }
-
-            return Ok(new { Status = "Success", Message = "company deleted successfully." });
-        }
 
       
     }

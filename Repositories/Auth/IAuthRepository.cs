@@ -20,5 +20,8 @@ namespace XeniaRentalBackend.Repositories.Auth
 
         string GenerateJwtCustomerToken(XRS_Tenant user);
 
+
+        Task<bool> DisableTenantAsync(int tenantId);
+
     }
 }

@@ -125,7 +125,23 @@ namespace XeniaRentalBackend.Controllers
             }
         }
 
-  
+
+        [HttpPut("disable")]
+        public async Task<IActionResult> DisableTenant( [FromQuery] int tenantId)
+        {
+            var result = await _authRepository.DisableTenantAsync(tenantId);
+
+            if (!result)
+                return NotFound(new
+                {
+                    message = "Tenant not found or already disabled"
+                });
+
+            return Ok(new
+            {
+                message = "Tenant account disabled successfully"
+            });
+        }
 
 
     }

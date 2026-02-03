@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XeniaRentalBackend.Dtos.Report;
 using XeniaRentalBackend.Dtos.Reports;
 using XeniaRentalBackend.Models;
 namespace XeniaRentalBackend.Repositories.Report
@@ -166,7 +167,86 @@ namespace XeniaRentalBackend.Repositories.Report
                 }).ToList();
         }
 
+        public async Task<BalanceSheetResponseDto> GetIncomeExpenseAsync( int companyId, DateTime? startDate,  DateTime? endDate,  int? propertyId)
+        {
+            var rawData = await (
+                from a in _context.Accounts
+                join v in _context.Vouchers on a.VoucherId equals v.VoucherID
+                join g in _context.AccountGroups on a.GroupId equals g.groupID
+                join ldr in _context.Ledgers on a.ledgerDr equals ldr.ledgerID into drJoin
+                from dr in drJoin.DefaultIfEmpty()
+                join lcr in _context.Ledgers on a.ledgerCr equals lcr.ledgerID into crJoin
+                from cr in crJoin.DefaultIfEmpty()
+                where a.companyID == companyId
+                      && a.isActive
+                      && (!startDate.HasValue || v.VoucherDate >= startDate.Value)
+                      && (!endDate.HasValue || v.VoucherDate <= endDate.Value)
+                      && (!propertyId.HasValue || v.PropID == propertyId.Value)
+                select new
+                {
+                    g.groupName,
+                    g.groupCode,
+                    v.VoucherType,
+                    LedgerName = a.amountDr > 0 ? dr.ledgerName : cr.ledgerName,
+                    AmountDr = a.amountDr,
+                    AmountCr = a.amountCr
+                }
+            ).AsNoTracking().ToListAsync();
 
+            bool IsIncome(dynamic x)
+            {
+                if (x.groupCode == "INDIRECT EXPENSES")
+                    return false;
+
+                if (x.groupCode == "INDIRECT INCOME" && x.VoucherType == "Rent Pay")
+                    return true;
+
+                return x.AmountCr > 0;
+            }
+
+            var incomeData = rawData.Where(IsIncome).ToList();
+            var expenseData = rawData.Where(x => !IsIncome(x)).ToList();
+
+            var incomeGroups = incomeData
+                .GroupBy(x => x.groupName)
+                .Select(g => new GroupSummaryDto
+                {
+                    GroupName = g.Key,
+                    GroupTotal = g.Sum(x => x.AmountCr),
+                    Ledgers = g.GroupBy(x => x.LedgerName)
+                        .Select(l => new LedgerTotalDto
+                        {
+                            LedgerName = l.Key!,
+                            Amount = l.Sum(x => x.AmountCr)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            var expenseGroups = expenseData
+                .GroupBy(x => x.groupName)
+                .Select(g => new GroupSummaryDto
+                {
+                    GroupName = g.Key,
+                    GroupTotal = g.Sum(x => x.AmountDr),
+                    Ledgers = g.GroupBy(x => x.LedgerName)
+                        .Select(l => new LedgerTotalDto
+                        {
+                            LedgerName = l.Key!,
+                            Amount = l.Sum(x => x.AmountDr)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            return new BalanceSheetResponseDto
+            {
+                IncomeGroups = incomeGroups,
+                ExpenseGroups = expenseGroups,
+                TotalIncome = incomeGroups.Sum(x => x.GroupTotal),
+                TotalExpense = expenseGroups.Sum(x => x.GroupTotal)
+            };
+        }
 
 
         private int GetMonthsBetween(DateTime start, DateTime end)
@@ -200,8 +280,6 @@ namespace XeniaRentalBackend.Repositories.Report
                 Status = (expectedRent - paid) > 0 ? "Pending" : "Clear"
             };
         }
-
-
 
     }
 }

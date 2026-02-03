@@ -105,7 +105,7 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBedSpaceRepository, BedSpaceRepository>();
 builder.Services.AddScoped<IBedSpacePlanRepository, BedSpacePlanRepository>();
 builder.Services.AddScoped<IChargesRepository, ChargesRepository>();
-builder.Services.AddScoped<ICompanyRepsitory, CompanyRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IAccountLedgerRepository, AccountLedgerRepository>();
 builder.Services.AddScoped<IMessAttendancesRepository, MessAttendancesRepository>();

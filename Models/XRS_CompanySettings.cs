@@ -7,28 +7,16 @@ namespace XeniaRentalBackend.Models
     public class XRS_CompanySettings
     {
         [Key]
-        public int Id { get; set; }
+        public int CompanySettingsId { get; set; }
 
-        public int companyID { get; set; }
+        public int CompanyId { get; set; }
 
-        public string? emailIincomingServer { get; set; }
+        [Required, MaxLength(100)]
+        public string KeyCode { get; set; } = null!;
 
-        public string? emailSender { get; set; }
+        [Required]
+        public string Value { get; set; } = null!;
 
-        public string? password { get; set; }
-
-        public bool userDefaultCredentials { get; set; }
-
-        public string? port { get; set; }
-
-        public bool? enableSsl { get; set; }
-
-        public string? host { get; set; }
-        public string? smsGateWay { get; set; }
-        public string? termandcondition { get; set; }
-        public string? privacyPolicy { get; set; }
-        public string? help { get; set; }
-
-        public bool active { get; set; }
+        public bool Active { get; set; } = true;
     }
 }

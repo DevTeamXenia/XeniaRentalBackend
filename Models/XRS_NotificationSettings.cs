@@ -8,9 +8,6 @@ namespace XeniaRentalBackend.Models
     {
         [Key]
         public int NotificationId { get; set; }
-
-        public int? TemplateId { get; set; }
-
         public required string NotificationName { get; set; }
 
         public required string Description { get; set; }

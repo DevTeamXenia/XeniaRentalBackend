@@ -5,7 +5,6 @@
         public int UnitID { get; set; }
         public int CompanyID { get; set; }
         public int PropID { get; set; }
-        public string VoucherNo { get; set; } = string.Empty;
         public DateTime VoucherDate { get; set; }
         public string VoucherType { get; set; } = string.Empty;
         public string DrID { get; set; }

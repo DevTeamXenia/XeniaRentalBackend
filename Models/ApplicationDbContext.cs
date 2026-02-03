@@ -28,6 +28,8 @@ namespace XeniaRentalBackend.Models
 
         public DbSet<XRS_Company> Company { get; set; }
 
+        public DbSet<XRS_CompanySubscription> CompanySubscription { get; set; }
+
         public DbSet<XRS_Documents> Documents { get; set; }
 
         public DbSet<XRS_AccountLedger> Ledgers { get; set; }
@@ -52,7 +54,15 @@ namespace XeniaRentalBackend.Models
 
         public DbSet<XRS_Banners> Banners { get; set; }
 
+        public DbSet<XRS_SubscribePlan> SubscribePlan { get; set; }
+
+        public DbSet<XRS_SubscriptionTransaction> SubscriptionTransaction { get; set; }
+
         public DbSet<XRS_Voucher> Vouchers { get; set; }
+
+        public DbSet<XRS_PlanModuleMap> PlanModuleMap { get; set; }
+
+        public DbSet<XRS_Module> Module { get; set; }
 
         public DbSet<XRS_VoucherDetails> VoucherDetails { get; set; }
 
@@ -62,7 +72,7 @@ namespace XeniaRentalBackend.Models
 
         public DbSet<XRS_NotificationSettings> tblNotifications { get; set; }
 
-        public DbSet<XRS_CompanySettings> tblEmailSmsSettings {  get; set; }
+        public DbSet<XRS_CompanySettings> CompanySettings {  get; set; }
 
         public DbSet<XRS_Categories> Category { get; set; }
         public DbSet<XRS_Service> Services { get; set; }

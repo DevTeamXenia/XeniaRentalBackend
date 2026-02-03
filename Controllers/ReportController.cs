@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using XeniaRentalBackend.Dtos.Report;
 using XeniaRentalBackend.Repositories.Report;
 
 namespace XeniaRentalBackend.Controllers
@@ -22,6 +24,24 @@ namespace XeniaRentalBackend.Controllers
         {
             var result = await _reportRepository.GetTenantOccupancyReportAsync(companyId, propertyId,unitId, bedSpaceId, isBedSpace, search);
             return Ok(result);
+        }
+
+        [HttpGet("income-expense")]
+        public async Task<ActionResult<BalanceSheetResponseDto>> GetIncomeExpense( int companyId,[FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] int? propertyId)
+        {
+            try
+            {
+                var result = await _reportRepository.GetIncomeExpenseAsync(companyId, startDate, endDate, propertyId);
+
+                if (result == null)
+                    return NotFound("No data found for the given parameters.");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
     }

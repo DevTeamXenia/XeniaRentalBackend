@@ -124,7 +124,7 @@ namespace XeniaRentalBackend.Controllers
         }*/
 
 
-        [HttpGet("{propertyId}")]
+        [HttpGet("property/{propertyId}")]
         public async Task<IActionResult> GetServiceByPropertyId(int propertyId, string serviceType)
         {
             var charges = await _serviceRepository.GetServiceByPropertyIdAsync(propertyId, serviceType);

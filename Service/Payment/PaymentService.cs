@@ -1,9 +1,7 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
-using Stripe.Checkout;
-//using XeniaRentalBackend.Repositories.Order;
+using XeniaRentalBackend.Dtos;
+
 
 namespace XeniaRentalBackend.Service.Payment
 {
@@ -11,150 +9,125 @@ namespace XeniaRentalBackend.Service.Payment
     {
         private readonly HttpClient _httpClient;
 
+        /*  private const string MSWIPE_USER_ID = "9072454466";
+          private const string MSWIPE_CLIENT_ID = "MSW*PBLMOH9401987199";
+          private const string MSWIPE_CLIENT_SECRET = "ecd55fb5fe1e9329a7e03d7dc1575217e07e726eea4bceaacb4c5001fd8a511d";
+          private const string MERCHANT_CODE = "9401987199";*/
+
+
+        private const string MSWIPE_USER_ID = "9539484666";
+        private const string MSWIPE_CLIENT_ID = "MSW*PBLAru9401004474";
+        private const string MSWIPE_CLIENT_SECRET = "23f294d62327afca90b0a89076d82c9b3d0a499759819dc58cf7277f2ff2757b";
+        private const string MERCHANT_CODE = "9401004474";
+
+        private const string UAT_AUTH_URL = "https://dcuat.mswipetech.co.in/ipg/api/CreatePBLAuthToken";
+        private const string UAT_PAYMENT_URL = "https://dcuat.mswipetech.co.in/ipg/api/MswipePayment";
+
+        private const string PROD_AUTH_URL = "https://pbl.mswipe.com/ipg/api/CreatePBLAuthToken";
+        private const string PROD_PAYMENT_URL = "https://pbl.mswipe.com/ipg/api/MswipePayment";
+
         public PaymentService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<string> CreateOrderAsync(
-            decimal amount,
-            string currency,
-            string apiKey,
-            string apiSecret,
-            string receiptNo)
+        public async Task<string> CreatePaymentLink(string orderId, decimal? netAmount)
         {
-            if (amount <= 0)
-                throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
-          
-            var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            string token = await GenerateAuthToken();
+            return await GeneratePaymentLink(orderId, netAmount, token);
+        }
 
-            var orderData = new
+
+        private async Task<string> GenerateAuthToken()
+        {
+            var tokenRequest = new
             {
-                amount = (int)(amount * 100), 
-                currency,
-                receipt = receiptNo,
-                payment_capture = 1
+                userId = MSWIPE_USER_ID,
+                clientId = MSWIPE_CLIENT_ID,
+                password = MSWIPE_CLIENT_SECRET,
+                applId = "api",
+                channelId = "pbl"
             };
 
-            var content = new StringContent(JsonConvert.SerializeObject(orderData), Encoding.UTF8, "application/json");
+            var tokenResponse = await _httpClient.PostAsJsonAsync(
+             UAT_AUTH_URL,
+              tokenRequest);
 
-            var response = await _httpClient.PostAsync("https://api.razorpay.com/v1/orders", content);
+            if (!tokenResponse.IsSuccessStatusCode)
+                throw new Exception("Failed to generate MSWIPE token.");
+
+            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<MswipeTokenResponse>();
+
+            if (tokenResult == null || string.IsNullOrEmpty(tokenResult.token))
+                throw new Exception("MSWIPE token generation failed: " + tokenResult?.msg);
+
+            return tokenResult.token;
+        }
+
+        private async Task<string> GeneratePaymentLink(string orderId, decimal? netAmount, string token)
+        {
+            var json = $@"
+            {{
+              ""amount"": ""{netAmount:F2}"",
+              ""mobileno"": ""9999999999"",
+              ""custcode"": ""{MERCHANT_CODE}"",
+              ""user_id"": ""{MSWIPE_USER_ID}"",
+              ""sessiontoken"": ""{token}"",
+              ""versionno"": ""VER4.0.0"",
+              ""email_id"": ""customer@test.com"",
+              ""invoice_id"": ""{orderId}"",
+              ""request_id"": ""{Guid.NewGuid():N}"",
+              ""ApplicationId"": ""api"",
+              ""ChannelId"": ""pbl"",
+              ""ClientId"": ""{MSWIPE_CLIENT_ID}""
+            }}";
+
+            using var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(
+                UAT_PAYMENT_URL,
+                content);
+
+            var rawJson = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
-            {
-                var errorResponse = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Razorpay Error ({response.StatusCode}): {errorResponse}");
-            }
+                throw new Exception($"HTTP ERROR: {rawJson}");
 
-            var json = await response.Content.ReadAsStringAsync();
-            dynamic order = JsonConvert.DeserializeObject(json);
+            var result = JsonSerializer.Deserialize<MswipePaymentResponse>(
+                rawJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            return order.id;
+            if (result == null || result.status != "True")
+                throw new Exception($"MSWIPE ERROR: {result?.responsemessage}");
+
+            return result.smslink;
         }
 
 
-        public async Task<string> GetOrderStatusAsync(string razorpayOrderId, string apiKey, string apiSecret)
+        public async Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId)
         {
-            using (var client = new HttpClient())
-            {
-                var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            var statusRequest = new { id = transId };
 
-                var response = await client.GetAsync($"https://api.razorpay.com/v1/orders/{razorpayOrderId}");
-                response.EnsureSuccessStatusCode();
+            var statusResponse = await _httpClient.PostAsJsonAsync(
+                "https://pbl.mswipe.com/ipg/api/getPBLTransactionDetails",
+                statusRequest);
 
-                var json = await response.Content.ReadAsStringAsync();
-                var obj = JsonConvert.DeserializeObject<dynamic>(json);
-                string status = obj["status"];
+            var rawJson = await statusResponse.Content.ReadAsStringAsync();
 
-                return status;
-            }
+            if (!statusResponse.IsSuccessStatusCode)
+                throw new Exception($"Transaction status failed. Raw: {rawJson}");
+
+            var result = JsonSerializer.Deserialize<MswipeTransactionStatusResponse>(
+                rawJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (result == null || !string.Equals(result.Status, "True", StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Transaction status check failed: " + result?.ResponseMessage);
+
+            return result;
         }
-
-        //public async Task<PaymentStatusResult> GetLastPaymentStatusAsync(string orderId, string apiKey, string apiSecret)
-        //{
-        //    var request = new HttpRequestMessage(HttpMethod.Get,
-        //        $"https://api.razorpay.com/v1/orders/{orderId}/payments");
-
-        //    var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
-        //    request.Headers.Authorization =
-        //        new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-        //    var response = await _httpClient.SendAsync(request);
-        //    response.EnsureSuccessStatusCode();
-
-        //    var json = await response.Content.ReadAsStringAsync();
-        //    using var doc = JsonDocument.Parse(json);
-
-        //    var root = doc.RootElement;
-        //    var result = new PaymentStatusResult();
-
-        //    if (!root.TryGetProperty("items", out var items) ||
-        //        items.ValueKind != JsonValueKind.Array ||
-        //        items.GetArrayLength() == 0)
-        //    {
-        //        result.Status = "created";
-        //        return result;
-        //    }
-
-
-        //    var last = items[items.GetArrayLength() - 1];
-
-        //    if (last.TryGetProperty("id", out var idProp) && idProp.ValueKind == JsonValueKind.String)
-        //        result.PaymentId = idProp.GetString()!;
-       
-        //    if (last.TryGetProperty("status", out var statusProp) && statusProp.ValueKind == JsonValueKind.String)
-        //        result.Status = statusProp.GetString()!;
-
-        //    if (last.TryGetProperty("method", out var methodProp) && methodProp.ValueKind == JsonValueKind.String)
-        //        result.Method = methodProp.GetString()!;
-
-        //    return result;
-        //}
-
-        public async Task<Session> CreateCheckoutSession(string productName, long amount, string currency, string successUrl, string cancelUrl)
-        {
-            if (currency.ToLower() == "inr" && amount < 5200)
-            {
-                amount = 5200;
-            }
-            else if (currency.ToLower() == "eur")
-            {
-                amount = amount * 100;
-
-            }
-
-
-            var options = new SessionCreateOptions
-            {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>
-        {
-            new SessionLineItemOptions
-            {
-                PriceData = new SessionLineItemPriceDataOptions
-                {
-                    UnitAmount = amount,
-                    Currency = currency,
-                    ProductData = new SessionLineItemPriceDataProductDataOptions
-                    {
-                        Name = productName
-                    }
-                },
-                Quantity = 1
-            }
-        },
-                Mode = "payment",
-                SuccessUrl = successUrl,
-                CancelUrl = cancelUrl
-            };
-
-            var service = new SessionService();
-            return service.Create(options);
-        }
-
-
     }
 }
