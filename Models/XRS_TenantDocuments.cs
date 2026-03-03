@@ -26,6 +26,8 @@ namespace XeniaRentalBackend.Models
 	
         public string Documenturl  {get;set;}
 
+        public DateTime? documentExpiryDate { get; set; }
+
         public bool isActive { get; set; }
 
         [ForeignKey("TenantID")]
@@ -48,8 +50,6 @@ namespace XeniaRentalBackend.Models
         [NotMapped]
         public bool? IsMandatory { get; set; }
 
-        [NotMapped]
-        public DateTime? ExpiryDate { get; set; }
 
         [NotMapped]
         public string? DocPurpose { get; set; }

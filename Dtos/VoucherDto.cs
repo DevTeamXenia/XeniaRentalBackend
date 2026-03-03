@@ -1,13 +1,14 @@
 ﻿namespace XeniaRentalBackend.Dtos
 {
     public class VoucherDto
-    {
+    {  
         public int UnitID { get; set; }
         public int CompanyID { get; set; }
         public int PropID { get; set; }
         public DateTime VoucherDate { get; set; }
         public string VoucherType { get; set; } = string.Empty;
-        public string DrID { get; set; }
+        public string VoucherStatus { get; set; } = string.Empty;
+        public int DrID { get; set; }
         public int CrID { get; set; }
         public decimal Amount { get; set; }
         public string? RefNo { get; set; }

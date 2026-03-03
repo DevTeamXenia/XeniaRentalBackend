@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using XeniaRentalBackend.Models.Rental;
 namespace XeniaRentalBackend.Models
 {
     public class ApplicationDbContext : DbContext
@@ -55,6 +56,8 @@ namespace XeniaRentalBackend.Models
         public DbSet<XRS_Banners> Banners { get; set; }
 
         public DbSet<XRS_SubscribePlan> SubscribePlan { get; set; }
+
+        public DbSet<XRS_SubscribePlanDuration> SubscribePlanDuration { get; set; }
 
         public DbSet<XRS_SubscriptionTransaction> SubscriptionTransaction { get; set; }
 

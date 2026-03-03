@@ -49,6 +49,7 @@ namespace XeniaRentalBackend.Repositories.Properties
                     PropID = u.PropID,
                     propertyName = u.propertyName,
                     propertyType = u.propertyType,
+                    propertyPrefix = u.propertyPrefix,
                     IsActive = u.IsActive,
                     CompanyId = u.CompanyId
                 })
@@ -87,6 +88,7 @@ namespace XeniaRentalBackend.Repositories.Properties
                     PropID = p.PropID,
                     propertyName = p.propertyName,
                     propertyType = p.propertyType,
+                    propertyPrefix = p.propertyPrefix,
                     IsActive = p.IsActive,
                     CompanyId = p.CompanyId
                 })
@@ -108,21 +110,32 @@ namespace XeniaRentalBackend.Repositories.Properties
 
         public async Task<XRS_Properties> CreateProperties(XRS_Properties dtoProperties)
         {
+            bool exists = await _context.Properties.AnyAsync(p =>
+                p.CompanyId == dtoProperties.CompanyId &&
+                p.propertyName.ToLower() == dtoProperties.propertyName.ToLower() &&
+                p.propertyPrefix.ToLower() == dtoProperties.propertyPrefix.ToLower()
+            );
+
+            if (exists)
+            {
+                throw new Exception("Property with same name and prefix already exists.");
+            }
 
             var properties = new XRS_Properties
             {
                 propertyName = dtoProperties.propertyName,
                 propertyType = dtoProperties.propertyType,
-                CompanyId =   dtoProperties.CompanyId,
+                propertyPrefix = dtoProperties.propertyPrefix,
+                CompanyId = dtoProperties.CompanyId,
                 IsActive = dtoProperties.IsActive
-
             };
 
             await _context.Properties.AddAsync(properties);
             await _context.SaveChangesAsync();
-            return properties;
 
+            return properties;
         }
+
 
         public async Task<IEnumerable<PropertyWithUnitsDto>> GetPropertyForApp()
         {
@@ -166,6 +179,7 @@ namespace XeniaRentalBackend.Repositories.Properties
 
             updateProperties.propertyName = properties.propertyName;
             updateProperties.propertyType = properties.propertyType;
+            updateProperties.propertyPrefix = properties.propertyPrefix;    
             updateProperties.CompanyId = properties.CompanyId;
             updateProperties.IsActive = properties.IsActive;
 

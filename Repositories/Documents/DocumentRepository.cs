@@ -26,7 +26,6 @@ namespace XeniaRentalBackend.Repositories.Documents
                     isMandatory = u.isMandatory,
                     isAlphanumeric = u.isAlphanumeric,
                     isExpiry = u.isExpiry,
-                    ExpiryDate = u.ExpiryDate
                 })
                 .ToListAsync();
         }
@@ -63,7 +62,6 @@ namespace XeniaRentalBackend.Repositories.Documents
                     isAlphanumeric = u.isAlphanumeric,
                     isExpiry = u.isExpiry,
                     companyID = u.companyID,
-                    ExpiryDate = u.ExpiryDate
                 })
                 .ToListAsync();
 
@@ -88,8 +86,7 @@ namespace XeniaRentalBackend.Repositories.Documents
                     isActive = u.isActive,
                     isMandatory = u.isMandatory,
                     isAlphanumeric = u.isAlphanumeric,
-                    isExpiry = u.isExpiry,
-                    ExpiryDate = u.ExpiryDate,
+                    isExpiry = u.isExpiry,         
                     companyID = u.companyID 
                 })
                 .FirstOrDefaultAsync();
@@ -108,8 +105,6 @@ namespace XeniaRentalBackend.Repositories.Documents
                 isMandatory = dtoDocuments.isMandatory,
                 isAlphanumeric = dtoDocuments.isAlphanumeric,
                 isExpiry = dtoDocuments.isExpiry,
-                ExpiryDate= dtoDocuments.ExpiryDate
-
 
             };
            
@@ -142,7 +137,6 @@ namespace XeniaRentalBackend.Repositories.Documents
             updatedDocuments.isAlphanumeric = documents.isAlphanumeric;
             updatedDocuments.isMandatory = documents.isMandatory;
             updatedDocuments.isActive = documents.isActive;
-            updatedDocuments.ExpiryDate = documents.ExpiryDate;
             await _context.SaveChangesAsync();
             return true;
         }

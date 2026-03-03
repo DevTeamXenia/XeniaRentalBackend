@@ -27,7 +27,6 @@ namespace XeniaRentalBackend.Models
 
         public bool isActive { get; set; }
 
-        public DateTime? ExpiryDate { get; set; }
 
     }
 

@@ -22,39 +22,41 @@ namespace XeniaRentalBackend.Repositories.Subscription
         public async Task<List<PlanWithModulesDto>> GetMainPlansAsync()
         {
             var plans = await _context.SubscribePlan
-                .Where(p => p.PlanActive && !p.PlanIsAddOn)
+                .Where(p => p.PlanActive)
+                .Select(p => new PlanWithModulesDto
+                {
+                    PlanId = p.PlanId,
+                    PlanName = p.PlanName,
+                    PlanDescription = p.PlanDescription,
+                    Durations = _context.SubscribePlanDuration
+                        .Where(d => d.PlanId == p.PlanId && d.IsActive)
+                        .OrderBy(d => d.DurationDays)
+                        .Select(d => new PlanDurationDto
+                        {
+                            PlanDurationId = d.PlanDurationId,
+                            DurationDays = d.DurationDays,
+                            Price = d.Price
+                        })
+                        .ToList(),
+
+                    Modules = (
+                        from pm in _context.PlanModuleMap
+                        join m in _context.Module on pm.ModuleId equals m.ModuleId
+                        where pm.PlanId == p.PlanId
+                              && pm.Active
+                              && m.ModuleActive
+                        select new ModuleDto
+                        {
+                            ModuleId = m.ModuleId,
+                            ModuleName = m.ModuleName,
+                            ModuleDescription = m.ModuleDescription,
+                            ModuleActive = m.ModuleActive
+                        }
+                    ).ToList()
+                })
                 .ToListAsync();
 
-            var result = new List<PlanWithModulesDto>();
-
-            foreach (var plan in plans)
-            {
-                var modules = await (
-                    from pm in _context.PlanModuleMap
-                    join m in _context.Module on pm.ModuleId equals m.ModuleId
-                    where pm.PlanId == plan.PlanId
-                          && pm.Active
-                          && m.ModuleActive
-                    select new ModuleDto
-                    {
-                        ModuleId = m.ModuleId,
-                        ModuleName = m.ModuleName,
-                        ModuleDescription = m.ModuleDescription,
-                        ModuleActive = m.ModuleActive
-                    }).ToListAsync();
-
-                result.Add(new PlanWithModulesDto
-                {
-                    PlanId = plan.PlanId,
-                    PlanName = plan.PlanName,
-                    PlanDescription = plan.PlanDescription,
-                    PlanPrice = plan.PlanPrice,
-                    PlanDurationDays = plan.PlanDurationDays,
-                    Modules = modules
-                });
-            }
-
-            return result;
+            return plans;
         }
 
 
@@ -64,13 +66,27 @@ namespace XeniaRentalBackend.Repositories.Subscription
             using var tx = await _context.Database.BeginTransactionAsync();
 
             var mainPlan = await _context.SubscribePlan
-                .FirstOrDefaultAsync(p => p.PlanId == dto.PlanId && p.PlanActive && !p.PlanIsAddOn);
+                .FirstOrDefaultAsync(p =>
+                    p.PlanId == dto.PlanId &&
+                    p.PlanActive);
 
-            if (mainPlan == null) return null;
+            if (mainPlan == null)
+                return null;
 
-            decimal totalAmount = mainPlan.PlanPrice;
-            var merchantTxnId = $"TXN{DateTime.UtcNow:yyyyMMddHHmmss}{Guid.NewGuid().ToString("N")[..8]}";
-         
+            var duration = await _context.SubscribePlanDuration
+                .FirstOrDefaultAsync(d =>
+                    d.PlanDurationId == dto.PlanDurationId &&
+                    d.PlanId == dto.PlanId &&
+                    d.IsActive);
+
+            if (duration == null)
+                return null;
+
+            decimal totalAmount = duration.Price;
+
+            var merchantTxnId =
+                $"TXN{DateTime.UtcNow:yyyyMMddHHmmss}{Guid.NewGuid():N}".Substring(0, 30);
+
             var transaction = new XRS_SubscriptionTransaction
             {
                 CompanyId = dto.CompanyId,
@@ -91,9 +107,10 @@ namespace XeniaRentalBackend.Repositories.Subscription
             transaction.PaymentLink = paymentLink;
             await _context.SaveChangesAsync();
 
-
             var startDate = DateTime.Now;
-            var endDate = startDate.AddDays(mainPlan.PlanDurationDays);
+            var endDate = startDate
+                .AddDays(duration.DurationDays)
+                .AddTicks(-1);
 
             var subscription = new XRS_CompanySubscription
             {
@@ -102,13 +119,14 @@ namespace XeniaRentalBackend.Repositories.Subscription
                 SubscriptionDate = DateTime.Now,
                 SubscriptionStartDate = startDate,
                 SubscriptionEndDate = endDate,
-                SubscriptionAmount = mainPlan.PlanPrice,
-                SubscriptionDays = mainPlan.PlanDurationDays,
+                SubscriptionDays = duration.DurationDays,
+                SubscriptionAmount = duration.Price,
                 Status = "PENDING"
             };
 
             _context.CompanySubscription.Add(subscription);
             await _context.SaveChangesAsync();
+
             await tx.CommitAsync();
 
             return new RenewSubscriptionResponseDto
@@ -117,7 +135,6 @@ namespace XeniaRentalBackend.Repositories.Subscription
                 PaymentLink = paymentLink
             };
         }
-
 
         public async Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId)
         {

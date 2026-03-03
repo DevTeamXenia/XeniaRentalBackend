@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Properties;
+using XeniaRentalBackend.Service.Common;
 
 
 namespace XeniaRentalBackend.Controllers
@@ -57,20 +58,50 @@ namespace XeniaRentalBackend.Controllers
             return Ok(property);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> CreateProperties([FromBody] XRS_Properties properties)
         {
             if (properties == null)
             {
-                return BadRequest(new { Status = "Error", Message = "Invalid properties group." });
+                return BadRequest(new
+                {
+                    Status = "Error",
+                    Message = "Invalid properties data."
+                });
             }
 
-            var createdProperty = await _propertyRepository.CreateProperties(properties);
-            return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty }, new { Status = "Success", Data = createdProperty });
+            try
+            {
+                var createdProperty = await _propertyRepository.CreateProperties(properties);
+
+                return CreatedAtAction(
+                    nameof(GetPropertyById),
+                    new { id = createdProperty.PropID },  
+                    new
+                    {
+                        Status = "Success",
+                        Data = createdProperty
+                    });
+            }
+            catch (DuplicatePropertyException ex)
+            {
+                return Conflict(new   
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new
+                {
+                    Status = "Error",
+                    Message = "An unexpected error occurred while creating the property."
+                });
+            }
         }
 
-      
+
         [HttpGet("{id}")]
         public async Task<ActionResult<XRS_Properties>> GetPropertyById(int id)
         {

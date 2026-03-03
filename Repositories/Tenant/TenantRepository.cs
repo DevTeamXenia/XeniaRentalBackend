@@ -126,7 +126,7 @@ namespace XeniaRentalBackend.Repositories.Tenant
                         IsMandatory = td.Documents?.isMandatory ?? td.IsMandatory ?? false,
                         IsExpiry = td.Documents?.isExpiry ?? td.IsExpiry ?? false,
                         DocPurpose = td.Documents?.docPurpose ?? td.DocPurpose,
-                        ExpiryDate = td.Documents?.ExpiryDate ?? td.ExpiryDate
+                        ExpiryDate = td.documentExpiryDate
                     })
                     .ToList() ?? new List<TenantDocumentDto>()
             }).ToList();
@@ -178,7 +178,7 @@ namespace XeniaRentalBackend.Repositories.Tenant
                         IsMandatory = td.Documents?.isMandatory ?? td.IsMandatory ?? false,
                         IsExpiry = td.Documents?.isExpiry ?? td.IsExpiry ?? false,
                         DocPurpose = td.Documents?.docPurpose ?? td.DocPurpose,
-                        ExpiryDate = td.Documents?.ExpiryDate ?? td.ExpiryDate
+                        ExpiryDate =  td.documentExpiryDate
                     })
                     .ToList() ?? new List<TenantDocumentDto>()
             };

@@ -154,7 +154,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                         IsMandatory = td.Documents?.isMandatory ?? td.IsMandatory ?? false,
                         IsExpiry = td.Documents?.isExpiry ?? td.IsExpiry ?? false,
                         DocPurpose = td.Documents?.docPurpose ?? td.DocPurpose,
-                        ExpiryDate = td.Documents?.ExpiryDate ?? td.ExpiryDate
+                        ExpiryDate = td.documentExpiryDate
                     })
                     .ToList() ?? new List<TenantDocumentDto>()
             }).ToList();
@@ -332,7 +332,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                         IsMandatory = td.Documents?.isMandatory ?? td.IsMandatory ?? false,
                         IsExpiry = td.Documents?.isExpiry ?? td.IsExpiry ?? false,
                         DocPurpose = td.Documents?.docPurpose ?? td.DocPurpose,
-                        ExpiryDate = td.Documents?.ExpiryDate ?? td.ExpiryDate
+                        ExpiryDate = td.documentExpiryDate
                     })
                     .ToList() ?? new List<TenantDocumentDto>(),
 
@@ -367,28 +367,45 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 bedSpaceID = dto.bedSpaceID,
                 rentAmt = dto.rentAmt,
                 rentConcession = dto.rentConcession,
-                messConcession = dto.messConcession,            
+                messConcession = dto.messConcession,
                 collectionType = dto.collectionType,
+
                 agreementStartDate = dto.agreementStartDate,
-                closureDate = dto.closureDate,
                 agreementEndDate = dto.agreementEndDate,
+
                 rentCollection = dto.rentCollection,
                 escalationPer = dto.escalationPer,
-                nextescalationDate = dto.nextescalationDate,
+                nextescalationDate =
+                    dto.nextescalationDate.HasValue &&
+                    dto.nextescalationDate.Value >= new DateTime(1753, 1, 1)
+                        ? dto.nextescalationDate
+                        : null,
                 rentDueDate = dto.rentDueDate,
+                closureDate =
+                    dto.closureDate.HasValue &&
+                    dto.closureDate >= new DateTime(1753, 1, 1)
+                        ? dto.closureDate
+                        : null,
+
+                refundAmount = dto.refundAmount,
+                charges = dto.Charges,
+                amount = dto.amount,
+
                 notes = dto.notes,
                 paymentMode = dto.paymentMode,
+                isClosure = dto.isClosure,
                 isActive = true
             };
 
             _context.TenantAssignemnts.Add(entity);
             await _context.SaveChangesAsync();
 
-            if (dto.Documents != null && dto.Documents.Any())
+          
+            if (dto.Documents?.Any() == true)
             {
                 var tenantDocs = dto.Documents.Select(doc => new XRS_TenantDocuments
                 {
-                    TenantID = dto.tenantID, 
+                    TenantID = dto.tenantID,
                     CompanyID = dto.companyID,
                     DocTypeId = doc.docTypeId,
                     DocumentsNo = doc.documentsNo,
@@ -400,7 +417,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 await _context.SaveChangesAsync();
             }
 
-            if (dto.Cheques != null && dto.Cheques.Any())
+            if (dto.Cheques?.Any() == true)
             {
                 var cheques = dto.Cheques.Select(ch => new XRS_TenantChequeRegister
                 {
@@ -409,7 +426,9 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     tenantID = ch.tenantID,
                     chequeNo = ch.chequeNo,
                     chequeUrl = ch.chequeUrl,
-                    chequeDate = ch.chequeDate,
+                    chequeDate = ch.chequeDate >= new DateTime(1753, 1, 1)
+                                    ? ch.chequeDate
+                                    : throw new Exception("Invalid chequeDate"),
                     issueBank = ch.issueBank,
                     amount = ch.amount,
                     status = ch.status,

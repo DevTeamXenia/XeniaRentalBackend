@@ -19,7 +19,7 @@ namespace XeniaRentalBackend.Controllers
             _reportRepository = reportRepository;
         }
 
-        [HttpGet]
+        [HttpGet("tenantOccupancy")]
         public async Task<IActionResult> GetReport([FromQuery] int companyId,[FromQuery] int? propertyId,[FromQuery] int? unitId, [FromQuery] bool isBedSpace = true,[FromQuery] int? bedSpaceId = null, [FromQuery] string? search = null)
         {
             var result = await _reportRepository.GetTenantOccupancyReportAsync(companyId, propertyId,unitId, bedSpaceId, isBedSpace, search);

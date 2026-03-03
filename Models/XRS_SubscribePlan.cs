@@ -20,8 +20,6 @@ namespace XeniaRentalBackend.Models
 
         public int PlanDurationDays { get; set; }
 
-        public bool PlanIsAddOn { get; set; } = true;
-
         public int? PlanCreatedBy { get; set; }
 
         public DateTime PlanCreatedOn { get; set; } = DateTime.Now;

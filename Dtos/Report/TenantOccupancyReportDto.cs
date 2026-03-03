@@ -39,6 +39,8 @@
         public decimal Balance { get; set; }
         public DateTime JoinDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime? RentDueDate { get; set; }
+        public string? Note { get; set; }
         public string Status { get; set; }
     }
 }

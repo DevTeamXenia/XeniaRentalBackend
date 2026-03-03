@@ -20,8 +20,15 @@ namespace XeniaRentalBackend.Controllers
             _voucherRepository = voucherRepository;
         }
 
+        [HttpGet("company/expenseVoucher/{companyId}")]
+        public async Task<ActionResult<IEnumerable<XRS_Voucher>>> GetAllExpenseVouchers(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, string? voucherStatus, string? search)
+        {
+            var vouchers = await _voucherRepository.GetAllExpenseVouchersAsync(companyId, fromDate, toDate, propertyId, voucherStatus, search);
+            return Ok(vouchers);
+        }
 
-        [HttpPost]
+
+        [HttpPost("expenseVoucher")]
         public async Task<ActionResult<XRS_Voucher>> CreateVoucher([FromBody] VoucherDto dto)
         {
             var voucher = await _voucherRepository.CreateVoucherAsync(dto);
@@ -29,7 +36,7 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("expenseVoucher/{id}")]
         public async Task<ActionResult<XRS_Voucher>> GetVoucherById(int id)
         {
             var voucher = await _voucherRepository.GetVoucherByIdAsync(id);
@@ -38,14 +45,7 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-        [HttpGet("company/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_Voucher>>> GetAllVouchers(int companyId, string? search = null)
-        {
-            var vouchers = await _voucherRepository.GetAllVouchersAsync(companyId, search);
-            return Ok(vouchers);
-        }
-
-        [HttpPut("{id}")]
+        [HttpPut("expenseVoucher/{id}")]
         public async Task<ActionResult<XRS_Voucher>> UpdateVoucher(int id, [FromBody] VoucherDto dto)
         {
             var updatedVoucher = await _voucherRepository.UpdateVoucherAsync(id, dto);
@@ -54,19 +54,38 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteVoucher(int id)
+        [HttpGet("collectionStatus/{companyId}")]
+        public async Task<ActionResult<IEnumerable<XRS_Voucher>>> GetAllVouchers(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search)
         {
-            var deleted = await _voucherRepository.DeleteVoucherAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
+            var vouchers = await _voucherRepository.GetAllVouchersAsync(companyId, fromDate, toDate, propertyId, unitId, voucherStatus, search);
+            return Ok(vouchers);
+        }
+
+        [HttpPut("collectionStatus/{id}")]
+        public async Task<IActionResult> UpdatePaymentVoucher(int id, [FromBody] VoucherDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Invalid voucher data.");
+
+            try
+            {
+                var result = await _voucherRepository.UpdatePaymentVoucherAsync(id,dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
 
-        [HttpGet("rent/initiate/{month:int}/{year:int}")]
-        public async Task<IActionResult> GetTenantCharges(int month, int year)
+        [HttpGet("rent/initiate/{companyId:int}/{month:int}/{year:int}")]
+        public async Task<IActionResult> GetTenantCharges(int companyId , int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null)
         {
-            var data = await _voucherRepository.GetTenantChargesByMonthAsync(month, year);
+            var data = await _voucherRepository.GetTenantChargesByMonthAsync(companyId, month, year, propertyId , unitId , bedSpaceId, search);
             return Ok(data);
         }
 
@@ -88,6 +107,13 @@ namespace XeniaRentalBackend.Controllers
             }
         }
 
+
+        [HttpPut("rent/update{voucherId}")]
+        public async Task<IActionResult> UpdateVoucher( int voucherId, [FromBody] VoucherCreateRequest request)
+        {
+            var updatedVoucher = await _voucherRepository.UpdateAsync(voucherId, request);
+            return Ok(updatedVoucher);
+        }
 
 
     }

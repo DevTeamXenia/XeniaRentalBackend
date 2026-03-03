@@ -18,7 +18,12 @@ namespace XeniaRentalBackend.Models
         [Required]
         [StringLength(50)]
         public required string propertyName { get; set; }
-     
+
+        [Required]
+        [StringLength(10)]
+        public required string propertyPrefix { get; set; }
+
+
         public string propertyType { get; set; }
 
         public bool IsActive { get; set; }

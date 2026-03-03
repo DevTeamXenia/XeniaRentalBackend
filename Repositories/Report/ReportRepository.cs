@@ -67,7 +67,9 @@ namespace XeniaRentalBackend.Repositories.Report
                     Rent = ta.rentAmt,
                     Deposit = ta.securityAmt,
                     JoinDate = ta.agreementStartDate,
-                    EndDate = ta.agreementEndDate
+                    EndDate = ta.agreementEndDate,
+                    DueDate = ta.rentDueDate,
+                    Note = ta.notes
                 };
 
             if (bedSpaceId.HasValue)
@@ -261,11 +263,17 @@ namespace XeniaRentalBackend.Repositories.Report
         {
             var today = DateTime.Today;
 
-            DateTime rentEndDate = t.EndDate != null && t.EndDate < today ? t.EndDate : today;
+            DateTime rentEndDate =
+                t.EndDate != null && t.EndDate < today
+                    ? t.EndDate
+                    : today;
+
             int months = GetMonthsBetween(t.JoinDate, rentEndDate);
             decimal expectedRent = months * t.Rent;
 
-            decimal paid = tenantPaidAmounts.TryGetValue(t.tenantID, out decimal amount) ? amount : 0m;
+            decimal paid = tenantPaidAmounts.TryGetValue(t.tenantID, out decimal amount)
+                ? amount
+                : 0m;
 
             return new TenantRowDto
             {
@@ -277,6 +285,9 @@ namespace XeniaRentalBackend.Repositories.Report
                 Balance = expectedRent - paid,
                 JoinDate = t.JoinDate,
                 EndDate = t.EndDate,
+                RentDueDate = t.DueDate,
+                Note = t.Note,
+
                 Status = (expectedRent - paid) > 0 ? "Pending" : "Clear"
             };
         }

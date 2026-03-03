@@ -12,51 +12,203 @@ namespace XeniaRentalBackend.Repositories.Voucher
             _context = context;
 
         }
-        public async Task<IEnumerable<object>> GetAllVouchersAsync(int companyId, string? search)
-        {
-            var query = from v in _context.Vouchers
-                        where v.CompanyID == companyId
-                        join dr in _context.Ledgers on v.DrID equals dr.ledgerID
-                        join cr in _context.Ledgers on v.CrID equals cr.ledgerID
-                        select new
-                        {
-                            v.VoucherID,
-                            v.VoucherNo,
-                            v.VoucherDate,
-                            v.VoucherType,
-                            v.Amount,
-                            v.RefNo,
-                            v.Remarks,
-                            v.IssueingBank,
-                            v.ChequeNo,
-                            v.Cancelled,
-                            v.CrAmount,
-                            v.IsReconcil,
-                            v.ChequeStatus,
-                            v.ReconcilDate,
-                            v.CreatedOn,
-                            v.CreatedBy,
-                            v.ModificationBy,
-                            v.isActive,
-                            DrID = v.DrID,
-                            DrName = dr.ledgerName,
-                            CrID = v.CrID,
-                            CrName = cr.ledgerName
-                        };
 
-            if (!string.IsNullOrEmpty(search))
+        public async Task<IEnumerable<object>> GetAllExpenseVouchersAsync(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, string? voucherStatus, string? search)
+        {
+            var query =
+                from v in _context.Vouchers
+                where v.VoucherType == "Expense Voucher"
+
+                join dr in _context.Ledgers
+                    on (int?)v.DrID equals (int?)dr.ledgerID into drJoin
+                from dr in drJoin.DefaultIfEmpty()
+
+         
+                join crLedger in _context.Ledgers
+                    on (int?)v.CrID equals (int?)crLedger.ledgerID into crLedgerJoin
+                from crLedger in crLedgerJoin.DefaultIfEmpty()
+
+           
+
+                join p in _context.Properties
+                    on (int?)v.PropID equals (int?)p.PropID into propJoin
+                from p in propJoin.DefaultIfEmpty()
+
+                where v.CompanyID == companyId
+
+                select new
+                {
+                    v.VoucherID,
+                    v.VoucherNo,
+                    v.VoucherDate,
+                    v.VoucherType,
+                    v.VoucherStatus,
+                    v.Amount,
+                    v.RefNo,
+                    v.Remarks,
+                    v.IssueingBank,
+                    v.ChequeNo,
+                    v.Cancelled,
+                    v.CrAmount,
+                    v.IsReconcil,
+                    v.ChequeStatus,
+                    v.ReconcilDate,
+                    v.CreatedOn,
+                    v.CreatedBy,
+                    v.ModificationBy,
+                    v.isActive,
+                    DrID = v.DrID,
+                    DrName = dr != null ? dr.ledgerName : null,
+                    CrID = v.CrID,
+                    CrName =crLedger.ledgerName ,         
+                    PropertyId = p.PropID,
+                    PropertyName = p.propertyName
+                };
+
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(v => v.VoucherNo.Contains(search));
+                query = query.Where(v =>
+                    v.VoucherNo.Contains(search) ||
+                    v.CrName.Contains(search) ||
+                    v.PropertyName.Contains(search));
             }
 
+            if (fromDate.HasValue)
+                query = query.Where(v => v.VoucherDate >= fromDate.Value);
 
-            return await query.AsNoTracking().ToListAsync<object>();
+            if (toDate.HasValue)
+            {
+                var endDate = toDate.Value.Date.AddDays(1);
+                query = query.Where(v => v.VoucherDate < endDate);
+            }
+
+            if (propertyId.HasValue)
+                query = query.Where(v => v.PropertyId == propertyId.Value);
+
+
+            if (!string.IsNullOrWhiteSpace(voucherStatus))
+                query = query.Where(v => v.VoucherStatus == voucherStatus);
+
+
+            return await query
+                .AsNoTracking()
+                .OrderByDescending(v => v.VoucherDate)
+                .ToListAsync<object>();
+        }
+
+
+        public async Task<IEnumerable<object>> GetAllVouchersAsync(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search)
+        {
+            var query =
+                from v in _context.Vouchers
+                where v.VoucherType == "Pay Rent"
+
+                join dr in _context.Ledgers
+                    on (int?)v.DrID equals (int?)dr.ledgerID into drJoin
+                from dr in drJoin.DefaultIfEmpty()
+
+                join t in _context.Tenants
+                    on (int?)v.CrID equals (int?)t.tenantID into tenantJoin
+                from t in tenantJoin.DefaultIfEmpty()
+
+           
+                join crLedger in _context.Ledgers
+                    on (int?)v.CrID equals (int?)crLedger.ledgerID into crLedgerJoin
+                from crLedger in crLedgerJoin.DefaultIfEmpty()
+
+                join ta in _context.TenantAssignemnts
+                    on (int?)t.tenantID equals (int?)ta.tenantID into taJoin
+                from ta in taJoin.DefaultIfEmpty()
+
+                join u in _context.Units
+                    on (int?)ta.unitID equals (int?)u.UnitId into unitJoin
+                from u in unitJoin.DefaultIfEmpty()
+
+    
+                join p in _context.Properties
+                    on (int?)u.PropID equals (int?)p.PropID into propJoin
+                from p in propJoin.DefaultIfEmpty()
+
+                where v.CompanyID == companyId
+
+                select new
+                {
+                    v.VoucherID,
+                    v.VoucherNo,
+                    v.VoucherDate,
+                    v.VoucherType,
+                    v.VoucherStatus,
+                    v.Amount,
+                    v.RefNo,
+                    v.Remarks,
+                    v.IssueingBank,
+                    v.ChequeNo,
+                    v.Cancelled,
+                    v.CrAmount,
+                    v.IsReconcil,
+                    v.ChequeStatus,
+                    v.ReconcilDate,
+                    v.CreatedOn,
+                    v.CreatedBy,
+                    v.ModificationBy,
+                    v.isActive,
+
+                    DrID = v.DrID,
+                    DrName = dr != null ? dr.ledgerName : null,
+
+                    CrID = v.CrID,
+                    CrName =
+                    v.VoucherType == "Expense Voucher"    
+                        ? crLedger != null ? crLedger.ledgerName : null
+                        : t != null ? t.tenantName : null,
+
+                    UnitId = u.UnitId,
+                    UnitName = u.UnitName,
+
+                    PropertyId = p.PropID,
+                    PropertyName = p.propertyName
+                };
+
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(v =>
+                    v.VoucherNo.Contains(search) ||
+                    v.CrName.Contains(search) ||
+                    v.UnitName.Contains(search) ||
+                    v.PropertyName.Contains(search));
+            }
+
+            if (fromDate.HasValue)
+                query = query.Where(v => v.VoucherDate >= fromDate.Value);
+
+            if (toDate.HasValue)
+            {
+                var endDate = toDate.Value.Date.AddDays(1);
+                query = query.Where(v => v.VoucherDate < endDate);
+            }
+
+            if (propertyId.HasValue)
+                query = query.Where(v => v.PropertyId == propertyId.Value);
+
+            if (unitId.HasValue)
+                query = query.Where(v => v.UnitId == unitId.Value);
+
+            if (!string.IsNullOrWhiteSpace(voucherStatus))
+                query = query.Where(v => v.VoucherStatus == voucherStatus);
+
+
+            return await query
+                .AsNoTracking()
+                .OrderByDescending(v => v.VoucherDate)
+                .ToListAsync<object>();
         }
 
         public async Task<object?> GetVoucherByIdAsync(int id)
         {
             var query = from v in _context.Vouchers
-                        where v.VoucherID == id
+                        where v.VoucherID == id && v.VoucherType == "Expense Voucher"
                         join dr in _context.Ledgers on v.DrID equals dr.ledgerID
                         join cr in _context.Ledgers on v.CrID equals cr.ledgerID
                         select new
@@ -101,7 +253,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     throw new Exception("Indirect Expenses account group not found.");
 
                 var drLedger = await _context.Ledgers
-                    .FirstOrDefaultAsync(l => l.ledgerName == dto.DrID && l.companyID == dto.CompanyID);
+                    .FirstOrDefaultAsync(l => l.ledgerID == dto.DrID && l.companyID == dto.CompanyID);
 
                 if (drLedger == null)
                     throw new Exception($"Ledger '{dto.DrID}' not found.");
@@ -149,7 +301,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     ModifiedOn = now,
                     CreatedBy = dto.CreatedBy ?? "System",
                     ModificationBy = dto.ModificationBy,
-                    VoucherStatus = "PAID",
+                    VoucherStatus = "Success",
                     isActive = dto.IsActive
                 };
 
@@ -221,7 +373,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
 
                 var drLedger = await _context.Ledgers
-                               .FirstOrDefaultAsync(g => g.ledgerName == dto.DrID && g.companyID == dto.CompanyID);
+                               .FirstOrDefaultAsync(g => g.ledgerID == dto.DrID && g.companyID == dto.CompanyID);
 
                 voucher.VoucherNo = voucher.VoucherNo;
                 voucher.VoucherDate = dto.VoucherDate;
@@ -283,6 +435,137 @@ namespace XeniaRentalBackend.Repositories.Voucher
             }
         }
 
+        public async Task<XRS_Voucher> UpdatePaymentVoucherAsync(int id, VoucherDto dto)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var now = DateTime.Now;
+
+                var indirectIncomeGroup = await _context.AccountGroups
+                    .FirstOrDefaultAsync(g =>
+                        g.groupName == "INDIRECT INCOME" &&
+                        g.companyID == dto.CompanyID);
+
+                if (indirectIncomeGroup == null)
+                    throw new Exception("Indirect Income account group not found.");
+
+      
+                var cashLedger = await _context.Ledgers
+                    .FirstOrDefaultAsync(l => l.ledgerCode == "Cash" && l.companyID == dto.CompanyID);
+
+                var bankLedger = await _context.Ledgers
+                    .FirstOrDefaultAsync(l => l.ledgerCode == "Bank" && l.companyID == dto.CompanyID);
+
+                if (cashLedger == null)
+                    throw new Exception("Cash ledger not found.");
+
+                if (bankLedger == null)
+                    throw new Exception("Bank ledger not found.");
+
+                bool isManualRef =
+                    string.IsNullOrWhiteSpace(dto.RefNo) ||
+                    dto.RefNo.Trim().Equals("MANUAL", StringComparison.OrdinalIgnoreCase);
+
+                var paymentLedger = isManualRef ? cashLedger : bankLedger;
+
+           
+                var voucher = await _context.Vouchers
+                    .FirstOrDefaultAsync(v =>
+                        v.VoucherID == id &&
+                        v.CompanyID == dto.CompanyID);
+
+                if (voucher == null)
+                    throw new Exception("Voucher not found.");
+
+          
+                voucher.VoucherDate = dto.VoucherDate;
+                voucher.VoucherType = dto.VoucherType;
+                voucher.DrID = paymentLedger.ledgerID;
+                voucher.CrID = dto.CrID;
+                voucher.Amount = dto.Amount;
+                voucher.RefNo = dto.RefNo;
+                voucher.Remarks = dto.Remarks;
+                voucher.IssueingBank = dto.IssuingBank;
+                voucher.ChequeNo = dto.ChequeNo;
+                voucher.Cancelled = dto.Cancelled;
+                voucher.CrAmount = dto.CrAmount ?? dto.Amount;
+                voucher.IsReconcil = dto.IsReconcil;
+                voucher.ChequeStatus = dto.ChequeStatus;
+                voucher.ReconcilDate = dto.ReconcilDate;
+                voucher.ModifiedOn = now;
+                voucher.ModificationBy = dto.ModificationBy ?? "System";
+                voucher.VoucherStatus = dto.VoucherStatus;
+                voucher.isActive = dto.IsActive;
+
+                var existingAccounts = await _context.Accounts
+                    .Where(a => a.VoucherId == voucher.VoucherID)
+                    .ToListAsync();
+
+                if (existingAccounts.Any())
+                {
+                    _context.Accounts.RemoveRange(existingAccounts);
+                    await _context.SaveChangesAsync();
+                }
+
+          
+                var debitEntry = new XRS_Accounts
+                {
+                    companyID = dto.CompanyID,
+                    VoucherId = voucher.VoucherID,
+                    GroupId = indirectIncomeGroup.groupID,
+                    invType = voucher.VoucherType,
+                    invNo = voucher.VoucherNo,
+                    invDate = voucher.VoucherDate,
+                    ledgerDr = paymentLedger.ledgerID,
+                    ledgerCr = dto.CrID,
+                    amountDr = voucher.Amount,
+                    amountCr = 0,
+                    remarks = isManualRef
+                        ? "Indirect Income - Cash Debit"
+                        : "Indirect Income - Bank Debit",
+                    createdOn = now,
+                    createdBy = dto.CreatedBy ?? "System",
+                    modifiedOn = now,
+                    modifiedBy = dto.CreatedBy ?? "System",
+                    isActive = true
+                };
+
+                var creditEntry = new XRS_Accounts
+                {
+                    companyID = dto.CompanyID,
+                    VoucherId = voucher.VoucherID,
+                    GroupId = indirectIncomeGroup.groupID,
+                    invType = voucher.VoucherType,
+                    invNo = voucher.VoucherNo,
+                    invDate = voucher.VoucherDate,
+                    ledgerDr = dto.CrID,
+                    ledgerCr = paymentLedger.ledgerID,
+                    amountDr = 0,
+                    amountCr = voucher.Amount,
+                    remarks = "Indirect Income - Credit",
+                    createdOn = now,
+                    createdBy = dto.CreatedBy ?? "System",
+                    modifiedOn = now,
+                    modifiedBy = dto.CreatedBy ?? "System",
+                    isActive = true
+                };
+
+                _context.Accounts.AddRange(debitEntry, creditEntry);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return voucher;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        
         public async Task<XRS_Voucher> CreateIntiateAsync(VoucherCreateRequest request)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -309,7 +592,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     VoucherNo = newVoucherNo.ToString(),
                     VoucherDate = request.VoucherDate,
                     VoucherType = request.VoucherType,
-                    DrID = request.DrID,
+                    DrID = 0,
                     CrID = request.CrID,
                     Amount = request.Amount,
                     RefNo = request.RefNo,
@@ -348,23 +631,90 @@ namespace XeniaRentalBackend.Repositories.Voucher
             }
         }
 
-        public async Task<bool> DeleteVoucherAsync(int id)
+        public async Task<XRS_Voucher> UpdateAsync(int voucherId, VoucherCreateRequest request)
         {
-            var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.VoucherID == id);
-            if (voucher == null) return false;
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            _context.Vouchers.Remove(voucher);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                var voucher = await _context.Vouchers
+                    .FirstOrDefaultAsync(v => v.VoucherID == voucherId);
+
+                if (voucher == null)
+                    throw new Exception("Voucher not found");
+      
+                voucher.VoucherDate = request.VoucherDate;
+                voucher.VoucherType = request.VoucherType;
+                voucher.DrID = 0;
+                voucher.CrID = request.CrID;
+                voucher.Amount = request.Amount;
+                voucher.RefNo = request.RefNo;
+                voucher.Remarks = request.Remarks;
+                voucher.VoucherStatus = request.VoucherStatus ?? voucher.VoucherStatus;
+                voucher.isActive = request.IsActive;
+                voucher.ModifiedOn = DateTime.UtcNow;
+                voucher.ModificationBy = request.modifiedBy;
+
+                var existingDetails = await _context.VoucherDetails
+                    .Where(d => d.voucherId == voucher.VoucherID)
+                    .ToListAsync();
+
+                _context.VoucherDetails.RemoveRange(existingDetails);
+
+                foreach (var detail in request.VoucherDetails)
+                {
+                    _context.VoucherDetails.Add(new XRS_VoucherDetails
+                    {
+                        voucherId = voucher.VoucherID,
+                        chargeId = detail.ChargeId,
+                        amount = detail.Amount
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return voucher;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
-        public async Task<object> GetTenantChargesByMonthAsync(int month, int year)
+        public async Task<object> GetTenantChargesByMonthAsync(int companyId, int month, int year,  int? propertyId = null,  int? unitId = null,   int? bedSpaceId = null,  string? search = null)
         {
-            var tenants = await _context.TenantAssignemnts
-                .Include(t => t.Tenant)
-                .Include(t => t.Unit)
-                    .ThenInclude(u => u.Property)
-                .Include(t => t.BedSpace)
+
+            var tenantQuery = _context.TenantAssignemnts
+                               .Include(t => t.Tenant)
+                               .Include(t => t.Unit)
+                                   .ThenInclude(u => u.Property)
+                               .Include(t => t.BedSpace)
+                               .Where(t => !t.isClosure
+                                   && t.companyID == companyId)
+                               .AsQueryable();
+
+
+            if (propertyId.HasValue)
+                tenantQuery = tenantQuery.Where(t => t.Unit.Property.PropID == propertyId.Value);
+
+            if (unitId.HasValue)
+                tenantQuery = tenantQuery.Where(t => t.unitID == unitId.Value);
+
+            if (bedSpaceId.HasValue)
+                tenantQuery = tenantQuery.Where(t => t.bedSpaceID == bedSpaceId.Value);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                tenantQuery = tenantQuery.Where(t =>
+                    t.Tenant.tenantName.Contains(search) ||
+                    t.Unit.UnitName.Contains(search)
+                );
+            }
+
+            var tenants = await tenantQuery
                 .Select(t => new
                 {
                     t.tenantID,
@@ -392,10 +742,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 );
 
                 var voucher = await _context.Vouchers
-                    .Where(v => v.DrID == tenant.tenantID
+                    .Where(v => v.CrID == tenant.tenantID
                                 && v.VoucherDate.Month == month
                                 && v.VoucherDate.Year == year
-                                && v.VoucherType == "Pay Rent")
+                                && v.VoucherType == "Pay Rent"
+                                && v.isActive)
                     .FirstOrDefaultAsync();
 
                 string status;
@@ -405,7 +756,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 if (voucher != null)
                 {
-           
                     status = voucher.VoucherStatus ?? "Initiated";
 
                     var voucherDetails = await _context.VoucherDetails
@@ -427,7 +777,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 }
                 else
                 {
-      
                     status = "Not Initiated";
 
                     var chargeIds = await _context.UnitChargesMappings
@@ -456,6 +805,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 result.Add(new
                 {
+                    VoucherID = voucher != null ? voucher.VoucherID : 0,
                     tenant.tenantID,
                     tenant.TenantName,
                     tenant.PropertyId,

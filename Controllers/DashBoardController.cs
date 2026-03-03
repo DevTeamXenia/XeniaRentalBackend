@@ -26,12 +26,14 @@ namespace XeniaRentalBackend.Controllers
             return Ok(data);
         }
 
+
         [HttpGet("rent/monthly")]
         public async Task<IActionResult> GetMonthlyRevenue(int companyid,[FromQuery] int year)
         {
             var revenue = await _dashboardRepsitory.GetMonthlyRentRevenueAsync(companyid,year);
             return Ok(revenue);
         }
+
 
         [HttpGet("home/{unitId}")]
         public async Task<IActionResult> GetTenantPayments(int unitId)

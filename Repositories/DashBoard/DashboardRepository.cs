@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XeniaRentalBackend.Controllers;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Common;
@@ -11,6 +12,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
 
         private readonly ApplicationDbContext _context;
         private readonly JwtHelperService _jwtHelperService;
+
         public DashboardRepository(ApplicationDbContext context, JwtHelperService jwtHelperService)
         {
             _context = context;
@@ -19,11 +21,16 @@ namespace XeniaRentalBackend.Repositories.Dashboard
 
         public async Task<RentDashboardDto> GetRentDashboardAsync(int companyId, DateTime fromDate, DateTime toDate)
         {
+            var from = fromDate.Date;
+            var to = toDate.Date;
+
             var activeAssignments = await _context.TenantAssignemnts
-                .Where(t => t.companyID == companyId &&
-                            t.rentDueDate >= fromDate &&
-                            t.rentDueDate <= toDate &&
-                            !t.isClosure)
+                .Where(t =>
+                    t.companyID == companyId &&
+                    !t.isClosure &&
+                    t.agreementStartDate.Date <= to &&
+                    t.agreementEndDate.Date >= from
+                )
                 .ToListAsync();
 
             var vouchers = await _context.Vouchers
@@ -120,28 +127,45 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             };
         }
 
-        public async Task<List<MonthlyRevenueDto>> GetMonthlyRentRevenueAsync(int companyid,int year)
+        public async Task<MonthlyRevenueResponseDto> GetMonthlyRentRevenueAsync(int companyid, int year)
         {
+            var company = await _context.Company
+                .Where(c => c.companyID == companyid && c.IsActive)
+                .Select(c => new
+                {
+                    c.companyID,
+                    c.companyName,
+                    c.logo
+                })
+                .FirstOrDefaultAsync();
+
+            if (company == null)
+                throw new Exception("Company not found");
+
             var vouchers = await _context.Vouchers
-                .Where(v => v.VoucherType == "Pay Rent" && v.VoucherDate.Year == year && v.CompanyID == companyid)
+                .Where(v =>
+                    v.VoucherType == "Pay Rent" &&
+                    v.VoucherDate.Year == year &&
+                    v.CompanyID == companyid)
                 .ToListAsync();
 
             var monthlyRevenue = Enumerable.Range(1, 12)
-                .Select(month =>
+                .Select(month => new MonthlyRevenueDto
                 {
-                    var total = vouchers
+                    Month = new DateTime(year, month, 1).ToString("MMM"),
+                    TotalRent = vouchers
                         .Where(v => v.VoucherDate.Month == month)
-                        .Sum(v => v.Amount);
-
-                    return new MonthlyRevenueDto
-                    {
-                        Month = new DateTime(year, month, 1).ToString("MMM"),
-                        TotalRent = total
-                    };
+                        .Sum(v => v.Amount)
                 })
                 .ToList();
 
-            return monthlyRevenue;
+            return new MonthlyRevenueResponseDto
+            {
+                CompanyId = company.companyID,
+                CompanyName = company.companyName,
+                CompanyLogo = company.logo,
+                MonthlyRevenue = monthlyRevenue
+            };
         }
 
         public async Task<TenantPaymentBannerDto> GetTenantPaymentBannerAsync(int tenantId, int companyId)

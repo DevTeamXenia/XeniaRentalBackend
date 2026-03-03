@@ -5103,9 +5103,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaRentalBackend.csproj",
-      "projectName": "XeniaRentalBackend",
-      "projectPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaRentalBackend.csproj",
+      "projectUniqueName": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaTenoraBackend.csproj",
+      "projectName": "XeniaTenoraBackend",
+      "projectPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaTenoraBackend.csproj",
       "packagesPath": "C:\\Users\\Xenia\\.nuget\\packages\\",
       "outputPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\obj\\",
       "projectStyle": "PackageReference",
