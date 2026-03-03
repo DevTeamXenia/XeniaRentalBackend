@@ -13,11 +13,11 @@ namespace XeniaRentalBackend.Repositories.Category
 
         }
 
-        public async Task<IEnumerable<XRS_Categories>> GetCategories()
+        public async Task<IEnumerable<XRS_Categories>> GetCategories(int companyId)
         {
 
             return await _context.Category
-                .Where(u => u.IsActive == true)
+                .Where(u => u.CompanyID == companyId && u.IsActive == true)
                  .Select(u => new Models.XRS_Categories
                  {
                      CategoryName = u.CategoryName,

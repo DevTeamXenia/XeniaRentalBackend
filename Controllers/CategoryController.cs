@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.Design;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Category;
@@ -16,10 +17,10 @@ public class CategoryController : ControllerBase
     }
 
 
-    [HttpGet("all")]
-    public async Task<ActionResult<IEnumerable<XRS_Categories>>> Get()
+    [HttpGet("all/{companyId}")]
+    public async Task<ActionResult<IEnumerable<XRS_Categories>>> Get(int companyId)
     {
-        var categories = await _categoryRepository.GetCategories();
+        var categories = await _categoryRepository.GetCategories(companyId);
         if (categories == null || !categories.Any())
         {
             return NotFound(new { Status = "Error", Message = "No categories found." });
