@@ -18,7 +18,7 @@ namespace XeniaRentalBackend.Repositories.Category
 
             return await _context.Category
                 .Where(u => u.CompanyID == companyId && u.IsActive == true)
-                 .Select(u => new Models.XRS_Categories
+                 .Select(u => new XRS_Categories
                  {
                      CategoryName = u.CategoryName,
                      CatID = u.CatID,
@@ -46,7 +46,7 @@ namespace XeniaRentalBackend.Repositories.Category
                 .OrderBy(u => u.CategoryName)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                 .Select(u => new Models.XRS_Categories
+                 .Select(u => new XRS_Categories
                  {
                      CategoryName = u.CategoryName,
                      CatID = u.CatID,
@@ -71,7 +71,7 @@ namespace XeniaRentalBackend.Repositories.Category
 
             return await _context.Category
                 .Where(u => u.CatID == categoryId)
-                 .Select(u => new Models.XRS_Categories
+                 .Select(u => new XRS_Categories
                  {
                      CategoryName = u.CategoryName,
                      CatID = u.CatID,
@@ -85,7 +85,7 @@ namespace XeniaRentalBackend.Repositories.Category
         public async Task<XRS_Categories> CreateCategory(CategoryDto dtoCategory)
         {
 
-            var category = new Models.XRS_Categories
+            var category = new XRS_Categories
             {
                 CategoryName = dtoCategory.CategoryName,
                 IsActive = dtoCategory.IsActive,
