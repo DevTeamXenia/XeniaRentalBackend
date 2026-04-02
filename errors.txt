@@ -1,0 +1,11 @@
+﻿D:\Project\github\XeniaTenoraBackend\Controllers\ManageMaintenanceController.cs(7,34): error CS0234: The type or namespace name 'Socket' does not exist in the namespace 'XeniaRentalBackend.Service' (are you missing an assembly reference?) [D:\Project\github\XeniaTenoraBackend\XeniaTenoraBackend.csproj]
+D:\Project\github\XeniaTenoraBackend\Program.cs(26,34): error CS0234: The type or namespace name 'Socket' does not exist in the namespace 'XeniaRentalBackend.Service' (are you missing an assembly reference?) [D:\Project\github\XeniaTenoraBackend\XeniaTenoraBackend.csproj]
+D:\Project\github\XeniaTenoraBackend\Program.cs(27,34): error CS0234: The type or namespace name 'Hubs' does not exist in the namespace 'XeniaRentalBackend.Service' (are you missing an assembly reference?) [D:\Project\github\XeniaTenoraBackend\XeniaTenoraBackend.csproj]
+D:\Project\github\XeniaTenoraBackend\Controllers\ManageMaintenanceController.cs(18,26): error CS0246: The type or namespace name 'IMaintenanceUpdateService' could not be found (are you missing a using directive or an assembly reference?) [D:\Project\github\XeniaTenoraBackend\XeniaTenoraBackend.csproj]
+D:\Project\github\XeniaTenoraBackend\Controllers\ManageMaintenanceController.cs(23,13): error CS0246: The type or namespace name 'IMaintenanceUpdateService' could not be found (are you missing a using directive or an assembly reference?) [D:\Project\github\XeniaTenoraBackend\XeniaTenoraBackend.csproj]
+
+Build FAILED.
+    3 Warning(s)
+    5 Error(s)
+
+Time Elapsed 00:00:08.23

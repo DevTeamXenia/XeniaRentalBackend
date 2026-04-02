@@ -1,45 +1,67 @@
-using Microsoft.AspNetCore.SignalR;
-using XeniaRentalBackend.Repositories.ManageMaintenance;
-using XeniaRentalBackend.Service.Hubs;
+﻿using Microsoft.AspNetCore.SignalR;
+using XeniaRentalBackend.Hubs;
+using XeniaRentalBackend.Repositories.AdminComplaint;
 
-namespace XeniaRentalBackend.Service.Socket
+namespace XeniaRentalBackend.Service.Maintenance
 {
-    public interface IMaintenanceUpdateService
-    {
-        Task SendMaintenanceUpdate(int companyId, string? search = null, DateTime? date = null, int pageNumber = 1, int pageSize = 10, string? connectionId = null);
-    }
-
     public class MaintenanceUpdateService : IMaintenanceUpdateService
     {
         private readonly IHubContext<MaintenanceHub> _hubContext;
-        private readonly IManageMaintenanceRepository _maintenanceRepo;
+        private readonly IAdminComplaintRepository _adminComplaintRepository;
 
         public MaintenanceUpdateService(
             IHubContext<MaintenanceHub> hubContext,
-            IManageMaintenanceRepository maintenanceRepo)
+            IAdminComplaintRepository adminComplaintRepository)
         {
             _hubContext = hubContext;
-            _maintenanceRepo = maintenanceRepo;
+            _adminComplaintRepository = adminComplaintRepository;
         }
 
-        public async Task SendMaintenanceUpdate(int companyId, string? search = null, DateTime? date = null, int pageNumber = 1, int pageSize = 10, string? connectionId = null)
+        public async Task SendMaintenanceUpdate(
+            int companyId,
+            string status,
+            string? zone = null,
+            string? search = null,
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? connectionId = null)
         {
-            var pending = await _maintenanceRepo.GetPendingList(companyId, search, date, pageNumber, pageSize);
-            var inProgress = await _maintenanceRepo.GetInProgressList(companyId, search, date, pageNumber, pageSize);
-            var completed = await _maintenanceRepo.GetCompletedList(companyId, search, date, pageNumber, pageSize);
-
-            var dashboardData = new
+            // Status-ൽ നിന്ന് Data Fetch ചെയ്യുക
+            object? data = status.ToLower() switch
             {
-                Pending = pending,
-                InProgress = inProgress,
-                Completed = completed
+                "pending" => await _adminComplaintRepository
+                    .GetNewComplaints(companyId, search, zone, pageNumber, pageSize),
+                "inprogress" => await _adminComplaintRepository
+                    .GetInProgressComplaints(companyId, search, zone, pageNumber, pageSize),
+                "completed" => await _adminComplaintRepository
+                    .GetClosedComplaints(companyId, search, zone, pageNumber, pageSize),
+                "overdue" => await _adminComplaintRepository
+                    .GetOverdueComplaints(companyId, search, zone, pageNumber, pageSize),
+                _ => null
             };
 
-            var target = !string.IsNullOrEmpty(connectionId)
-                ? _hubContext.Clients.Client(connectionId)
-                : _hubContext.Clients.Group($"company-{companyId}");
+            if (data == null) return;
 
-            await target.SendAsync("ReceiveMaintenanceUpdate", dashboardData);
+            var payload = new
+            {
+                Status = status,
+                Data = data
+            };
+
+            // Specific Connection-ലേക്ക് Send ചെയ്യുക
+            if (!string.IsNullOrEmpty(connectionId))
+            {
+                await _hubContext.Clients
+                    .Client(connectionId)
+                    .SendAsync("ReceiveMaintenanceUpdate", payload);
+            }
+            else
+            {
+                // Company Group-ലേക്ക് Broadcast ചെയ്യുക
+                await _hubContext.Clients
+                    .Group($"company-{companyId}")
+                    .SendAsync("ReceiveMaintenanceUpdate", payload);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Repositories.ManageMaintenance;
 
 using XeniaRentalBackend.Repositories.AdminComplaint;
-using XeniaRentalBackend.Service.Socket;
+using XeniaRentalBackend.Service.Maintenance;
 
 namespace XeniaRentalBackend.Controllers
 {
@@ -28,63 +28,38 @@ namespace XeniaRentalBackend.Controllers
         }
 
         // ─────────────────────────────────────────
-        // GET /api/ManageMaintenance/pending/{companyId}
+        // GET /api/ManageMaintenance/list/{companyId}
+        // Unified list API (Also triggers Socket Broadcast)
         // ─────────────────────────────────────────
-        [HttpGet("pending/{companyId}")]
-        public async Task<IActionResult> GetPendingList(
+        [HttpGet("list/{companyId}")]
+        public async Task<IActionResult> GetMaintenanceList(
             int companyId,
-            string? search = null,
-            DateTime? date = null,
-            int pageNumber = 1,
-            int pageSize = 10)
+            [FromQuery] string status = "pending", // "pending", "inprogress", "completed"
+            [FromQuery] string? search = null,
+            [FromQuery] DateTime? date = null,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _manageMaintenanceRepository
-                .GetPendingList(companyId, search, date, pageNumber, pageSize);
+            // 1. Send via socket to any connected clients
+            await _maintenanceUpdateService.SendMaintenanceUpdate(companyId, status, null, search, pageNumber, pageSize);
+            
+            // 2. Fetch the data directly for normal API response (so you can view it in Swagger)
+            object result = null;
+            switch (status.ToLower())
+            {
+                case "pending":
+                    result = await _manageMaintenanceRepository.GetPendingList(companyId, search, date, pageNumber, pageSize);
+                    break;
+                case "inprogress":
+                    result = await _manageMaintenanceRepository.GetInProgressList(companyId, search, date, pageNumber, pageSize);
+                    break;
+                case "completed":
+                    result = await _manageMaintenanceRepository.GetCompletedList(companyId, search, date, pageNumber, pageSize);
+                    break;
+            }
 
             if (result == null)
-                return NotFound(new { Status = "Error", Message = "No pending maintenance found." });
-
-            return Ok(new { Status = "Success", Data = result });
-        }
-
-     
-   
-        // ─────────────────────────────────────────
-        // GET /api/ManageMaintenance/inprogress/{companyId}
-        // ─────────────────────────────────────────
-        [HttpGet("inprogress/{companyId}")]
-        public async Task<IActionResult> GetInProgressList(
-            int companyId,
-            string? search = null,
-            DateTime? date = null,
-            int pageNumber = 1,
-            int pageSize = 10)
-        {
-            var result = await _manageMaintenanceRepository
-                .GetInProgressList(companyId, search, date, pageNumber, pageSize);
-
-            if (result == null)
-                return NotFound(new { Status = "Error", Message = "No in-progress maintenance found." });
-
-            return Ok(new { Status = "Success", Data = result });
-        }
-
-        // ─────────────────────────────────────────
-        // GET /api/ManageMaintenance/completed/{companyId}
-        // ─────────────────────────────────────────
-        [HttpGet("completed/{companyId}")]
-        public async Task<IActionResult> GetCompletedList(
-            int companyId,
-            string? search = null,
-            DateTime? date = null,
-            int pageNumber = 1,
-            int pageSize = 10)
-        {
-            var result = await _manageMaintenanceRepository
-                .GetCompletedList(companyId, search, date, pageNumber, pageSize);
-
-            if (result == null)
-                return NotFound(new { Status = "Error", Message = "No completed maintenance found." });
+                return NotFound(new { Status = "Error", Message = $"No {status} maintenance found." });
 
             return Ok(new { Status = "Success", Data = result });
         }
@@ -103,7 +78,7 @@ namespace XeniaRentalBackend.Controllers
             var created = await _manageMaintenanceRepository.CreateMaintenance(dto);
 
             // Broadcast the new maintenance update immediately via socket
-            await _maintenanceUpdateService.SendMaintenanceUpdate(dto.CompanyId);
+            await _maintenanceUpdateService.SendMaintenanceUpdate(dto.CompanyId, "pending");
 
             return Ok(new { Status = "Success", Data = created });
         }
@@ -130,7 +105,7 @@ namespace XeniaRentalBackend.Controllers
             if (companyId.HasValue)
             {
                 // Broadcast updated list to the specific company connected clients
-                await _maintenanceUpdateService.SendMaintenanceUpdate(companyId.Value);
+                await _maintenanceUpdateService.SendMaintenanceUpdate(companyId.Value, dto.Status);
             }
 
             return Ok(new { Status = "Success", Message = $"Status updated to {dto.Status}." });

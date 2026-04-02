@@ -111,20 +111,22 @@ namespace XeniaRentalBackend.Repositories.Company
 
         public async Task<bool> UpdateCompany(int id, XRS_Company company)
         {
-            var updatedCompany = await _context.Company.FirstOrDefaultAsync(u => u.companyID == id);
+            var updatedCompany = await _context.Company
+                .FirstOrDefaultAsync(u => u.companyID == id);
+
             if (updatedCompany == null) return false;
 
-            updatedCompany.companyName = company.companyName ?? updatedCompany.companyName;
-            updatedCompany.companyID = company.companyID;
+            updatedCompany.companyName = company.companyName;
             updatedCompany.phoneNumber = company.phoneNumber;
             updatedCompany.address = company.address;
             updatedCompany.pin = company.pin;
             updatedCompany.email = company.email;
             updatedCompany.logo = company.logo;
             updatedCompany.IsActive = company.IsActive;
+
             await _context.SaveChangesAsync();
             return true;
         }
-     
+
     }
 }
