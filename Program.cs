@@ -23,12 +23,19 @@ using XeniaRentalBackend.Repositories.Units;
 using XeniaRentalBackend.Repositories.Voucher;
 using XeniaRentalBackend.Service.Common;
 using XeniaRentalBackend.Service.Notification;
+using XeniaRentalBackend.Service.Socket;
+using XeniaRentalBackend.Service.Hubs;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Category;
 using XeniaRentalBackend.Repositories.Unit;
 using XeniaRentalBackend.Repositories.Dashboard;
 using XeniaRentalBackend.Repositories.Service;
 using XeniaRentalBackend.Repositories.Report;
+using XeniaRentalBackend.Repositories.MaintenanceCategory;
+using XeniaRentalBackend.Repositories.EmployeeMaster;
+using XeniaRentalBackend.Repositories.ManageMaintenance;
+using XeniaRentalBackend.Repositories.AdminComplaint;
+using XeniaRentalBackend.Repositories.MaintenanceService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,6 +101,7 @@ builder.Services.AddSignalR();
 builder.Services.AddWebSockets(options => { });
 
 
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -120,6 +128,12 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IDashboardRepsitory, DashboardRepository>();
 builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IMaintenanceCategoryRepository, MaintenanceCategoryRepository>();
+builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>();
+builder.Services.AddScoped<IManageMaintenanceRepository, ManageMaintenanceRepository>();
+builder.Services.AddScoped<IAdminComplaintRepository, AdminComplaintRepository>();
+builder.Services.AddScoped<IMaintenanceServiceRepository, MaintenanceServiceRepository>();
+builder.Services.AddScoped<IMaintenanceUpdateService, MaintenanceUpdateService>();
 
 
 
@@ -194,7 +208,9 @@ app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseWebSockets();
 
+app.MapHub<MaintenanceHub>("/maintenanceHub").RequireCors("AllowSpecificOrigin");
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

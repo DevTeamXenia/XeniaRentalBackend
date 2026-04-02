@@ -47,6 +47,19 @@
           }
         }
       },
+      "BCrypt.Net-Next/2.1.4": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GeoCoordinate.NetCore/1.0.0.1": {
         "type": "package",
         "compile": {
@@ -1790,6 +1803,41 @@
         "azureicon.png",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "BCrypt.Net-Next/2.1.4": {
+      "sha512": "JIJe7x+M9sv6adYBLzbeYMuljTySqHXnXws7mF2ewQs2S11VDGZvQkdK0zR14OkvGn3y3rHxfyy6rczTOqKOqQ==",
+      "type": "package",
+      "path": "bcrypt.net-next/2.1.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.2.1.4.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net40/BCrypt.Net-Next.dll",
+        "lib/net40/BCrypt.Net-Next.xml",
+        "lib/net45/BCrypt.Net-Next.dll",
+        "lib/net45/BCrypt.Net-Next.xml",
+        "lib/net451/BCrypt.Net-Next.dll",
+        "lib/net451/BCrypt.Net-Next.xml",
+        "lib/net452/BCrypt.Net-Next.dll",
+        "lib/net452/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net47/BCrypt.Net-Next.dll",
+        "lib/net47/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/netstandard1.3/BCrypt.Net-Next.dll",
+        "lib/netstandard1.3/BCrypt.Net-Next.xml",
+        "lib/netstandard1.6/BCrypt.Net-Next.dll",
+        "lib/netstandard1.6/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml"
       ]
     },
     "GeoCoordinate.NetCore/1.0.0.1": {
@@ -5082,6 +5130,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
+      "BCrypt.Net-Next >= 2.1.4",
       "GeoCoordinate.NetCore >= 1.0.0.1",
       "Google.Apis.Auth >= 1.70.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 9.0.3",
@@ -5097,23 +5146,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Xenia\\.nuget\\packages\\": {},
+    "C:\\Users\\Administrator\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaTenoraBackend.csproj",
+      "projectUniqueName": "D:\\Project\\github\\XeniaTenoraBackend\\XeniaTenoraBackend.csproj",
       "projectName": "XeniaTenoraBackend",
-      "projectPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\XeniaTenoraBackend.csproj",
-      "packagesPath": "C:\\Users\\Xenia\\.nuget\\packages\\",
-      "outputPath": "D:\\XENIA\\GITHUB\\WEBAPI\\ASP.NET\\CORE\\XeniaRentalBackend\\obj\\",
+      "projectPath": "D:\\Project\\github\\XeniaTenoraBackend\\XeniaTenoraBackend.csproj",
+      "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
+      "outputPath": "D:\\Project\\github\\XeniaTenoraBackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Xenia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5123,7 +5172,9 @@
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://packagesource": {},
+        "https://packagesource1": {}
       },
       "frameworks": {
         "net9.0": {
@@ -5141,12 +5192,16 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net9.0": {
         "targetAlias": "net9.0",
         "dependencies": {
+          "BCrypt.Net-Next": {
+            "target": "Package",
+            "version": "[2.1.4, )"
+          },
           "GeoCoordinate.NetCore": {
             "target": "Package",
             "version": "[1.0.0.1, )"
@@ -5217,7 +5272,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

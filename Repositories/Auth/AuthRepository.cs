@@ -8,6 +8,7 @@ using XeniaCatalogueApi.Dictionary;
 using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Notification;
+using XeniaTenoraBackend.DTOs;
 
 namespace XeniaRentalBackend.Repositories.Auth
 {
@@ -50,16 +51,16 @@ namespace XeniaRentalBackend.Repositories.Auth
             {
                 throw new UnauthorizedAccessException("Incorrect password.");
             }
-           
+
             return user;
         }
 
-   
+
 
         public async Task<bool> ResetUserPassword(ForegtPasswordDTO request)
         {
             var latestOtp = await _context.tblOTPLogs
-                .Where(o => o.MobileNo == request.PhoneNumber && o.CompanyId ==request.CompanyId)
+                .Where(o => o.MobileNo == request.PhoneNumber && o.CompanyId == request.CompanyId)
                 .OrderByDescending(o => o.OTPId)
                 .FirstOrDefaultAsync();
 
@@ -110,7 +111,7 @@ namespace XeniaRentalBackend.Repositories.Auth
             {
                 Type = (int)OTPType.REGISTRATION,
                 MobileNo = request.MobileNo,
-                CompanyId =request.CompanyID,
+                CompanyId = request.CompanyID,
                 OTP = GenerateOTP(),
                 ExpiryDate = GetExpiryTime(request.CompanyID)
             };
@@ -137,7 +138,7 @@ namespace XeniaRentalBackend.Repositories.Auth
 
             return new OkObjectResult("OTP sent successfully.");
         }
-        public async Task<XRS_Tenant?> AuthenticateUser( string username, int companyId, string otp, string? deviceToken)
+        public async Task<XRS_Tenant?> AuthenticateUser(string username, int companyId, string otp, string? deviceToken)
         {
             const string TEST_USERNAME = "9539484666";
             const string FIXED_OTP = "628266";
@@ -293,7 +294,7 @@ namespace XeniaRentalBackend.Repositories.Auth
         {
             var tenant = await _context.Tenants
                 .FirstOrDefaultAsync(t =>
-                    t.tenantID == tenantId &&              
+                    t.tenantID == tenantId &&
                     t.isActive);
 
             if (tenant == null)
@@ -322,5 +323,73 @@ namespace XeniaRentalBackend.Repositories.Auth
         }
 
         #endregion
+
+
+        #region EMPLOYEE
+
+        public async Task<XRS_Employee?> AuthenticateEmployee(EmployeeLoginRequest request)
+        {
+            var employee = await _context.Employee
+                .Where(e =>
+                    e.MobileNumber == request.MobileNumber &&
+                    e.CompanyId == request.CompanyId &&
+                    e.IsActive == true)
+                .FirstOrDefaultAsync();
+
+            if (employee == null)
+                return null;
+
+            if (employee.Password != request.Password)
+                throw new UnauthorizedAccessException("Incorrect password.");
+
+            return employee;
+        }
+
+        public string GenerateJwtEmployeeToken(XRS_Employee employee)
+        {
+            var keyString = _configuration["JwtSettings:Key"]
+                ?? throw new InvalidOperationException("JWT key is not configured.");
+
+            var issuer = _configuration["JwtSettings:Issuer"]
+                ?? throw new InvalidOperationException("JWT issuer is not configured.");
+
+            var audience = _configuration["JwtSettings:Audience"]
+                ?? throw new InvalidOperationException("JWT audience is not configured.");
+
+            var expirationMinutesString = _configuration["JwtSettings:ExpirationMinutes"]
+                ?? throw new InvalidOperationException("JWT expiration is not configured.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, employee.MobileNumber),
+        new Claim("EmployeeId", employee.EmployeeId.ToString()),
+        new Claim("EmployeeCode", employee.EmployeeCode),
+        new Claim("CompanyId", employee.CompanyId.ToString()),
+        new Claim(ClaimTypes.Role, "Employee"),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutesString)),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        #endregion
+
+
+
     }
+
+
+
+
 }

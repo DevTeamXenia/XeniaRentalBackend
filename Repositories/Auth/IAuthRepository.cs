@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
+using XeniaTenoraBackend.DTOs;
 
 namespace XeniaRentalBackend.Repositories.Auth
 {
@@ -22,6 +23,9 @@ namespace XeniaRentalBackend.Repositories.Auth
 
 
         Task<bool> DisableTenantAsync(int tenantId);
+        
+        Task<XRS_Employee?> AuthenticateEmployee(EmployeeLoginRequest request);
+        string GenerateJwtEmployeeToken(XRS_Employee employee);
 
     }
 }

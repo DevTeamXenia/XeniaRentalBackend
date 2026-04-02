@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Repositories.Auth;
 using XeniaRentalBackend.Service.Common;
+using XeniaTenoraBackend.DTOs;
 
 
 namespace XeniaRentalBackend.Controllers
@@ -66,7 +67,49 @@ namespace XeniaRentalBackend.Controllers
                 });
             }
         }
+        [HttpPost("employee/login")]
+        public async Task<IActionResult> EmployeeLogin([FromBody] EmployeeLoginRequest request)
+        {
+            try
+            {
+                var employee = await _authRepository.AuthenticateEmployee(request);
 
+                if (employee == null)
+                {
+                    return NotFound(new
+                    {
+                        Status = "Error",
+                        Message = "Employee does not exist."
+                    });
+                }
+
+                var token = _authRepository.GenerateJwtEmployeeToken(employee);
+
+                return Ok(new
+                {
+                    Status = "Success",
+                    Message = "Login successful.",
+                    Token = token
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new
+                {
+                    Status = "Error",
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Status = "Error",
+                    Message = "An unexpected error occurred.",
+                    Details = ex.Message
+                });
+            }
+        }
 
         [HttpPost]
         [Route("OTP/login")]
