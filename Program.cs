@@ -23,19 +23,22 @@ using XeniaRentalBackend.Repositories.Units;
 using XeniaRentalBackend.Repositories.Voucher;
 using XeniaRentalBackend.Service.Common;
 using XeniaRentalBackend.Service.Notification;
-using XeniaRentalBackend.Service.Maintenance;
-using XeniaRentalBackend.Hubs;
+//using XeniaRentalBackend.Service.Maintenance;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Category;
 using XeniaRentalBackend.Repositories.Unit;
 using XeniaRentalBackend.Repositories.Dashboard;
 using XeniaRentalBackend.Repositories.Service;
 using XeniaRentalBackend.Repositories.Report;
-using XeniaRentalBackend.Repositories.MaintenanceCategory;
+//using XeniaRentalBackend.Repositories.MaintenanceCategory;
 using XeniaRentalBackend.Repositories.EmployeeMaster;
 using XeniaRentalBackend.Repositories.ManageMaintenance;
-using XeniaRentalBackend.Repositories.AdminComplaint;
+
 using XeniaRentalBackend.Repositories.MaintenanceService;
+using XeniaRentalBackend.Repositories.Module;
+using XeniaTenoraBackend.Hubs;
+using XeniaTenoraBackend.Service.Socket;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -128,12 +131,14 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IDashboardRepsitory, DashboardRepository>();
 builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-builder.Services.AddScoped<IMaintenanceCategoryRepository, MaintenanceCategoryRepository>();
+//builder.Services.AddScoped<IMaintenanceCategoryRepository, MaintenanceCategoryRepository>();
 builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>();
-builder.Services.AddScoped<IManageMaintenanceRepository, ManageMaintenanceRepository>();
-builder.Services.AddScoped<IAdminComplaintRepository, AdminComplaintRepository>();
-builder.Services.AddScoped<IMaintenanceServiceRepository, MaintenanceServiceRepository>();
-builder.Services.AddScoped<IMaintenanceUpdateService, MaintenanceUpdateService>();
+builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
+
+
+builder.Services.AddScoped<ITenoraUpdateService, TenoraUpdateService>();
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+
 
 
 
@@ -210,7 +215,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseWebSockets();
 
-app.MapHub<MaintenanceHub>("/maintenanceHub").RequireCors("AllowSpecificOrigin");
+app.MapHub<TenoraHub>("/tenoraHub")
+    .RequireCors("AllowSpecificOrigin");
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

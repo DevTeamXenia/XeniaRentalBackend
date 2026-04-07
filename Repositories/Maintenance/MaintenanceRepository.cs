@@ -1,17 +1,112 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 
-namespace XeniaRentalBackend.Repositories.MaintenanceCategory
+namespace XeniaRentalBackend.Repositories.ManageMaintenance
 {
-    public class MaintenanceCategoryRepository : IMaintenanceCategoryRepository
+    public class MaintenanceRepository : IMaintenanceRepository
     {
         private readonly ApplicationDbContext _context;
-
-        public MaintenanceCategoryRepository(ApplicationDbContext context)
+      
+        public MaintenanceRepository(ApplicationDbContext context)
         {
             _context = context;
+          
         }
+
+        public async Task<List<XRS_Maintenance>> GetMaintenance(int companyId, int? tenantId)
+        {
+            var query = _context.ManageMaintenance
+                .Include(m => m.Photos)
+                .Where(m => m.CompanyId == companyId && m.IsActive);
+
+
+            if (tenantId.HasValue)
+            {
+                query = query.Where(m => m.TenantId == tenantId.Value);
+            }
+
+            return await query
+                .OrderByDescending(m => m.CreatedAt)
+                .ToListAsync();
+        }
+
+
+        public async Task<XRS_Maintenance> CreateMaintenance(MaintenanceDto dto)
+        {
+            var lastComplaint = await _context.ManageMaintenance
+                .OrderByDescending(m => m.MaintenanceId)
+                .FirstOrDefaultAsync();
+
+            int nextNo = 500;
+
+            if (lastComplaint != null && !string.IsNullOrEmpty(lastComplaint.ComplaintNo))
+            {
+                var numberPart = lastComplaint.ComplaintNo.Replace("CMP", "");
+                if (int.TryParse(numberPart, out int last))
+                {
+                    nextNo = last + 1;
+                }
+            }
+
+            var maintenance = new XRS_Maintenance
+            {
+                CompanyId = dto.CompanyId,
+                TenantId = dto.TenantId,
+                ComplaintNo = $"CMP{nextNo}",
+                PropertyId = dto.PropertyId,
+                UnitId = dto.UnitId,
+                CategoryId = dto.CategoryId,
+                Complaint = dto.Complaint,
+                PreferredVisitTime = dto.PreferredVisitTime,
+                Status = "Pending",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _context.ManageMaintenance.AddAsync(maintenance);
+            await _context.SaveChangesAsync();
+
+          
+            if (dto.Photos != null && dto.Photos.Any())
+            {
+                foreach (var photo in dto.Photos)
+                {
+                    var maintenancePhoto = new XRS_MaintenancePhotos
+                    {
+                        MaintenanceId = maintenance.MaintenanceId,
+                        PhotoUrl = photo.PhotoUrl, 
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    await _context.MaintenancePhotos.AddAsync(maintenancePhoto);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            return maintenance;
+        }
+
+        public async Task<bool> UpdateMaintenance(int maintainceId, int? employeeId, string status)
+        {
+            var maintenance = await _context.ManageMaintenance
+                .FirstOrDefaultAsync(m => m.MaintenanceId == maintainceId);
+
+            if (maintenance == null) return false;
+
+            maintenance.Status = status;
+            maintenance.UpdatedAt = DateTime.Now;
+
+            if (employeeId != null)
+                maintenance.AssignedEmployeeId = employeeId;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+      
 
         public async Task<IEnumerable<XRS_MaintenanceCategory>> GetMaintenanceCategories(int companyId)
         {

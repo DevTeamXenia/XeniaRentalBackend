@@ -1,27 +1,34 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.Repositories.ManageMaintenance;
+
 using XeniaRentalBackend.Models;
-using XeniaRentalBackend.Repositories.MaintenanceCategory;
 
 namespace XeniaRentalBackend.Controllers
 {
     [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
-    public class MaintenanceCategoryController : ControllerBase
+    public class MaintenanceController : ControllerBase
     {
-        private readonly IMaintenanceCategoryRepository _maintenanceCategoryRepository;
+        private readonly IMaintenanceRepository _manageMaintenanceRepository;
+        //private readonly IAdminComplaintRepository _adminComplaintRepository;
 
-        public MaintenanceCategoryController(IMaintenanceCategoryRepository maintenanceCategoryRepository)
+        public MaintenanceController(IMaintenanceRepository manageMaintenanceRepository)
         {
-            _maintenanceCategoryRepository = maintenanceCategoryRepository;
+            _manageMaintenanceRepository = manageMaintenanceRepository;
+            //_/*adminComplaintRepository = adminComplaintRepository;*/
+
         }
 
-        [HttpGet("all/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_MaintenanceCategory>>> Get(int companyId)
+
+        #region CATEGORY
+
+        [HttpGet("category/all/{companyId}")]
+        public async Task<ActionResult<IEnumerable<XRS_MaintenanceCategory>>> GetCategories(int companyId)
         {
-            var categories = await _maintenanceCategoryRepository.GetMaintenanceCategories(companyId);
+            var categories = await _manageMaintenanceRepository.GetMaintenanceCategories(companyId);
             if (categories == null || !categories.Any())
             {
                 return NotFound(new { Status = "Error", Message = "No maintenance categories found." });
@@ -29,10 +36,10 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = categories });
         }
 
-        [HttpGet("company/{companyId}")]
+        [HttpGet("category/company/{companyId}")]
         public async Task<ActionResult<PagedResultDto<XRS_MaintenanceCategory>>> GetMaintenanceCategoryByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
-            var categories = await _maintenanceCategoryRepository.GetMaintenanceCategoryByCompanyId(companyId, search, pageNumber, pageSize);
+            var categories = await _manageMaintenanceRepository.GetMaintenanceCategoryByCompanyId(companyId, search, pageNumber, pageSize);
             if (categories == null)
             {
                 return NotFound(new { Status = "Error", Message = "No maintenance categories found for the given Company ID." });
@@ -40,10 +47,10 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = categories });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("category/{id}")]
         public async Task<ActionResult<IEnumerable<XRS_MaintenanceCategory>>> GetMaintenanceCategory(int id)
         {
-            var category = await _maintenanceCategoryRepository.GetMaintenanceCategoryById(id);
+            var category = await _manageMaintenanceRepository.GetMaintenanceCategoryById(id);
             if (category == null || !category.Any())
             {
                 return NotFound(new { Status = "Error", Message = "Maintenance category not found." });
@@ -51,7 +58,7 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = category });
         }
 
-        [HttpPost]
+        [HttpPost("category")]
         public async Task<IActionResult> CreateMaintenanceCategory([FromBody] MaintenanceCategoryDto category)
         {
             if (category == null)
@@ -59,11 +66,11 @@ namespace XeniaRentalBackend.Controllers
                 return BadRequest(new { Status = "Error", Message = "Invalid maintenance category." });
             }
 
-            var createdCategory = await _maintenanceCategoryRepository.CreateMaintenanceCategory(category);
-            return CreatedAtAction(nameof(Get), new { companyId = createdCategory.CompanyId }, new { Status = "Success", Data = createdCategory });
+            var createdCategory = await _manageMaintenanceRepository.CreateMaintenanceCategory(category);
+            return Ok(new { Status = "Success", Data = createdCategory });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("category/{id}")]
         public async Task<IActionResult> UpdateMaintenanceCategory(int id, [FromBody] MaintenanceCategoryDto category)
         {
             if (category == null)
@@ -71,7 +78,7 @@ namespace XeniaRentalBackend.Controllers
                 return BadRequest(new { Status = "Error", Message = "Invalid maintenance category data." });
             }
 
-            var updated = await _maintenanceCategoryRepository.UpdateMaintenanceCategory(id, category);
+            var updated = await _manageMaintenanceRepository.UpdateMaintenanceCategory(id, category);
             if (!updated)
             {
                 return NotFound(new { Status = "Error", Message = "Maintenance category not found or update failed." });
@@ -80,10 +87,10 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Message = "Maintenance category updated successfully." });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("category/{id}")]
         public async Task<IActionResult> DeleteMaintenanceCategory(int id)
         {
-            var deleted = await _maintenanceCategoryRepository.DeleteMaintenanceCategory(id);
+            var deleted = await _manageMaintenanceRepository.DeleteMaintenanceCategory(id);
             if (!deleted)
             {
                 return NotFound(new { Status = "Error", Message = "Maintenance category not found or delete failed." });
@@ -91,5 +98,98 @@ namespace XeniaRentalBackend.Controllers
 
             return Ok(new { Status = "Success", Message = "Maintenance category deleted successfully." });
         }
+    
+
+#endregion
+
+
+        //[HttpPost("service")]
+        //public async Task<IActionResult> Create(MaintenanceDto dto)
+        //{
+        //    if (dto == null)
+        //        return BadRequest(new { Status = "Error", Message = "Invalid data." });
+
+        //    var created = await _manageMaintenanceRepository.CreateMaintenance(dto);
+
+
+        //    return Ok(new { Status = "Success", Data = created });
+        //}
+
+
+        //[HttpPut("service/status/{maintainceId}")]
+        //public async Task<IActionResult> UpdateStatus(int maintainceId, int? employeeId,string status)
+        //{
+        //    var updated = await _manageMaintenanceRepository .UpdateMaintenanceStatus(maintainceId, employeeId, status);
+
+        //    if (!updated)
+        //        return NotFound(new { Status = "Error", Message = "Maintenance not found." });
+
+
+
+        //    return Ok(new { Status = "Success", Message = $"Status updated to {status}." });
+        //}
     }
-}
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

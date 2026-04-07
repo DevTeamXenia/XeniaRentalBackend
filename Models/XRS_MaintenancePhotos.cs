@@ -12,13 +12,11 @@ namespace XeniaRentalBackend.Models
         public int MaintenanceId { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string PhotoUrl { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation Property
         [ForeignKey("MaintenanceId")]
-        public XRS_ManageMaintenance Maintenance { get; set; } = null!;
+        public XRS_Maintenance Maintenance { get; set; } = null!;
     }
 }

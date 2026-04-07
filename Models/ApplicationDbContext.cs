@@ -81,13 +81,9 @@ namespace XeniaRentalBackend.Models
         public DbSet<XRS_Service> Services { get; set; }
         public DbSet<XRS_MaintenanceCategory> MaintenanceCategories { get; set; }
         public DbSet<XRS_Employee> Employee{ get; set; }
-        public DbSet<XRS_ManageMaintenance> ManageMaintenance { get; set; }
+        public DbSet<XRS_Maintenance> ManageMaintenance { get; set; }
         public DbSet<XRS_MaintenancePhotos> MaintenancePhotos { get; set; }
-        public DbSet<XRS_ComplaintAssignment> ComplaintAssignments { get; set; }
-        public DbSet<XRS_ComplaintHistory> ComplaintHistories {  get; set; }
-        public DbSet<XRS_MaintenanceServiceHistory> MaintenanceServiceHistories { get; set; }
-
-        public DbSet<XRS_ComplaintServiceNo> ComplaintServiceNo {  get; set; }
+  
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

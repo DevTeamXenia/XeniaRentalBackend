@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace XeniaRentalBackend.Models
 {
     [Table("XRS_ManageMaintenance")]
-    public class XRS_ManageMaintenance
+    public class XRS_Maintenance
     {
         [Key]
         public int MaintenanceId { get; set; }
 
         public int CompanyId { get; set; }
-        public int ?TenantId  { get; set; }
 
-
+        public int? TenantId  { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -21,8 +20,7 @@ namespace XeniaRentalBackend.Models
         public int PropertyId { get; set; }
 
         [Required]
-        [StringLength(50)]
-        public string Unit { get; set; } = string.Empty;
+        public int UnitId { get; set; } 
 
         public int CategoryId { get; set; }
 

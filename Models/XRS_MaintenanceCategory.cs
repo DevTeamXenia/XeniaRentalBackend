@@ -11,7 +11,7 @@ namespace XeniaRentalBackend.Models
 
         public int CompanyId { get; set; }
 
-        public string CategoryName { get; set; }
+        public required string CategoryName { get; set; }
 
         public int SLADays { get; set; }
 
