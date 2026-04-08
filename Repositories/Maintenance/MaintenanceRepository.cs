@@ -14,12 +14,40 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
           
         }
 
-        public async Task<List<XRS_Maintenance>> GetMaintenance(int companyId, int? tenantId, string? status)
+        public async Task<List<MaintenanceResponseDto>> GetMaintenance(int companyId, int? tenantId, string? status)
         {
-            var query = _context.ManageMaintenance
-                .Include(m => m.Photos)
-                .Where(m => m.CompanyId == companyId && m.IsActive);
-
+            var query = from m in _context.ManageMaintenance
+                        join p in _context.Properties on m.PropertyId equals p.PropID into pp
+                        from property in pp.DefaultIfEmpty()
+                        join u in _context.Units on m.UnitId equals u.UnitId into uu
+                        from unit in uu.DefaultIfEmpty()
+                        join t in _context.Tenants on m.TenantId equals t.tenantID into tt
+                        from tenant in tt.DefaultIfEmpty()
+                        join c in _context.MaintenanceCategories on m.CategoryId equals c.CategoryId into cc
+                        from category in cc.DefaultIfEmpty()
+                        where m.CompanyId == companyId && m.IsActive
+                        select new MaintenanceResponseDto
+                        {
+                            MaintenanceId = m.MaintenanceId,
+                            CompanyId = m.CompanyId,
+                            TenantId = m.TenantId,
+                            TenantName = tenant != null ? tenant.tenantName : null,
+                            ComplaintNo = m.ComplaintNo,
+                            PropertyId = m.PropertyId,
+                            PropertyName = property != null ? property.propertyName : null,
+                            UnitId = m.UnitId,
+                            UnitName = unit != null ? unit.UnitName : null,
+                            CategoryId = m.CategoryId,
+                            CategoryName = category != null ? category.CategoryName : null,
+                            Complaint = m.Complaint,
+                            PreferredVisitTime = m.PreferredVisitTime,
+                            Status = m.Status,
+                            AssignedEmployeeId = m.AssignedEmployeeId,
+                            IsActive = m.IsActive,
+                            CreatedAt = m.CreatedAt,
+                            UpdatedAt = m.UpdatedAt,
+                            Photos = m.Photos.ToList()
+                        };
 
             if (tenantId.HasValue)
             {
@@ -36,7 +64,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
         }
 
 
-        public async Task<XRS_Maintenance> CreateMaintenance(MaintenanceDto dto)
+        public async Task<MaintenanceResponseDto> CreateMaintenance(MaintenanceDto dto)
         {
             var lastComplaint = await _context.ManageMaintenance
                 .OrderByDescending(m => m.MaintenanceId)
@@ -90,7 +118,33 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                 await _context.SaveChangesAsync();
             }
 
-            return maintenance;
+            var property = await _context.Properties.FindAsync(dto.PropertyId);
+            var unit = await _context.Units.FindAsync(dto.UnitId);
+            var tenant = await _context.Tenants.FindAsync(dto.TenantId);
+            var category = await _context.MaintenanceCategories.FindAsync(dto.CategoryId);
+
+            return new MaintenanceResponseDto
+            {
+                MaintenanceId = maintenance.MaintenanceId,
+                CompanyId = maintenance.CompanyId,
+                TenantId = maintenance.TenantId,
+                TenantName = tenant?.tenantName,
+                ComplaintNo = maintenance.ComplaintNo,
+                PropertyId = maintenance.PropertyId,
+                PropertyName = property?.propertyName,
+                UnitId = maintenance.UnitId,
+                UnitName = unit?.UnitName,
+                CategoryId = maintenance.CategoryId,
+                CategoryName = category?.CategoryName,
+                Complaint = maintenance.Complaint,
+                PreferredVisitTime = maintenance.PreferredVisitTime,
+                Status = maintenance.Status,
+                AssignedEmployeeId = maintenance.AssignedEmployeeId,
+                IsActive = maintenance.IsActive,
+                CreatedAt = maintenance.CreatedAt,
+                UpdatedAt = maintenance.UpdatedAt,
+                Photos = await _context.MaintenancePhotos.Where(p => p.MaintenanceId == maintenance.MaintenanceId).ToListAsync()
+            };
         }
 
         public async Task<bool> UpdateMaintenance(int maintainceId, int? employeeId, string status)
