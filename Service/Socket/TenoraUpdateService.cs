@@ -1,6 +1,4 @@
-﻿
-using Microsoft.AspNetCore.SignalR;
-using Stripe;
+﻿using Microsoft.AspNetCore.SignalR;
 using XeniaRentalBackend.Repositories.ManageMaintenance;
 using XeniaTenoraBackend.Hubs;
 
@@ -8,57 +6,52 @@ namespace XeniaTenoraBackend.Service.Socket
 {
     public class TenoraUpdateService : ITenoraUpdateService
     {
-        private readonly IMaintenanceRepository _manageMaintenanceRepository;
+        private readonly IMaintenanceRepository _repository;
         private readonly IHubContext<TenoraHub> _hubContext;
 
-        public TenoraUpdateService( IMaintenanceRepository manageMaintenanceRepository,    IHubContext<TenoraHub> hubContext)
+        public TenoraUpdateService(
+            IMaintenanceRepository repository,
+            IHubContext<TenoraHub> hubContext)
         {
-            _manageMaintenanceRepository = manageMaintenanceRepository;
+            _repository = repository;
             _hubContext = hubContext;
         }
 
-        //public async Task SendTenoraUpdate(int companyId, int? tenanatId = null, int? id = null, int? pageNumber = null, int? pageSize = null, string? search = null, string? connectionId = null)
-        //{
-        //    object? data = null;
-
-        //    var maintenances = await _manageMaintenanceRepository.GetMaintenance(companyId, tenanatId);
-        //    data = new
-        //    {
-        //        Maintance = maintenances,
-        //    };
-
-
-        //    if (id.HasValue)
-        //    {
-        //        await _hubContext.Clients.Group($"company-{companyId}-employee-{id.Value}")
-        //            .SendAsync("ReceiveMaintenanceUpdate", data);
-        //    }
-
-        //    else
-        //    {
-        //        await _hubContext.Clients.Group($"company-{companyId}")
-        //            .SendAsync("ReceiveMaintenanceUpdate", data);
-        //    }
-        //}  
-        public async Task SendTenoraUpdate(int companyId, int? tenanatId = null, int? id = null, int? pageNumber = null, int? pageSize = null, string? search = null, string? connectionId = null)
+        public async Task SendTenoraUpdate(
+            int companyId,
+            int? tenantId = null,
+            int? employeeId = null,
+            int? pageNumber = null,
+            int? pageSize = null,
+            string? search = null,
+            string? connectionId = null
+        )
         {
             try
             {
-                var maintenances = await _manageMaintenanceRepository.GetMaintenance(companyId, tenanatId);
+                Console.WriteLine($"📡 SERVICE: Fetching data...");
+
+                var maintenances = await _repository.GetMaintenance(companyId, tenantId);
 
                 var data = new
                 {
-                    Maintance = maintenances,
+                    Maintenance = maintenances
                 };
 
-                if (id.HasValue)
+                if (employeeId.HasValue)
                 {
-                    await _hubContext.Clients.Group($"company-{companyId}-employee-{id.Value}")
+                    Console.WriteLine($"📡 Sending to employee group");
+
+                    await _hubContext.Clients
+                        .Group($"company-{companyId}-employee-{employeeId.Value}")
                         .SendAsync("ReceiveMaintenanceUpdate", data);
                 }
                 else
                 {
-                    await _hubContext.Clients.Group($"company-{companyId}")
+                    Console.WriteLine($"📡 Sending to company group");
+
+                    await _hubContext.Clients
+                        .Group($"company-{companyId}")
                         .SendAsync("ReceiveMaintenanceUpdate", data);
                 }
             }
@@ -69,5 +62,4 @@ namespace XeniaTenoraBackend.Service.Socket
             }
         }
     }
-
 }

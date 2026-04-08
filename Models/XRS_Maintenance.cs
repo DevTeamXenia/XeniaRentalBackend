@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XeniaRentalBackend.Models
 {
-    [Table("XRS_ManageMaintenance")]
+    [Table("XRS_Maintenance")]
     public class XRS_Maintenance
     {
         [Key]

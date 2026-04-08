@@ -5,51 +5,49 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
-using XeniaRentalBackend.Repositories.UserRole;
+using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.AccountGroups;
 using XeniaRentalBackend.Repositories.Auth;
 using XeniaRentalBackend.Repositories.BedSpace;
 using XeniaRentalBackend.Repositories.BedSpacePlan;
+using XeniaRentalBackend.Repositories.Category;
 using XeniaRentalBackend.Repositories.Charges;
 using XeniaRentalBackend.Repositories.Company;
+using XeniaRentalBackend.Repositories.Dashboard;
 using XeniaRentalBackend.Repositories.Documents;
+using XeniaRentalBackend.Repositories.EmployeeMaster;
 using XeniaRentalBackend.Repositories.Ledger;
+using XeniaRentalBackend.Repositories.ManageMaintenance;
 using XeniaRentalBackend.Repositories.MessDetails;
 using XeniaRentalBackend.Repositories.MessTypes;
+using XeniaRentalBackend.Repositories.Module;
 using XeniaRentalBackend.Repositories.Properties;
+using XeniaRentalBackend.Repositories.Report;
+using XeniaRentalBackend.Repositories.Service;
 using XeniaRentalBackend.Repositories.Tenant;
 using XeniaRentalBackend.Repositories.TenantAssignment;
+using XeniaRentalBackend.Repositories.Unit;
 using XeniaRentalBackend.Repositories.Units;
+using XeniaRentalBackend.Repositories.UserRole;
 using XeniaRentalBackend.Repositories.Voucher;
 using XeniaRentalBackend.Service.Common;
 using XeniaRentalBackend.Service.Notification;
-//using XeniaRentalBackend.Service.Maintenance;
-using XeniaRentalBackend.Models;
-using XeniaRentalBackend.Repositories.Category;
-using XeniaRentalBackend.Repositories.Unit;
-using XeniaRentalBackend.Repositories.Dashboard;
-using XeniaRentalBackend.Repositories.Service;
-using XeniaRentalBackend.Repositories.Report;
-//using XeniaRentalBackend.Repositories.MaintenanceCategory;
-using XeniaRentalBackend.Repositories.EmployeeMaster;
-using XeniaRentalBackend.Repositories.ManageMaintenance;
-
-using XeniaRentalBackend.Repositories.MaintenanceService;
-using XeniaRentalBackend.Repositories.Module;
 using XeniaTenoraBackend.Hubs;
 using XeniaTenoraBackend.Service.Socket;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
+#region ✅ Controllers + JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
+#endregion
 
+#region ✅ Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -80,36 +78,40 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+#endregion
 
-
+#region ✅ CORS (ONLY ONE POLICY)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        policyBuilder =>
-        {
-            policyBuilder.WithOrigins(
-                "https://rental.xeniapos.com",
-                "https://rental.xeniapos.com/",
-                "https://www.rental.xeniapos.com",
-                "https://www.rental.xeniapos.com/"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .SetIsOriginAllowed(_ => true);
+    });
 });
+#endregion
 
+#region ✅ SignalR (FIXED)
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+#endregion
 
-builder.Services.AddSignalR();
+#region ✅ WebSockets
 builder.Services.AddWebSockets(options => { });
+#endregion
 
-
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+#region ✅ Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+#endregion
 
-
+#region ✅ Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -126,30 +128,24 @@ builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<ITenantAssignmentRepository, TenantAssignmentRepository>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
 builder.Services.AddScoped<IVoucherRepository, VoucherRepository>();
-builder.Services.AddScoped<INotificationService, OTPService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IDashboardRepsitory, DashboardRepository>();
 builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-//builder.Services.AddScoped<IMaintenanceCategoryRepository, MaintenanceCategoryRepository>();
 builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>();
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
-
-
-builder.Services.AddScoped<ITenoraUpdateService, TenoraUpdateService>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+#endregion
 
-
-
-
-
-
-builder.Services.Configure<FtpSettings>(builder.Configuration.GetSection("FtpSettings"));
-builder.Services.AddHttpContextAccessor();
+#region ✅ Services
+builder.Services.AddScoped<INotificationService, OTPService>();
+builder.Services.AddScoped<ITenoraUpdateService, TenoraUpdateService>();
 builder.Services.AddScoped<JwtHelperService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<FtpSettings>(builder.Configuration.GetSection("FtpSettings"));
+#endregion
 
-
-
+#region ✅ Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -161,64 +157,58 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])
+            ),
             RoleClaimType = ClaimTypes.Role
         };
 
         options.Events = new JwtBearerEvents
         {
-            OnChallenge = context =>
+            OnMessageReceived = context =>
             {
-                context.HandleResponse();
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
-                return context.Response.WriteAsJsonAsync(new
+                // ✅ IMPORTANT for SignalR + JWT
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/tenorahub"))
                 {
-                    Status = "Error",
-                    Message = "Token is missing or invalid."
-                });
-            },
-            OnForbidden = context =>
-            {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                context.Response.ContentType = "application/json";
-                return context.Response.WriteAsJsonAsync(new
-                {
-                    Status = "Error",
-                    Message = "You do not have permission to access this resource."
-                });
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
             }
         };
     });
+#endregion
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AllowAnonymous", policy => policy.RequireAssertion(_ => true));
-});
+#region ✅ Authorization
+builder.Services.AddAuthorization();
+#endregion
 
-
+// 🔥 BUILD APP
 var app = builder.Build();
 
-
-
+#region ✅ Middleware Pipeline
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors("AllowSpecificOrigin");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseWebSockets();
+#endregion
 
-app.MapHub<TenoraHub>("/tenoraHub")
-    .RequireCors("AllowSpecificOrigin");
-
+#region ✅ Endpoints
+app.MapHub<TenoraHub>("/tenorahub");
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+#endregion
 
 app.Run();
