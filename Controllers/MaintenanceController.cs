@@ -98,10 +98,24 @@ namespace XeniaRentalBackend.Controllers
 
             return Ok(new { Status = "Success", Message = "Maintenance category deleted successfully." });
         }
-    
 
-#endregion
 
+        #endregion
+        [HttpPost]
+        public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceDto dto)
+        {
+            if (dto == null)
+                return BadRequest(new { Status = "Error", Message = "Invalid data." });
+
+            var result = await _manageMaintenanceRepository.CreateMaintenance(dto);
+
+            return Ok(new
+            {
+                Status = "Success",
+                Message = "Maintenance request created successfully",
+                Data = result
+            });
+        }
 
         //[HttpPost("service")]
         //public async Task<IActionResult> Create(MaintenanceDto dto)

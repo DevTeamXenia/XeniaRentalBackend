@@ -10,12 +10,11 @@ namespace XeniaRentalBackend.Dtos
         [Required]
         public int CompanyId { get; set; }
 
-
         [Required]
         public int PropertyId { get; set; }
-    
+
         [Required]
-        public int UnitId { get; set; } 
+        public int UnitId { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
@@ -27,13 +26,10 @@ namespace XeniaRentalBackend.Dtos
         public string PreferredVisitTime { get; set; } = string.Empty;
 
         [Required]
-        public int? TenantId { get; set; }
+        public int TenantId { get; set; }
 
         public List<MaintancePhotoDto> Photos { get; set; } = new();
-
-
     }
-
     public class  MaintancePhotoDto
     {
         [Required]

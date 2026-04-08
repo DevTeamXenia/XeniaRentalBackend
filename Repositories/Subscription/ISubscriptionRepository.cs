@@ -7,6 +7,8 @@ namespace XeniaRentalBackend.Repositories.Subscription
         Task<List<PlanWithModulesDto>> GetMainPlansAsync();
         Task<RenewSubscriptionResponseDto?> RenewSubscriptionAsync(RenewSubscriptionDto dto);
         Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId);
+   
         Task<bool> UpdatePaymentStatusAsync(string transactionRefId, bool isSuccess);
+      
     }
 }
