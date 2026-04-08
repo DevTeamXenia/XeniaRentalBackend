@@ -9,6 +9,7 @@
             int? pageNumber = null,
             int? pageSize = null,
             string? search = null,
+            string? status = null,
             string? connectionId = null
         );
     }

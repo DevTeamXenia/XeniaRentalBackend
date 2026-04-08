@@ -14,7 +14,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
           
         }
 
-        public async Task<List<XRS_Maintenance>> GetMaintenance(int companyId, int? tenantId)
+        public async Task<List<XRS_Maintenance>> GetMaintenance(int companyId, int? tenantId, string? status)
         {
             var query = _context.ManageMaintenance
                 .Include(m => m.Photos)
@@ -24,6 +24,10 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             if (tenantId.HasValue)
             {
                 query = query.Where(m => m.TenantId == tenantId.Value);
+            }
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(x => x.Status == status); // ✅ FILTER
             }
 
             return await query
