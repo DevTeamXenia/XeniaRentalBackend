@@ -33,6 +33,7 @@ using XeniaRentalBackend.Repositories.Voucher;
 using XeniaRentalBackend.Service.Common;
 using XeniaRentalBackend.Service.Notification;
 using XeniaTenoraBackend.Hubs;
+using XeniaTenoraBackend.Repositories.Area;
 using XeniaTenoraBackend.Service.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -135,6 +136,7 @@ builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>();
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 #endregion
 
 #region ✅ Services
@@ -194,7 +196,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 

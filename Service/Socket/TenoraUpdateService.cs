@@ -24,14 +24,13 @@ namespace XeniaTenoraBackend.Service.Socket
             int? pageNumber = null,
             int? pageSize = null,
             string? search = null,
-            string? connectionId = null
-        )
+            string? connectionId = null)
         {
             try
             {
                 Console.WriteLine($"📡 SERVICE: Fetching data...");
 
-                var maintenances = await _repository.GetMaintenance(companyId, tenantId);
+                var maintenances = await _repository.GetMaintenance(companyId, tenantId, search);
 
                 var data = new
                 {
