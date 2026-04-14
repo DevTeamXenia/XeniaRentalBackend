@@ -64,7 +64,8 @@ namespace XeniaTenoraBackend.Hubs
             int? employeeId = null,
             int? pageNumber = null,
             int? pageSize = null,
-            string? search = null
+            string? search = null,
+            string? status = null
         )
         {
             try
@@ -78,6 +79,7 @@ namespace XeniaTenoraBackend.Hubs
                     pageNumber,
                     pageSize,
                     search,
+                    status, 
                     Context.ConnectionId
                 );
             }

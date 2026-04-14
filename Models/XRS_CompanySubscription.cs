@@ -8,7 +8,7 @@ namespace XeniaRentalBackend.Models
     {
         [Key]
         public int SubId { get; set; }
-
+       
         public int PlanId { get; set; }
 
         public int CompanyId { get; set; }
@@ -27,5 +27,7 @@ namespace XeniaRentalBackend.Models
 
         [MaxLength(50)]
         public string Status { get; set; } = "ACTIVE";
+        public string? ModuleIds { get; set; }
     }
 }
+

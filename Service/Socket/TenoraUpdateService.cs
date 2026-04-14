@@ -24,13 +24,20 @@ namespace XeniaTenoraBackend.Service.Socket
             int? pageNumber = null,
             int? pageSize = null,
             string? search = null,
-            string? connectionId = null)
+            string? status = null,
+            string? connectionId = null
+        )
         {
             try
             {
-                Console.WriteLine($"📡 SERVICE: Fetching data...");
+                Console.WriteLine("📡 SERVICE: Fetching data...");
 
-                var maintenances = await _repository.GetMaintenance(companyId, tenantId, search);
+                var maintenances = await _repository.GetMaintenance(
+                    companyId,
+                    tenantId,
+                    search,
+                    status
+                );
 
                 var data = new
                 {
@@ -39,7 +46,7 @@ namespace XeniaTenoraBackend.Service.Socket
 
                 if (employeeId.HasValue)
                 {
-                    Console.WriteLine($"📡 Sending to employee group");
+                    Console.WriteLine("📡 Sending to employee group");
 
                     await _hubContext.Clients
                         .Group($"company-{companyId}-employee-{employeeId.Value}")
@@ -47,7 +54,7 @@ namespace XeniaTenoraBackend.Service.Socket
                 }
                 else
                 {
-                    Console.WriteLine($"📡 Sending to company group");
+                    Console.WriteLine("📡 Sending to company group");
 
                     await _hubContext.Clients
                         .Group($"company-{companyId}")
