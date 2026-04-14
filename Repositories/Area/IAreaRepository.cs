@@ -10,7 +10,7 @@ namespace XeniaTenoraBackend.Repositories.Area
         Task<bool> UpdateArea(XRS_Area area);
         Task<bool> DeleteArea(int id);
 
-        Task<bool> MapAreaToProperty(int propId, int areaId);
+        Task<bool> MapAreaToProperty(int propId, List<int> areaIds);
         Task<IEnumerable<XRS_Area>> GetAreasByProperty(int propId);
     }
 }

@@ -52,9 +52,9 @@ namespace XeniaTenoraBackend.Controllers
         }
 
         [HttpPost("map")]
-        public async Task<IActionResult> MapArea([FromQuery] int propId, [FromQuery] int areaId)
+        public async Task<IActionResult> MapArea([FromQuery] int propId, [FromQuery] List<int> areaIds)
         {
-            var result = await _areaRepository.MapAreaToProperty(propId, areaId);
+            var result = await _areaRepository.MapAreaToProperty(propId, areaIds);
             return Ok(result);
         }
 

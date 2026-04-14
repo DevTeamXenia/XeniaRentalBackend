@@ -47,30 +47,29 @@ namespace XeniaTenoraBackend.Repositories.Area
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> MapAreaToProperty(int propId, int areaId)
+        public async Task<bool> MapAreaToProperty(int propId, List<int> areaIds)
         {
-            var exists = await _context.PropertyAreas
-                .AnyAsync(x => x.PropId == propId && x.AreaId == areaId);
-            
-            if (exists) return false;
+            var existing = _context.PropertyAreas.Where(x => x.PropId == propId);
+            _context.PropertyAreas.RemoveRange(existing);
 
-            var mapping = new XRS_PropertyAreas
+            var mappings = areaIds.Select(areaId => new XRS_PropertyAreas
             {
                 PropId = propId,
                 AreaId = areaId
-            };
+            });
 
-            _context.PropertyAreas.Add(mapping);
+            await _context.PropertyAreas.AddRangeAsync(mappings);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<IEnumerable<XRS_Area>> GetAreasByProperty(int propId)
         {
-            return await _context.PropertyAreas
-                .Where(pa => pa.PropId == propId)
-                .Include(pa => pa.Area)
-                .Select(pa => pa.Area)
-                .ToListAsync();
+            var query = from pa in _context.PropertyAreas
+                        join a in _context.Areas on pa.AreaId equals a.AreaId
+                        where pa.PropId == propId
+                        select a;
+
+            return await query.ToListAsync();
         }
     }
 }

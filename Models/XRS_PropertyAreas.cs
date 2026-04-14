@@ -12,8 +12,5 @@ namespace XeniaRentalBackend.Models
         public int PropId { get; set; }
 
         public int AreaId { get; set; }
-
-        [ForeignKey("AreaId")]
-        public XRS_Area Area { get; set; }
     }
 }

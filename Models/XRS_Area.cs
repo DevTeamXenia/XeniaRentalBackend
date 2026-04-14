@@ -11,16 +11,18 @@ namespace XeniaRentalBackend.Models
 
         public int CompanyID { get; set; }
 
-        public  required string AreaName { get; set; }
+        [Required]
+        public string AreaName { get; set; }
 
-        public required string AreaCode { get; set; }
+        [Required]
+        public string AreaCode { get; set; }
 
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         public int CreatedBy { get; set; }
 
-        public ICollection<XRS_PropertyAreas> PropertyAreas { get; set; }
+
     }
 }
