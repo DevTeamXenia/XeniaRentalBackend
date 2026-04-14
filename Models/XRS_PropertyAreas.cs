@@ -13,12 +13,6 @@ namespace XeniaRentalBackend.Models
 
         public int AreaId { get; set; }
 
-        public int companyID { get; set; }
-
-        public DateTime createdOn { get; set; }
-
-        public string createdBy { get; set; }
-
         [ForeignKey("AreaId")]
         public XRS_Area Area { get; set; }
     }

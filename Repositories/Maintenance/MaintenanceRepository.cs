@@ -228,8 +228,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             await _context.SaveChangesAsync();
             return true;
         }
-
-      
+    
         public async Task<IEnumerable<XRS_MaintenanceCategory>> GetMaintenanceCategories(int companyId)
         {
             return await _context.MaintenanceCategories
