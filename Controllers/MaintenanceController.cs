@@ -13,13 +13,11 @@ namespace XeniaRentalBackend.Controllers
     public class MaintenanceController : ControllerBase
     {
         private readonly IMaintenanceRepository _manageMaintenanceRepository;
-        //private readonly IAdminComplaintRepository _adminComplaintRepository;
 
         public MaintenanceController(IMaintenanceRepository manageMaintenanceRepository)
         {
             _manageMaintenanceRepository = manageMaintenanceRepository;
-            //_/*adminComplaintRepository = adminComplaintRepository;*/
-
+ 
         }
 
 
@@ -101,6 +99,8 @@ namespace XeniaRentalBackend.Controllers
 
 
         #endregion
+
+
         [HttpPost]
         public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceDto dto)
         {
@@ -117,30 +117,38 @@ namespace XeniaRentalBackend.Controllers
             });
         }
 
-        //[HttpPost("service")]
-        //public async Task<IActionResult> Create(MaintenanceDto dto)
-        //{
-        //    if (dto == null)
-        //        return BadRequest(new { Status = "Error", Message = "Invalid data." });
+        [HttpGet("details/{maintenanceId}/{companyId}")]
+        public async Task<IActionResult> GetDetails(int maintenanceId, int companyId)
+        {
+            var data = await _manageMaintenanceRepository.GetMaintenanceDetails(maintenanceId, companyId);
 
-        //    var created = await _manageMaintenanceRepository.CreateMaintenance(dto);
+            if (data == null)
+                return NotFound();
 
+            return Ok(data);
+        }
 
-        //    return Ok(new { Status = "Success", Data = created });
-        //}
+        [HttpPut("update/{maintenanceId}")]
+        public async Task<IActionResult> UpdateMaintenance(int maintainceId, int? employeeId, string status)
+        {
+            if (string.IsNullOrEmpty(status))
+                return BadRequest("Status is required");
 
+            var result = await _manageMaintenanceRepository.UpdateMaintenance(
+                maintainceId,
+                employeeId,
+                status
+            );
 
-        //[HttpPut("service/status/{maintainceId}")]
-        //public async Task<IActionResult> UpdateStatus(int maintainceId, int? employeeId,string status)
-        //{
-        //    var updated = await _manageMaintenanceRepository .UpdateMaintenanceStatus(maintainceId, employeeId, status);
+            if (!result)
+                return NotFound("Maintenance not found or update failed");
 
-        //    if (!updated)
-        //        return NotFound(new { Status = "Error", Message = "Maintenance not found." });
+            return Ok(new
+            {
+                Message = "Maintenance updated successfully"
+            });
+        }
 
-
-
-        //    return Ok(new { Status = "Success", Message = $"Status updated to {status}." });
         /// <summary>
         /// Maintenance Report
         /// </summary>

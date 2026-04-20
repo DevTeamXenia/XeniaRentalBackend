@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
+using XeniaTenoraBackend.Dtos;
 
 namespace XeniaRentalBackend.Repositories.ManageMaintenance
 {
@@ -14,7 +15,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
           
         }
 
-        public async Task<List<MaintenanceResponseDto>> GetMaintenance(int companyId, int? tenantId, string? status)
+        public async Task<List<MaintenanceResponseDto>> GetMaintenance(int companyId, int? tenantId, string? search, string? status = null)
         {
             var query = from m in _context.ManageMaintenance
                         join p in _context.Properties on m.PropertyId equals p.PropID into pp
@@ -55,7 +56,18 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             }
             if (!string.IsNullOrEmpty(status))
             {
-                query = query.Where(x => x.Status == status); // ✅ FILTER
+                query = query.Where(x => x.Status == status); 
+            }
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(m =>
+                    m.ComplaintNo.Contains(search) ||
+                    m.PropertyName.Contains(search) ||
+                    m.UnitName.Contains(search) ||
+                    m.CategoryName.Contains(search) ||
+                    m.Complaint.Contains(search) ||
+                    m.Status.Contains(search)
+                );
             }
 
             return await query
@@ -63,6 +75,59 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                 .ToListAsync();
         }
 
+        public async Task<MaintenanceDetailsDto> GetMaintenanceDetails(int maintenanceId, int companyId)
+        {
+            var baseQuery = from m in _context.ManageMaintenance
+                            join p in _context.Properties on m.PropertyId equals p.PropID into pp
+                            from property in pp.DefaultIfEmpty()
+                            join u in _context.Units on m.UnitId equals u.UnitId into uu
+                            from unit in uu.DefaultIfEmpty()
+                            join t in _context.Tenants on m.TenantId equals t.tenantID into tt
+                            from tenant in tt.DefaultIfEmpty()
+                            join c in _context.MaintenanceCategories on m.CategoryId equals c.CategoryId into cc
+                            from category in cc.DefaultIfEmpty()
+                            where m.CompanyId == companyId && m.IsActive
+                            select new MaintenanceResponseDto
+                            {
+                                MaintenanceId = m.MaintenanceId,
+                                CompanyId = m.CompanyId,
+                                TenantId = m.TenantId,
+                                TenantName = tenant != null ? tenant.tenantName : null,
+                                ComplaintNo = m.ComplaintNo,
+                                PropertyId = m.PropertyId,
+                                PropertyName = property != null ? property.propertyName : null,
+                                UnitId = m.UnitId,
+                                UnitName = unit != null ? unit.UnitName : null,
+                                CategoryId = m.CategoryId,
+                                CategoryName = category != null ? category.CategoryName : null,
+                                Complaint = m.Complaint,
+                                PreferredVisitTime = m.PreferredVisitTime,
+                                Status = m.Status,
+                                AssignedEmployeeId = m.AssignedEmployeeId,
+                                IsActive = m.IsActive,
+                                CreatedAt = m.CreatedAt,
+                                UpdatedAt = m.UpdatedAt,
+                                Photos = m.Photos.ToList()
+                            };
+
+            var current = await baseQuery
+                .FirstOrDefaultAsync(x => x.MaintenanceId == maintenanceId);
+
+            if (current == null)
+                return null;
+
+        
+            var history = await baseQuery
+                .Where(x => x.UnitId == current.UnitId && x.MaintenanceId != maintenanceId)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            return new MaintenanceDetailsDto
+            {
+                Current = current,
+                History = history
+            };
+        }
 
         public async Task<MaintenanceResponseDto> CreateMaintenance(MaintenanceDto dto)
         {
@@ -163,9 +228,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             await _context.SaveChangesAsync();
             return true;
         }
-
-      
-
+    
         public async Task<IEnumerable<XRS_MaintenanceCategory>> GetMaintenanceCategories(int companyId)
         {
             return await _context.MaintenanceCategories
