@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using XeniaRentalBackend.Models.Rental;
 namespace XeniaRentalBackend.Models
 {
