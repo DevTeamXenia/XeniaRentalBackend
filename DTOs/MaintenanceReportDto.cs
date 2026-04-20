@@ -5,7 +5,7 @@ namespace XeniaRentalBackend.Dtos
     public class MaintenanceReportDto
     {
         public int MaintenanceId { get; set; }
-        public string ComplaintNo { get; set; } = string.Empty; // Complaint ID
+        public string ComplaintNo { get; set; } = string.Empty; // Complaint 
         public DateTime CreatedAt { get; set; } // Date
         public string PropertyUnit { get; set; } = string.Empty; // e.g., "Tower A - Flat 102"
         public string RegisteredBy { get; set; } = string.Empty; // Tenant Name

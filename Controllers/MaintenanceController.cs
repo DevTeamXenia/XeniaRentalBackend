@@ -141,9 +141,21 @@ namespace XeniaRentalBackend.Controllers
 
 
         //    return Ok(new { Status = "Success", Message = $"Status updated to {status}." });
-        //}
+        /// <summary>
+        /// Maintenance Report
+        /// </summary>
+        [HttpGet("MaintenanceReport/{companyId}")]
+        public async Task<IActionResult> MaintenanceReport(int companyId, [FromQuery] int? tenantId, [FromQuery] string? status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? zone, [FromQuery] string? search)
+        {
+            var result = await _manageMaintenanceRepository.GetMaintenanceReport(companyId, tenantId, status, fromDate, toDate, zone, search);
+            return Ok(new
+            {
+                Status = "Success",
+                Data = result
+            });
+        }
     }
- }
+}
 
 
 

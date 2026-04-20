@@ -270,5 +270,73 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status, DateTime? fromDate, DateTime? toDate, string? zone, string? search)
+        {
+            var query = from m in _context.ManageMaintenance
+                        join p in _context.Properties on m.PropertyId equals p.PropID into pp
+                        from property in pp.DefaultIfEmpty()
+                        join u in _context.Units on m.UnitId equals u.UnitId into uu
+                        from unit in uu.DefaultIfEmpty()
+                        join t in _context.Tenants on m.TenantId equals t.tenantID into tt
+                        from tenant in tt.DefaultIfEmpty()
+                        join c in _context.MaintenanceCategories on m.CategoryId equals c.CategoryId into cc
+                        from category in cc.DefaultIfEmpty()
+                        join e in _context.Employee on m.AssignedEmployeeId equals e.EmployeeId into ee
+                        from employee in ee.DefaultIfEmpty()
+                        where m.CompanyId == companyId && m.IsActive
+                        select new { m, property, unit, tenant, category, employee };
+
+            // Filters
+            if (tenantId.HasValue && tenantId > 0)
+            {
+                query = query.Where(x => x.m.TenantId == tenantId);
+            }
+
+            if (!string.IsNullOrEmpty(status) && status != "All")
+            {
+                query = query.Where(x => x.m.Status == status);
+            }
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(x => x.m.CreatedAt.Date >= fromDate.Value.Date);
+            }
+
+            if (toDate.HasValue)
+            {
+                query = query.Where(x => x.m.CreatedAt.Date <= toDate.Value.Date);
+            }
+
+            if (!string.IsNullOrEmpty(zone) && zone != "All")
+            {
+                query = query.Where(x => x.employee != null && x.employee.AreaZone.Contains(zone));
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(x => x.m.ComplaintNo.Contains(search) ||
+                                         x.m.Complaint.Contains(search) ||
+                                         (x.tenant != null && x.tenant.tenantName.Contains(search)) ||
+                                         (x.employee != null && x.employee.Name.Contains(search)));
+            }
+
+            var result = await query.Select(x => new MaintenanceReportDto
+            {
+                MaintenanceId = x.m.MaintenanceId,
+                ComplaintNo = x.m.ComplaintNo,
+                CreatedAt = x.m.CreatedAt,
+                PropertyUnit = (x.property != null ? x.property.propertyName : "") + (x.unit != null ? " - " + x.unit.UnitName : ""),
+                RegisteredBy = x.tenant != null ? x.tenant.tenantName : "Owner",
+                CategoryName = x.category != null ? x.category.CategoryName : "",
+                Complaint = x.m.Complaint,
+                Status = x.m.Status,
+                EngineerName = x.employee != null ? x.employee.Name : "Unassigned",
+                Zone = x.employee != null ? x.employee.AreaZone : "",
+                UpdatedAt = x.m.UpdatedAt
+            }).OrderByDescending(x => x.CreatedAt).ToListAsync();
+
+            return result;
+        }
     }
 }
