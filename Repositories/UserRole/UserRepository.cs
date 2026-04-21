@@ -122,7 +122,7 @@ namespace XeniaRentalBackend.Repositories.UserRole
             var accountgroupsettings = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
             if (accountgroupsettings == null) return false;
             accountgroupsettings.IsActive = false;
-            accountgroupsettings.Modifieddate = DateTime.UtcNow;
+            accountgroupsettings.Modifieddate = DateTime.Now;
             await _context.SaveChangesAsync();
             return true;
         }

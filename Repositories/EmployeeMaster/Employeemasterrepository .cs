@@ -121,12 +121,12 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                 Name = dto.Name,
                 Department = dto.Department,
                 Specialization = dto.Specialization,
-                AreaZone = string.Join(",", dto.AreaZone), // ["North Zone","West Zone"] → "North Zone,West Zone"
+                AreaZone = string.Join(",", dto.AreaZone), 
                 MobileNumber = dto.MobileNumber,
                  Password = dto.Password,
                 IsActive = dto.IsActive,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
 
             await _context.Employee.AddAsync(employee);

@@ -41,8 +41,12 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                             CategoryId = m.CategoryId,
                             CategoryName = category != null ? category.CategoryName : null,
                             Complaint = m.Complaint,
-                            PreferredVisitTime = m.PreferredVisitTime,
-                            Status = m.Status,
+                            Status =
+                            category != null &&
+                            m.CreatedAt.AddDays(category.SLADays) < DateTime.Now &&
+                            (m.Status == "Pending" || m.Status == "InProgress")
+                                ? "Overdue"
+                                : m.Status,
                             AssignedEmployeeId = m.AssignedEmployeeId,
                             IsActive = m.IsActive,
                             CreatedAt = m.CreatedAt,
@@ -158,8 +162,8 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                 PreferredVisitTime = dto.PreferredVisitTime,
                 Status = "Pending",
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
 
             await _context.ManageMaintenance.AddAsync(maintenance);
@@ -174,7 +178,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                     {
                         MaintenanceId = maintenance.MaintenanceId,
                         PhotoUrl = photo.PhotoUrl, 
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.Now
                     };
 
                     await _context.MaintenancePhotos.AddAsync(maintenancePhoto);
