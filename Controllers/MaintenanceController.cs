@@ -20,7 +20,6 @@ namespace XeniaRentalBackend.Controllers
  
         }
 
-
         #region CATEGORY
 
         [HttpGet("category/all/{companyId}")]
@@ -149,20 +148,7 @@ namespace XeniaRentalBackend.Controllers
             });
         }
 
-        /// <summary>
-        /// Maintenance Report
-        /// </summary>
-        [HttpGet("MaintenanceReport/{companyId}")]
-        public async Task<IActionResult> MaintenanceReport(int companyId, [FromQuery] int? tenantId, [FromQuery] string? status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? zone, [FromQuery] string? search)
-        {
-            var result = await _manageMaintenanceRepository.GetMaintenanceReport(companyId, tenantId, status, fromDate, toDate, zone, search);
-            return Ok(new
-            {
-                Status = "Success",
-                Data = result
-            });
-        }
-
+    
         [HttpGet("dashboard/{companyId}")]
         public async Task<IActionResult> GetDashboard(int companyId)
         {

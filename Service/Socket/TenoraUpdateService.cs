@@ -24,7 +24,6 @@ namespace XeniaTenoraBackend.Service.Socket
             int? pageNumber = null,
             int? pageSize = null,
             string? search = null,
-            string? status = null,
             string? connectionId = null
         )
         {
@@ -35,8 +34,7 @@ namespace XeniaTenoraBackend.Service.Socket
                 var maintenances = await _repository.GetMaintenance(
                     companyId,
                     tenantId,
-                    search,
-                    status
+                    search
                 );
 
                 var data = new

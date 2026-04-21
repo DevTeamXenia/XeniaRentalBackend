@@ -7,8 +7,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
     public interface IMaintenanceRepository
     {
 
-        Task<List<MaintenanceResponseDto>> GetMaintenance(int companyId, int? tenantId, string? search, string? status = null);
-        Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status, DateTime? fromDate, DateTime? toDate, string? zone, string? search);
+        Task<List<MaintenanceStatusGroupDto>> GetMaintenance(int companyId, int? tenantId, string? search);
         Task<MaintenanceResponseDto> CreateMaintenance(MaintenanceDto dto);
         Task<bool> UpdateMaintenance(int maintainceId, int? employeeId, string status);
         Task<MaintenanceDetailsDto> GetMaintenanceDetails(int maintenanceId, int companyId);

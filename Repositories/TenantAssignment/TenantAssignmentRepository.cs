@@ -304,6 +304,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 refundAmount = assignment.refundAmount,
                 dueAmount = 0,
                 charges = assignment.charges,
+                securityAmt = assignment.securityAmt,
                 amount = assignment.amount,
                 rentConcession = assignment.rentConcession,
                 messConcession = assignment.messConcession,

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Dtos.Report;
 using XeniaRentalBackend.Dtos.Reports;
 using XeniaRentalBackend.Models;
@@ -290,6 +291,96 @@ namespace XeniaRentalBackend.Repositories.Report
 
                 Status = (expectedRent - paid) > 0 ? "Pending" : "Clear"
             };
+        }
+
+
+        public async Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status,DateTime? fromDate, DateTime? toDate, string? zone, string? search)
+        {
+            var now = DateTime.Now;
+
+            var categories = await _context.MaintenanceCategories
+                .Where(c => c.CompanyId == companyId && c.IsActive)
+                .ToListAsync();
+
+            var categoryDict = categories.ToDictionary(c => c.CategoryId, c => c.SLADays);
+
+            bool IsOverdue(XRS_Maintenance m)
+            {
+                if (m.Status != "Pending" && m.Status != "InProgress")
+                    return false;
+
+                if (!categoryDict.TryGetValue(m.CategoryId, out int slaDays))
+                    return false;
+
+                if (slaDays <= 0)
+                    return false;
+
+                return m.CreatedAt.AddDays(slaDays) < now;
+            }
+
+   
+            var query = from m in _context.ManageMaintenance
+                        join p in _context.Properties on m.PropertyId equals p.PropID into pp
+                        from property in pp.DefaultIfEmpty()
+                        join u in _context.Units on m.UnitId equals u.UnitId into uu
+                        from unit in uu.DefaultIfEmpty()
+                        join t in _context.Tenants on m.TenantId equals t.tenantID into tt
+                        from tenant in tt.DefaultIfEmpty()
+                        join c in _context.MaintenanceCategories on m.CategoryId equals c.CategoryId into cc
+                        from category in cc.DefaultIfEmpty()
+                        join e in _context.Employee on m.AssignedEmployeeId equals e.EmployeeId into ee
+                        from employee in ee.DefaultIfEmpty()
+                        where m.CompanyId == companyId && m.IsActive
+                        select new { m, property, unit, tenant, category, employee };
+
+   
+            if (tenantId.HasValue && tenantId > 0)
+                query = query.Where(x => x.m.TenantId == tenantId);
+
+            if (fromDate.HasValue)
+                query = query.Where(x => x.m.CreatedAt.Date >= fromDate.Value.Date);
+
+            if (toDate.HasValue)
+                query = query.Where(x => x.m.CreatedAt.Date <= toDate.Value.Date);
+
+            if (!string.IsNullOrEmpty(zone) && zone != "All")
+                query = query.Where(x => x.employee != null && x.employee.AreaZone.Contains(zone));
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(x =>
+                    x.m.ComplaintNo.Contains(search) ||
+                    x.m.Complaint.Contains(search) ||
+                    (x.tenant != null && x.tenant.tenantName.Contains(search)) ||
+                    (x.employee != null && x.employee.Name.Contains(search)));
+            }
+
+            var data = await query.ToListAsync();
+
+            var result = data.Select(x => new MaintenanceReportDto
+            {
+                MaintenanceId = x.m.MaintenanceId,
+                ComplaintNo = x.m.ComplaintNo,
+                CreatedAt = x.m.CreatedAt,
+                PropertyUnit = (x.property != null ? x.property.propertyName : "") +
+                               (x.unit != null ? " - " + x.unit.UnitName : ""),
+                RegisteredBy = x.tenant != null ? x.tenant.tenantName : "Owner",
+                CategoryName = x.category != null ? x.category.CategoryName : "",
+                Complaint = x.m.Complaint,
+                Status = IsOverdue(x.m) ? "Overdue" : x.m.Status,
+
+                EngineerName = x.employee != null ? x.employee.Name : "Unassigned",
+                Zone = x.employee != null ? x.employee.AreaZone : "",
+                UpdatedAt = x.m.UpdatedAt
+            }).ToList();
+            if (!string.IsNullOrEmpty(status) && status != "All")
+            {
+                result = result.Where(x => x.Status == status).ToList();
+            }
+
+            return result
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
         }
 
     }
