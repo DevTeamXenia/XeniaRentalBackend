@@ -12,6 +12,8 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
         Task<MaintenanceResponseDto> CreateMaintenance(MaintenanceDto dto);
         Task<bool> UpdateMaintenance(int maintainceId, int? employeeId, string status);
         Task<MaintenanceDetailsDto> GetMaintenanceDetails(int maintenanceId, int companyId);
+        Task<MaintenanceDashboardDto> GetMaintenanceDashboard(int companyId);
+
 
 
  

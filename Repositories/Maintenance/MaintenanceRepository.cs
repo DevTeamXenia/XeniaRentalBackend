@@ -401,5 +401,50 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
 
             return result;
         }
+
+        public async Task<MaintenanceDashboardDto> GetMaintenanceDashboard(int companyId)
+        {
+            var maintenance = await _context.ManageMaintenance
+                .Where(m => m.CompanyId == companyId && m.IsActive)
+                .ToListAsync();
+
+            var categories = await _context.MaintenanceCategories
+                .Where(c => c.CompanyId == companyId && c.IsActive)
+                .ToListAsync();
+
+            var categoryDict = categories.ToDictionary(c => c.CategoryId, c => c.SLADays);
+
+            var dashboard = new MaintenanceDashboardDto
+            {
+                NewComplaints = maintenance.Count(m => m.Status == "Pending"),
+                InProgress = maintenance.Count(m => m.Status == "InProgress"),
+                Closed = maintenance.Count(m => m.Status == "Closed"),
+                Overdue = maintenance.Count(m =>
+                {
+                    if (m.Status == "Closed") return false;
+                    if (categoryDict.TryGetValue(m.CategoryId, out int slaDays))
+                    {
+                        return m.CreatedAt.AddDays(slaDays) < DateTime.UtcNow;
+                    }
+                    return false;
+                })
+            };
+
+            var propertyStats = await (from m in _context.ManageMaintenance
+                                       join p in _context.Properties on m.PropertyId equals p.PropID
+                                       where m.CompanyId == companyId && m.IsActive
+                                       group m by new { p.PropID, p.propertyName } into g
+                                       select new PropertyComplaintStatsDto
+                                       {
+                                           PropertyName = g.Key.propertyName,
+                                           Complaints = g.Count(),
+                                           Solved = g.Sum(x => x.Status == "Closed" ? 1 : 0)
+                                       }).ToListAsync();
+
+            dashboard.PropertyStats = propertyStats;
+
+            return dashboard;
+        }
     }
 }
+

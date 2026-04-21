@@ -162,8 +162,20 @@ namespace XeniaRentalBackend.Controllers
                 Data = result
             });
         }
+
+        [HttpGet("dashboard/{companyId}")]
+        public async Task<IActionResult> GetDashboard(int companyId)
+        {
+            var result = await _manageMaintenanceRepository.GetMaintenanceDashboard(companyId);
+            return Ok(new
+            {
+                Status = "Success",
+                Data = result
+            });
+        }
     }
 }
+
 
 
 
