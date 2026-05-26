@@ -10,6 +10,7 @@ namespace XeniaRentalBackend.Repositories.Report
     {
         Task<List<TenantOccupancyReportDto>> GetTenantOccupancyReportAsync( int companyId, int? propertyId, int? unitId, int? bedSpaceId, bool isBedSpace, string? search);
         public  Task<BalanceSheetResponseDto> GetIncomeExpenseAsync( int companyId,  DateTime? startDate, DateTime? endDate, int? propertyId);
+        Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status, DateTime? fromDate, DateTime? toDate, string? zone, string? search);
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Payment;
@@ -85,7 +85,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
             decimal totalAmount = duration.Price;
 
             var merchantTxnId =
-                $"TXN{DateTime.UtcNow:yyyyMMddHHmmss}{Guid.NewGuid():N}".Substring(0, 30);
+                $"TXN{DateTime.Now:yyyyMMddHHmmss}{Guid.NewGuid():N}".Substring(0, 30);
 
             var transaction = new XRS_SubscriptionTransaction
             {

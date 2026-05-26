@@ -247,7 +247,7 @@ namespace XeniaRentalBackend.Repositories.Auth
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutesString)),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(expirationMinutesString)),
                 signingCredentials: credentials
             );
 
@@ -283,7 +283,7 @@ namespace XeniaRentalBackend.Repositories.Auth
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutesString)),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(expirationMinutesString)),
                 signingCredentials: credentials
             );
 
@@ -376,7 +376,7 @@ namespace XeniaRentalBackend.Repositories.Auth
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(expirationMinutesString)),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(expirationMinutesString)),
                 signingCredentials: credentials
             );
 

@@ -599,10 +599,10 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     Remarks = request.Remarks,
                     VoucherStatus = request.VoucherStatus ?? "Initiated",
                     isActive = request.IsActive,
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.Now,
                     CreatedBy = request.createdBy,
                     ModificationBy = request.modifiedBy,
-                    ModifiedOn = DateTime.UtcNow,
+                    ModifiedOn = DateTime.Now,
                 };
 
                 _context.Vouchers.Add(voucher);
@@ -652,7 +652,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 voucher.Remarks = request.Remarks;
                 voucher.VoucherStatus = request.VoucherStatus ?? voucher.VoucherStatus;
                 voucher.isActive = request.IsActive;
-                voucher.ModifiedOn = DateTime.UtcNow;
+                voucher.ModifiedOn = DateTime.Now;
                 voucher.ModificationBy = request.modifiedBy;
 
                 var existingDetails = await _context.VoucherDetails

@@ -53,7 +53,7 @@ namespace XeniaRentalBackend.Repositories.AccountGroups
             var accountgroupsettings = await _context.AccountGroups.FirstOrDefaultAsync(u => u.groupID == id);
             if (accountgroupsettings == null) return false;
             accountgroupsettings.isActive = false;
-            accountgroupsettings.modifiedOn = DateTime.UtcNow;
+            accountgroupsettings.modifiedOn = DateTime.Now;
             await _context.SaveChangesAsync();
             return true;
         }
@@ -67,7 +67,7 @@ namespace XeniaRentalBackend.Repositories.AccountGroups
             updatedAccountGroup.companyID = updatedAccountGroup.companyID;
             updatedAccountGroup.groupCode = updatedAccountGroup.groupCode;
             updatedAccountGroup.isActive = updatedAccountGroup.isActive;
-            updatedAccountGroup.modifiedOn = DateTime.UtcNow;
+            updatedAccountGroup.modifiedOn = DateTime.Now;
             await _context.SaveChangesAsync();
             return true;
         }

@@ -78,8 +78,7 @@ namespace XeniaTenoraBackend.Hubs
                     employeeId,
                     pageNumber,
                     pageSize,
-                    search,
-                    status, 
+                    search,        
                     Context.ConnectionId
                 );
             }

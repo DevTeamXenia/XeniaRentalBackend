@@ -137,9 +137,11 @@ builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>(
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddHttpClient<XeniaRentalBackend.Repositories.Subscription.ISubscriptionRepository, XeniaRentalBackend.Repositories.Subscription.SubscriptionRepository>();
 #endregion
 
 #region ✅ Services
+builder.Services.AddScoped<XeniaRentalBackend.Service.Payment.IPaymentService, XeniaRentalBackend.Service.Payment.PaymentService>();
 builder.Services.AddScoped<INotificationService, OTPService>();
 builder.Services.AddScoped<ITenoraUpdateService, TenoraUpdateService>();
 builder.Services.AddScoped<JwtHelperService>();

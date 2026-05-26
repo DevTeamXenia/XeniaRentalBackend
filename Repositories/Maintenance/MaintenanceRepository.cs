@@ -8,15 +8,17 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
     public class MaintenanceRepository : IMaintenanceRepository
     {
         private readonly ApplicationDbContext _context;
-      
+
         public MaintenanceRepository(ApplicationDbContext context)
         {
             _context = context;
-          
+
         }
 
-        public async Task<List<MaintenanceResponseDto>> GetMaintenance(int companyId, int? tenantId, string? search, string? status = null)
+        public async Task<List<MaintenanceStatusGroupDto>> GetMaintenance(int companyId, int? tenantId, string? search)
         {
+            var now = DateTime.Now;
+
             var query = from m in _context.ManageMaintenance
                         join p in _context.Properties on m.PropertyId equals p.PropID into pp
                         from property in pp.DefaultIfEmpty()
@@ -41,8 +43,14 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                             CategoryId = m.CategoryId,
                             CategoryName = category != null ? category.CategoryName : null,
                             Complaint = m.Complaint,
-                            PreferredVisitTime = m.PreferredVisitTime,
-                            Status = m.Status,
+
+                            Status =
+                                category != null &&
+                                m.CreatedAt.AddDays(category.SLADays) < now &&
+                                (m.Status == "Pending" || m.Status == "InProgress")
+                                    ? "Overdue"
+                                    : m.Status,
+
                             AssignedEmployeeId = m.AssignedEmployeeId,
                             IsActive = m.IsActive,
                             CreatedAt = m.CreatedAt,
@@ -51,28 +59,45 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                         };
 
             if (tenantId.HasValue)
-            {
                 query = query.Where(m => m.TenantId == tenantId.Value);
+<<<<<<< HEAD
             }
             if (!string.IsNullOrEmpty(status))
             {
-                query = query.Where(x => x.Status == status); 
+                query = query.Where(x => x.Status == status);
             }
+=======
+
+>>>>>>> 1eee53952917b0eb96f7fed2cd14903023a0684d
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(m =>
-                    m.ComplaintNo.Contains(search) ||
-                    m.PropertyName.Contains(search) ||
-                    m.UnitName.Contains(search) ||
-                    m.CategoryName.Contains(search) ||
-                    m.Complaint.Contains(search) ||
-                    m.Status.Contains(search)
+                    (m.ComplaintNo ?? "").Contains(search) ||
+                    (m.PropertyName ?? "").Contains(search) ||
+                    (m.UnitName ?? "").Contains(search) ||
+                    (m.CategoryName ?? "").Contains(search) ||
+                    (m.Complaint ?? "").Contains(search) ||
+                    (m.Status ?? "").Contains(search)
                 );
             }
 
-            return await query
+            var list = await query
                 .OrderByDescending(m => m.CreatedAt)
                 .ToListAsync();
+
+           
+            var result = list
+                .GroupBy(x => x.Status)
+                .Select(g => new MaintenanceStatusGroupDto
+                {
+                    Status = g.Key,
+                    Count = g.Count(),
+                    Data = g.ToList()
+                })
+                .OrderBy(g => g.Status) 
+                .ToList();
+
+            return result;
         }
 
         public async Task<MaintenanceDetailsDto> GetMaintenanceDetails(int maintenanceId, int companyId)
@@ -116,7 +141,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             if (current == null)
                 return null;
 
-        
+
             var history = await baseQuery
                 .Where(x => x.UnitId == current.UnitId && x.MaintenanceId != maintenanceId)
                 .OrderByDescending(x => x.CreatedAt)
@@ -158,14 +183,14 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                 PreferredVisitTime = dto.PreferredVisitTime,
                 Status = "Pending",
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
 
             await _context.ManageMaintenance.AddAsync(maintenance);
             await _context.SaveChangesAsync();
 
-          
+
             if (dto.Photos != null && dto.Photos.Any())
             {
                 foreach (var photo in dto.Photos)
@@ -173,8 +198,13 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                     var maintenancePhoto = new XRS_MaintenancePhotos
                     {
                         MaintenanceId = maintenance.MaintenanceId,
-                        PhotoUrl = photo.PhotoUrl, 
+<<<<<<< HEAD
+                        PhotoUrl = photo.PhotoUrl,
                         CreatedAt = DateTime.UtcNow
+=======
+                        PhotoUrl = photo.PhotoUrl, 
+                        CreatedAt = DateTime.Now
+>>>>>>> 1eee53952917b0eb96f7fed2cd14903023a0684d
                     };
 
                     await _context.MaintenancePhotos.AddAsync(maintenancePhoto);
@@ -228,7 +258,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             await _context.SaveChangesAsync();
             return true;
         }
-    
+
         public async Task<IEnumerable<XRS_MaintenanceCategory>> GetMaintenanceCategories(int companyId)
         {
             return await _context.MaintenanceCategories
@@ -334,6 +364,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             return true;
         }
 
+<<<<<<< HEAD
         public async Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status, DateTime? fromDate, DateTime? toDate, string? zone, string? search)
         {
             var query = from m in _context.ManageMaintenance
@@ -402,8 +433,68 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
             return result;
         }
 
+        //    public async Task<MaintenanceDashboardDto> GetMaintenanceDashboard(int companyId)
+        //    {
+        //        var maintenance = await _context.ManageMaintenance
+        //            .Where(m => m.CompanyId == companyId && m.IsActive)
+        //            .ToListAsync();
+
+        //        var categories = await _context.MaintenanceCategories
+        //            .Where(c => c.CompanyId == companyId && c.IsActive)
+        //            .ToListAsync();
+
+        //        var categoryDict = categories.ToDictionary(c => c.CategoryId, c => c.SLADays);
+
+        //        var dashboard = new MaintenanceDashboardDto
+        //        {
+        //            NewComplaints = maintenance.Count(m => m.Status == "Pending"),
+        //            InProgress = maintenance.Count(m => m.Status == "InProgress"),
+        //            Closed = maintenance.Count(m => m.Status == "Closed"),
+        //            Overdue = maintenance.Count(m =>
+        //            {
+        //                if (m.Status == "Closed") return false;
+        //                if (categoryDict.TryGetValue(m.CategoryId, out int slaDays))
+        //                {
+        //                    return m.CreatedAt.AddDays(slaDays) < DateTime.UtcNow;
+        //                }
+        //                return false;
+        //            })
+        //        };
+
+        //        var propertyStats = await (from m in _context.ManageMaintenance
+        //                                   join p in _context.Properties on m.PropertyId equals p.PropID
+        //                                   where m.CompanyId == companyId && m.IsActive
+        //                                   group m by new { p.PropID, p.propertyName } into g
+        //                                   select new PropertyComplaintStatsDto
+        //                                   {
+        //                                       PropertyName = g.Key.propertyName,
+        //                                       Complaints = g.Count(),
+        //                                       Solved = g.Sum(x => x.Status == "Closed" ? 1 : 0)
+        //                                   }).ToListAsync();
+
+        //        dashboard.PropertyStats = propertyStats;
+
+        //        return dashboard;
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+>>>>>>> 1eee53952917b0eb96f7fed2cd14903023a0684d
         public async Task<MaintenanceDashboardDto> GetMaintenanceDashboard(int companyId)
         {
+            var now = DateTime.Now;
+
             var maintenance = await _context.ManageMaintenance
                 .Where(m => m.CompanyId == companyId && m.IsActive)
                 .ToListAsync();
@@ -414,22 +505,50 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
 
             var categoryDict = categories.ToDictionary(c => c.CategoryId, c => c.SLADays);
 
+<<<<<<< HEAD
+            var now = DateTime.UtcNow;
+
+            int newComplaints = 0;
+            int inProgress = 0;
+            int closed = 0;
+            int overdue = 0;
+            foreach (var m in maintenance)
+            {
+                if (m.Status == "Closed")
+                {
+                    closed++;
+                    continue;
+                }
+
+                // ✅ Always count by status
+                if (m.Status == "InProgress")
+                {
+                    inProgress++;
+                }
+                else if (m.Status == "Pending")
+                {
+                    newComplaints++;
+                }
+
+                // ✅ Separately check overdue
+                if (categoryDict.TryGetValue(m.CategoryId, out int slaDays))
+                {
+                    if (m.CreatedAt.AddDays(slaDays) < now)
+                    {
+                        overdue++;
+                    }
+                }
+            }
+
             var dashboard = new MaintenanceDashboardDto
             {
-                NewComplaints = maintenance.Count(m => m.Status == "Pending"),
-                InProgress = maintenance.Count(m => m.Status == "InProgress"),
-                Closed = maintenance.Count(m => m.Status == "Closed"),
-                Overdue = maintenance.Count(m =>
-                {
-                    if (m.Status == "Closed") return false;
-                    if (categoryDict.TryGetValue(m.CategoryId, out int slaDays))
-                    {
-                        return m.CreatedAt.AddDays(slaDays) < DateTime.UtcNow;
-                    }
-                    return false;
-                })
+                NewComplaints = newComplaints,
+                InProgress = inProgress,
+                Closed = closed,
+                Overdue = overdue
             };
 
+            // ✅ Property Stats (no change needed)
             var propertyStats = await (from m in _context.ManageMaintenance
                                        join p in _context.Properties on m.PropertyId equals p.PropID
                                        where m.CompanyId == companyId && m.IsActive
@@ -440,6 +559,62 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                                            Complaints = g.Count(),
                                            Solved = g.Sum(x => x.Status == "Closed" ? 1 : 0)
                                        }).ToListAsync();
+=======
+
+            bool IsOverdue(XRS_Maintenance m)
+            {
+                if (m.Status != "Pending" && m.Status != "InProgress")
+                    return false;
+
+                if (!categoryDict.TryGetValue(m.CategoryId, out int slaDays))
+                    return false;
+
+                if (slaDays <= 0)
+                    return false;
+
+                var dueDate = m.CreatedAt.AddDays(slaDays);
+
+                return dueDate < now;
+            }
+
+
+            var overdueItems = maintenance.Where(IsOverdue).ToList();
+
+            var pendingItems = maintenance
+                .Where(m => m.Status == "Pending" && !IsOverdue(m))
+                .ToList();
+
+            var inProgressItems = maintenance
+                .Where(m => m.Status == "InProgress" && !IsOverdue(m))
+                .ToList();
+
+            var closedItems = maintenance
+                .Where(m => m.Status == "Closed")
+                .ToList();
+
+            var dashboard = new MaintenanceDashboardDto
+            {
+                NewComplaints = pendingItems.Count,
+                InProgress = inProgressItems.Count,
+                Closed = closedItems.Count,
+                Overdue = overdueItems.Count
+            };
+
+            var propertyStats = (from m in maintenance
+                                 join p in _context.Properties
+                                 on m.PropertyId equals p.PropID
+                                 select new { m, p })
+                                .ToList()
+                                .GroupBy(x => new { x.p.PropID, x.p.propertyName })
+                                .Select(g => new PropertyComplaintStatsDto
+                                {
+                                    PropertyName = g.Key.propertyName,
+                                    Complaints = g.Count(),
+                                    Solved = g.Count(x => x.m.Status == "Closed")
+                                })
+                                .OrderByDescending(x => x.Complaints)
+                                .ToList();
+>>>>>>> 1eee53952917b0eb96f7fed2cd14903023a0684d
 
             dashboard.PropertyStats = propertyStats;
 

@@ -14,7 +14,7 @@ namespace XeniaRentalBackend.Models
         [Required]
         public string PhotoUrl { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [ForeignKey("MaintenanceId")]
         public XRS_Maintenance Maintenance { get; set; } = null!;

@@ -114,7 +114,7 @@ namespace XeniaRentalBackend.Repositories.MessDetails
             {
                 existing.IsPresent = dto.IsPresent;
                 existing.CreatedBy = dto.CreatedBy;
-                existing.CreatedOn = DateTime.UtcNow;
+                existing.CreatedOn = DateTime.Now;
             }
             else
             {
@@ -127,7 +127,7 @@ namespace XeniaRentalBackend.Repositories.MessDetails
                     AttendanceDate = dto.AttendanceDate.Date,
                     IsPresent = dto.IsPresent,
                     CreatedBy = dto.CreatedBy,
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.Now
                 };
 
                 _context.MessAttendances.Add(newAttendance);
