@@ -47,7 +47,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
 
             foreach (var tenant in activeAssignments)
             {
-                var voucher = vouchers.FirstOrDefault(v => v.DrID == tenant.tenantID && v.unitID == tenant.unitID);
+                var voucher = vouchers.FirstOrDefault(v => v.CrID == tenant.tenantID && v.unitID == tenant.unitID);
                 if (voucher != null)
                 {
                     paidCount++;
@@ -79,10 +79,10 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 : 0;
 
             int highRiskTenantCount = activeAssignments.Count(t =>
-                !vouchers.Any(v => v.DrID == t.tenantID && v.unitID == t.unitID));
+       !vouchers.Any(v => v.CrID == t.tenantID && v.unitID == t.unitID));
 
             int highRiskPropertyCount = activeAssignments
-                .Where(t => !vouchers.Any(v => v.DrID == t.tenantID && v.unitID == t.unitID))
+                .Where(t => !vouchers.Any(v => v.CrID == t.tenantID && v.unitID == t.unitID))
                 .Select(t => t.propID)
                 .Distinct()
                 .Count();
@@ -171,7 +171,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
         public async Task<TenantPaymentBannerDto> GetTenantPaymentBannerAsync(int tenantId, int companyId)
         {
             var latestPayments = await _context.Vouchers
-                .Where(v => v.CompanyID == companyId && v.DrID == tenantId && v.VoucherType == "Pay Rent")
+               .Where(v => v.CompanyID == companyId && v.CrID == tenantId && v.VoucherType == "Pay Rent")
                 .OrderByDescending(v => v.VoucherDate)
                 .Take(3)
                 .Select(v => new PaymentInfoDto
