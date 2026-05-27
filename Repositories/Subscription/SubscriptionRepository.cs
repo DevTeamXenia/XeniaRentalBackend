@@ -22,12 +22,13 @@ namespace XeniaRentalBackend.Repositories.Subscription
         public async Task<List<PlanWithModulesDto>> GetMainPlansAsync()
         {
             var plans = await _context.SubscribePlan
-                .Where(p => p.PlanActive)
+           .Where(p => p.PlanActive == true)
                 .Select(p => new PlanWithModulesDto
                 {
                     PlanId = p.PlanId,
                     PlanName = p.PlanName,
                     PlanDescription = p.PlanDescription,
+                    PlanIsAddOn = p.PlanIsAddOn,
                     Durations = _context.SubscribePlanDuration
                         .Where(d => d.PlanId == p.PlanId && d.IsActive)
                         .OrderBy(d => d.DurationDays)
@@ -67,8 +68,8 @@ namespace XeniaRentalBackend.Repositories.Subscription
 
             var mainPlan = await _context.SubscribePlan
                 .FirstOrDefaultAsync(p =>
-                    p.PlanId == dto.PlanId &&
-                    p.PlanActive);
+    p.PlanId == dto.PlanId &&
+    p.PlanActive == true);
 
             if (mainPlan == null)
                 return null;
@@ -214,19 +215,22 @@ namespace XeniaRentalBackend.Repositories.Subscription
         }
 
 
-
         private async Task ExpirePendingSubscriptions(int companyId)
         {
             var pendingSubs = await _context.CompanySubscription
-                .Where(x => x.CompanyId == companyId && x.Status == "PENDING")
+                .Where(x =>
+                    x.CompanyId == companyId &&
+                    x.Status == "PENDING")
                 .ToListAsync();
 
-            foreach (var s in pendingSubs)
-                s.Status = "EXPIRED";
-     
+            if (pendingSubs.Any())
+            {
+                _context.CompanySubscription.RemoveRange(pendingSubs);
+            }
 
             await _context.SaveChangesAsync();
         }
-    }
 
+
+    }
 }

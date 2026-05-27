@@ -27,6 +27,7 @@ namespace XeniaRentalBackend.Models
 
         [MaxLength(50)]
         public string Status { get; set; } = "ACTIVE";
+        [NotMapped]
         public string? ModuleIds { get; set; }
     }
 }

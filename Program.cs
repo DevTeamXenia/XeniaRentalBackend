@@ -24,6 +24,7 @@ using XeniaRentalBackend.Repositories.Module;
 using XeniaRentalBackend.Repositories.Properties;
 using XeniaRentalBackend.Repositories.Report;
 using XeniaRentalBackend.Repositories.Service;
+using XeniaRentalBackend.Repositories.Subscription;
 using XeniaRentalBackend.Repositories.Tenant;
 using XeniaRentalBackend.Repositories.TenantAssignment;
 using XeniaRentalBackend.Repositories.Unit;
@@ -32,6 +33,7 @@ using XeniaRentalBackend.Repositories.UserRole;
 using XeniaRentalBackend.Repositories.Voucher;
 using XeniaRentalBackend.Service.Common;
 using XeniaRentalBackend.Service.Notification;
+using XeniaRentalBackend.Service.Payment;
 using XeniaTenoraBackend.Hubs;
 using XeniaTenoraBackend.Repositories.Area;
 using XeniaTenoraBackend.Service.Socket;
@@ -137,6 +139,8 @@ builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>(
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddHttpClient<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>(); // your actual impl class name
 #endregion
 
 #region ✅ Services

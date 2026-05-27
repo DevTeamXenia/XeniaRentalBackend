@@ -7,6 +7,8 @@
         public string PlanDescription { get; set; } = string.Empty;
         public List<PlanDurationDto> Durations { get; set; } = new();
         public List<ModuleDto> Modules { get; set; } = new();
+        public bool PlanIsAddOn { get; set; }
+
     }
 
     public class PlanDurationDto

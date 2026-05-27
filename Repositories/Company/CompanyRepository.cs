@@ -67,7 +67,7 @@ namespace XeniaRentalBackend.Repositories.Company
 
              
                 var plan = await _context.SubscribePlan
-                    .Where(p => p.PlanId == subscription.PlanId && p.PlanActive)
+                    .Where(p => p.PlanId == subscription.PlanId && p.PlanActive == true)
                     .FirstOrDefaultAsync();
 
                 if (plan != null)
@@ -75,11 +75,10 @@ namespace XeniaRentalBackend.Repositories.Company
                     planDto = new PlanDto
                     {
                         PlanId = plan.PlanId,
-                        PlanName = plan.PlanName,
-                        PlanDescription = plan.PlanDescription,
-                        PlanPrice = plan.PlanPrice,
-                        PlanDurationDays = plan.PlanDurationDays,
-                        PlanActive = plan.PlanActive
+                        PlanName = plan.PlanName ?? string.Empty,           // ✅ null coalesce
+                        PlanDescription = plan.PlanDescription ?? string.Empty, // ✅ null coalesce
+                        PlanIsAddOn = plan.PlanIsAddOn,
+                        PlanActive = plan.PlanActive ?? false               // ✅ null coalesce
                     };
 
 
