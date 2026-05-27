@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XeniaRentalBackend.Models
@@ -15,16 +15,10 @@ namespace XeniaRentalBackend.Models
         [MaxLength(500)]
         public string? PlanDescription { get; set; }
 
-        [NotMapped]
         [Column(TypeName = "decimal(18,2)")]
         public decimal PlanPrice { get; set; }
 
-        [NotMapped]
         public int PlanDurationDays { get; set; }
-
-        public int? PlanUsers { get; set; }
-
-        public bool PlanIsAddOn { get; set; }
 
         public int? PlanCreatedBy { get; set; }
 

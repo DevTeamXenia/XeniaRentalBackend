@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XeniaRentalBackend.Models
@@ -27,7 +27,6 @@ namespace XeniaRentalBackend.Models
 
         [MaxLength(50)]
         public string Status { get; set; } = "ACTIVE";
-        [NotMapped]
         public string? ModuleIds { get; set; }
     }
 }
