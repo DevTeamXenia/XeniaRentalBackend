@@ -22,7 +22,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
         public async Task<List<PlanWithModulesDto>> GetMainPlansAsync()
         {
             var plans = await _context.SubscribePlan
-           .Where(p => p.PlanActive == true)
+                .Where(p => p.PlanActive == true)
                 .Select(p => new PlanWithModulesDto
                 {
                     PlanId = p.PlanId,
@@ -56,6 +56,26 @@ namespace XeniaRentalBackend.Repositories.Subscription
                     ).ToList()
                 })
                 .ToListAsync();
+
+            foreach (var plan in plans)
+            {
+
+                var addon = await _context.CompanySubscriptionAddon
+              .Where(a => a.MainPlanId == plan.PlanId && a.Status == "ACTIVE")
+             .OrderByDescending(a => a.Id)
+              .FirstOrDefaultAsync();
+
+                plan.AddonPrice = addon?.Amount;
+
+             
+                var companyIdsOnPlan = await _context.CompanySubscription
+                    .Where(s => s.PlanId == plan.PlanId && s.Status == "ACTIVE")
+                    .Select(s => s.CompanyId)
+                    .ToListAsync();
+
+                plan.UserCount = await _context.Users
+                    .CountAsync(u => companyIdsOnPlan.Contains(u.CompanyId) && u.IsActive);
+            }
 
             return plans;
         }

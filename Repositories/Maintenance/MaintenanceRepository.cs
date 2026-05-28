@@ -15,7 +15,7 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
 
         }
 
-        public async Task<List<MaintenanceStatusGroupDto>> GetMaintenance(int companyId, int? tenantId, string? search)
+        public async Task<List<MaintenanceStatusGroupDto>> GetMaintenance(int companyId, int? tenantId, string? search, string? status = null)
         {
             var now = DateTime.Now;
 
@@ -473,6 +473,20 @@ namespace XeniaRentalBackend.Repositories.ManageMaintenance
                 Closed = closedItems.Count,
                 Overdue = overdueItems.Count
             };
+
+            var properties = await _context.Properties
+                .Where(p => p.CompanyId == companyId)
+                .ToListAsync();
+
+            var propertyStats = properties.Select(p => new PropertyComplaintStatsDto
+            {
+                PropertyName = p.propertyName ?? string.Empty,
+                Complaints = maintenance.Count(m => m.PropertyId == p.PropID),
+                Solved = maintenance.Count(m => m.PropertyId == p.PropID && m.Status == "Closed")
+            })
+            .Where(ps => ps.Complaints > 0)
+            .OrderByDescending(ps => ps.Complaints)
+            .ToList();
 
             dashboard.PropertyStats = propertyStats;
 

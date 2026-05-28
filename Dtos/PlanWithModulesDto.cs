@@ -8,6 +8,8 @@
         public List<PlanDurationDto> Durations { get; set; } = new();
         public List<ModuleDto> Modules { get; set; } = new();
         public bool PlanIsAddOn { get; set; }
+        public decimal? AddonPrice { get; set; }  
+        public int UserCount { get; set; }         
 
     }
 
