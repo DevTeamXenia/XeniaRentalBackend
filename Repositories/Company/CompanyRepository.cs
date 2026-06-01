@@ -226,6 +226,9 @@ namespace XeniaRentalBackend.Repositories.Company
                 .ToListAsync();
 
             var userCount = await _context.Users
+     .CountAsync(u => u.CompanyId == companyId);
+
+            var activeUserCount = await _context.Users
                 .CountAsync(u => u.CompanyId == companyId && u.IsActive);
 
             return new CompanyWithSubscriptionDto
@@ -234,7 +237,8 @@ namespace XeniaRentalBackend.Repositories.Company
                 Subscription = subscriptionDto,
                 Plan = planDto,
                 Settings = settings,
-                UserCount = userCount
+                UserCount = userCount,
+                ActiveUserCount = activeUserCount
             };
         }
 

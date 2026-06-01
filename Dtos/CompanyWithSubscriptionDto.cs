@@ -9,6 +9,7 @@ namespace XeniaRentalBackend.Dtos
         public PlanDto? Plan { get; set; }
         public List<CompanySettingsDto> Settings { get; set; } = new();
         public int UserCount { get; set; }
+        public int ActiveUserCount { get; set; }
     }
 
     public class SubscriptionDto
