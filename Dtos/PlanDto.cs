@@ -9,6 +9,7 @@
         public int PlanDurationDays { get; set; }
         public bool PlanIsAddOn { get; set; }
         public bool PlanActive { get; set; }
+        public int PlanUsers { get; set; }
         public List<ModuleDto> Modules { get; set; } = new();
     }
 

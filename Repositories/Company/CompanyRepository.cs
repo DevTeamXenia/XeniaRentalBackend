@@ -191,7 +191,9 @@ namespace XeniaRentalBackend.Repositories.Company
                         PlanName = plan.PlanName ?? string.Empty,
                         PlanDescription = plan.PlanDescription ?? string.Empty,
                         PlanIsAddOn = plan.PlanIsAddOn,
-                        PlanActive = plan.PlanActive ?? false
+                        PlanActive = plan.PlanActive ?? false,
+                        PlanUsers = plan.PlanUsers 
+
                     };
 
                     var modules = await (
@@ -225,8 +227,7 @@ namespace XeniaRentalBackend.Repositories.Company
                 })
                 .ToListAsync();
 
-            var userCount = await _context.Users
-     .CountAsync(u => u.CompanyId == companyId);
+      
 
             var activeUserCount = await _context.Users
                 .CountAsync(u => u.CompanyId == companyId && u.IsActive);
@@ -237,7 +238,7 @@ namespace XeniaRentalBackend.Repositories.Company
                 Subscription = subscriptionDto,
                 Plan = planDto,
                 Settings = settings,
-                UserCount = userCount,
+                UserCount = planDto?.PlanUsers ?? 0,  
                 ActiveUserCount = activeUserCount
             };
         }
