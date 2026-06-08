@@ -7,36 +7,27 @@ namespace XeniaRentalBackend.Models
     public class XRS_SubscribePlan
     {
         [Key]
-        [Column("planId")]
         public int PlanId { get; set; }
 
-        [Column("planName")]
-        [MaxLength(100)]
-        public string? PlanName { get; set; }
+        [Required, MaxLength(200)]
+        public string PlanName { get; set; } = null!;
 
-        [Column("planDescription")]
-        [MaxLength(100)]
+        [MaxLength(500)]
         public string? PlanDescription { get; set; }
 
-        [Column("planUsers")]
-        public int PlanUsers { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal PlanPrice { get; set; }
 
-        [Column("planCreatedBy")]
+        public int PlanDurationDays { get; set; }
+
         public int? PlanCreatedBy { get; set; }
 
-        [Column("planCreatedOn")]
-        public DateTime? PlanCreatedOn { get; set; }
+        public DateTime PlanCreatedOn { get; set; } = DateTime.Now;
 
-        [Column("planModifiedBy")]
         public int? PlanModifiedBy { get; set; }
 
-        [Column("planModifiedOn")]
         public DateTime? PlanModifiedOn { get; set; }
 
-        [Column("planActive")]
-        public bool? PlanActive { get; set; }
-
-        [Column("PlanIsAddOn")]
-        public bool PlanIsAddOn { get; set; }
+        public bool PlanActive { get; set; } = true;
     }
 }

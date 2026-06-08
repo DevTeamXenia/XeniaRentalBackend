@@ -6,7 +6,9 @@
         public int CompanyID { get; set; }
         public int PropID { get; set; }
         public DateTime VoucherDate { get; set; }
-        public string VoucherType { get; set; }  
+        public string VoucherType { get; set; }
+        public byte RentMonth { get; set; }
+        public short RentYear { get; set; }
         public int CrID { get; set; }
         public string? createdBy { get; set; }
         public string? modifiedBy { get; set; }

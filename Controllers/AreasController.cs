@@ -15,10 +15,10 @@ namespace XeniaTenoraBackend.Controllers
             _areaRepository = areaRepository;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("all/{companyId}")]
+        public async Task<IActionResult> GetAll(int companyId)
         {
-            var data = await _areaRepository.GetAllAreas();
+            var data = await _areaRepository.GetAllAreas(companyId);
             return Ok(data);
         }
 
@@ -51,18 +51,5 @@ namespace XeniaTenoraBackend.Controllers
             return Ok(result);
         }
 
-        [HttpPost("map")]
-        public async Task<IActionResult> MapArea([FromQuery] int propId, [FromQuery] List<int> areaIds)
-        {
-            var result = await _areaRepository.MapAreaToProperty(propId, areaIds);
-            return Ok(result);
-        }
-
-        [HttpGet("property/{propId}")]
-        public async Task<IActionResult> GetAreasByProperty(int propId)
-        {
-            var data = await _areaRepository.GetAreasByProperty(propId);
-            return Ok(data);
-        }
     }
 }

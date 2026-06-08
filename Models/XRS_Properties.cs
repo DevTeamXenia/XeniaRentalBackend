@@ -23,11 +23,13 @@ namespace XeniaRentalBackend.Models
         [StringLength(10)]
         public required string propertyPrefix { get; set; }
 
+        public int? propertyAreaId { get; set; }
 
-        public string propertyType { get; set; }
+        public string? propertyType { get; set; }
 
         public bool IsActive { get; set; }
 
 
     }
+    
 }

@@ -2,6 +2,7 @@
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Common;
+using XeniaTenoraBackend.Dtos;
 
 
 namespace XeniaRentalBackend.Repositories.Properties
@@ -17,45 +18,72 @@ namespace XeniaRentalBackend.Repositories.Properties
 
         }
 
-        public async Task<IEnumerable<XRS_Properties>> GetProperties(int companyId)
+        public async Task<IEnumerable<PropertyListDto>> GetProperties( int companyId)
         {
-            return await _context.Properties
-                .Where(p => p.CompanyId == companyId) 
-                .ToListAsync();
+            return await (
+                from p in _context.Properties
+                join a in _context.Areas
+                    on p.propertyAreaId equals a.AreaId into areaGroup
+                from area in areaGroup.DefaultIfEmpty()
+                where p.CompanyId == companyId
+                select new PropertyListDto
+                {
+                    PropID = p.PropID,
+                    propertyName = p.propertyName,
+                    propertyType = p.propertyType,
+                    propertyPrefix = p.propertyPrefix,
+                    propertyAreaId = p.propertyAreaId,
+                    AreaName = area != null
+                        ? area.AreaName
+                        : null,
+                    IsActive = p.IsActive,
+                    CompanyId = p.CompanyId
+                }
+            ).ToListAsync();
         }
 
-        public async Task<PagedResultDto<XRS_Properties>> GetPropertiesByCompanyId(int companyId,string? search = null, int pageNumber = 1,int pageSize = 10)
+        public async Task<PagedResultDto<PropertyListDto>> GetPropertiesByCompanyId( int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
-            var query = _context.Properties.AsQueryable();
-
-            query = query.Where(u => u.CompanyId == companyId);
+            var query =
+                from p in _context.Properties
+                join a in _context.Areas
+                    on p.propertyAreaId equals a.AreaId into areaGroup
+                from area in areaGroup.DefaultIfEmpty()
+                where p.CompanyId == companyId
+                select new PropertyListDto
+                {
+                    PropID = p.PropID,
+                    propertyName = p.propertyName,
+                    propertyType = p.propertyType,
+                    propertyPrefix = p.propertyPrefix,
+                    propertyAreaId = p.propertyAreaId,
+                    AreaName = area != null
+                        ? area.AreaName
+                        : null,
+                    IsActive = p.IsActive,
+                    CompanyId = p.CompanyId
+                };
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string lowerSearch = search.ToLower();
+
                 query = query.Where(u =>
                     u.propertyName.ToLower().Contains(lowerSearch) ||
-                    u.propertyType.ToLower().Contains(lowerSearch));
+                    u.propertyType.ToLower().Contains(lowerSearch) ||
+                    (u.AreaName != null &&
+                     u.AreaName.ToLower().Contains(lowerSearch)));
             }
 
             var totalRecords = await query.CountAsync();
 
             var items = await query
-                .OrderBy(u => u.propertyName) 
+                .OrderBy(u => u.propertyName)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(u => new XRS_Properties
-                {
-                    PropID = u.PropID,
-                    propertyName = u.propertyName,
-                    propertyType = u.propertyType,
-                    propertyPrefix = u.propertyPrefix,
-                    IsActive = u.IsActive,
-                    CompanyId = u.CompanyId
-                })
                 .ToListAsync();
 
-            return new PagedResultDto<XRS_Properties>
+            return new PagedResultDto<PropertyListDto>
             {
                 Data = items,
                 PageNumber = pageNumber,
@@ -63,7 +91,6 @@ namespace XeniaRentalBackend.Repositories.Properties
                 TotalRecords = totalRecords
             };
         }
-
 
         public async Task<List<XRS_Properties>> GetPropertiesForApp()
         {
@@ -73,8 +100,8 @@ namespace XeniaRentalBackend.Repositories.Properties
                 return new List<XRS_Properties>();
 
             var propertyIds = await _context.UserMapping
-                .Where(x => x.userID == customerId && x.isActive == true)
-                .Select(x => x.propID)
+                .Where(x => x.UserID == customerId && x.IsActive == true)
+                .Select(x => x.PropID)
                 .Distinct()
                 .ToListAsync();
 
@@ -99,13 +126,30 @@ namespace XeniaRentalBackend.Repositories.Properties
 
 
 
-        public async Task<IEnumerable<XRS_Properties>> GetPrpoertiesbyId(int propertyId)
+        public async Task<IEnumerable<PropertyListDto>> GetPrpoertiesbyId(
+         int propertyId)
         {
+            var result =
+                from p in _context.Properties
+                join a in _context.Areas
+                    on p.propertyAreaId equals a.AreaId into areaGroup
+                from area in areaGroup.DefaultIfEmpty()
+                where p.PropID == propertyId
+                select new PropertyListDto
+                {
+                    PropID = p.PropID,
+                    propertyName = p.propertyName,
+                    propertyType = p.propertyType,
+                    propertyPrefix = p.propertyPrefix,
+                    propertyAreaId = p.propertyAreaId,
+                    AreaName = area != null
+                        ? area.AreaName
+                        : null,
+                    IsActive = p.IsActive,
+                    CompanyId = p.CompanyId
+                };
 
-            return await _context.Properties
-                .Where(u => u.PropID == propertyId)
-                 .ToListAsync();
-
+            return await result.ToListAsync();
         }
 
         public async Task<XRS_Properties> CreateProperties(XRS_Properties dtoProperties)
@@ -126,6 +170,7 @@ namespace XeniaRentalBackend.Repositories.Properties
                 propertyName = dtoProperties.propertyName,
                 propertyType = dtoProperties.propertyType,
                 propertyPrefix = dtoProperties.propertyPrefix,
+                propertyAreaId = dtoProperties.propertyAreaId,
                 CompanyId = dtoProperties.CompanyId,
                 IsActive = dtoProperties.IsActive
             };
@@ -180,6 +225,7 @@ namespace XeniaRentalBackend.Repositories.Properties
             updateProperties.propertyName = properties.propertyName;
             updateProperties.propertyType = properties.propertyType;
             updateProperties.propertyPrefix = properties.propertyPrefix;    
+            updateProperties.propertyAreaId = properties.propertyAreaId;    
             updateProperties.CompanyId = properties.CompanyId;
             updateProperties.IsActive = properties.IsActive;
 

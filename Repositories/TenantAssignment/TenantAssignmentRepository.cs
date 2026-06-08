@@ -53,7 +53,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             return result;
         }
 
-        public async Task<IEnumerable<TenantAssignmentGetDto>> GetByCompanyIdAsync(int companyId,bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null,int? propertyId = null,int? unitId = null,string? search = null)
+        public async Task<object> GetByCompanyIdAsync(int companyId, bool isBedSpace = false,DateTime? startDate = null, DateTime? endDate = null,int? propertyId = null,int? unitId = null, string? search = null, int pageNumber = 1,int pageSize = 25)
         {
             IQueryable<XRS_TenantAssignment> query = _context.TenantAssignemnts
                 .Include(t => t.Properties)
@@ -63,7 +63,6 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                         .ThenInclude(td => td.Documents)
                 .AsNoTracking()
                 .Where(t => t.companyID == companyId && t.isClosure == false);
-
 
             if (isBedSpace)
             {
@@ -80,32 +79,42 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 var start = startDate.Value.Date;
                 var end = endDate.Value.Date;
 
-                query = query.Where(t => t.agreementStartDate <= end && t.agreementEndDate >= start);
+                query = query.Where(t =>
+                    t.agreementStartDate <= end &&
+                    t.agreementEndDate >= start);
             }
-
 
             if (propertyId.HasValue && propertyId.Value > 0)
             {
                 query = query.Where(t => t.propID == propertyId.Value);
             }
 
-
             if (unitId.HasValue && unitId.Value > 0)
             {
                 query = query.Where(t => t.unitID == unitId.Value);
             }
 
-
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string searchLower = search.ToLower();
+
                 query = query.Where(t =>
                     (t.Tenant.tenantName.ToLower().Contains(searchLower)) ||
                     (t.Unit.UnitName.ToLower().Contains(searchLower)) ||
                     (t.Properties.propertyName.ToLower().Contains(searchLower)) ||
-                    (t.BedSpace != null && t.BedSpace.bedSpaceName.ToLower().Contains(searchLower))
+                    (t.BedSpace != null &&
+                     t.BedSpace.bedSpaceName.ToLower().Contains(searchLower))
                 );
             }
+
+            // Total Count
+            var totalRecords = await query.CountAsync();
+
+            // Pagination
+            query = query
+                .OrderByDescending(t => t.tenantAssignId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
 
             var assignments = await query.ToListAsync();
 
@@ -126,7 +135,6 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 rentCollection = t.rentCollection,
                 escalationPer = t.escalationPer,
                 nextescalationDate = t.nextescalationDate,
-                rentDueDate = t.rentDueDate,
                 refundAmount = t.refundAmount,
                 charges = t.charges,
                 amount = t.amount,
@@ -140,6 +148,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 notes = t.notes,
                 BedSpaceID = t.bedSpaceID,
                 BedSpaceName = isBedSpace ? t.BedSpace?.bedSpaceName : null,
+
                 Documents = t.Tenant?.TenantDocuments?
                     .Select(td => new TenantDocumentDto
                     {
@@ -159,10 +168,16 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     .ToList() ?? new List<TenantDocumentDto>()
             }).ToList();
 
-            return result;
+            return new
+            {
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
+                Data = result
+            };
         }
-
-        public async Task<IEnumerable<TenantAssignmentGetDto>> GeClosure(int companyId, DateTime? startDate = null,DateTime? endDate = null, int? propertyId = null, int? unitId = null,string? search = null)
+        public async Task<object> GeClosure( int companyId, DateTime? startDate = null,  DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
             IQueryable<XRS_TenantAssignment> query = _context.TenantAssignemnts
                 .Include(t => t.Properties)
@@ -171,57 +186,113 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     .ThenInclude(tenant => tenant.TenantDocuments)
                         .ThenInclude(td => td.Documents)
                 .AsNoTracking()
-                .Where(t => t.companyID == companyId && t.isClosure == true);
-  
+                .Where(t =>
+                    t.companyID == companyId &&
+                    t.isClosure == true);
+
+
             if (startDate.HasValue)
-                query = query.Where(t => t.agreementStartDate >= startDate.Value);
+            {
+                query = query.Where(t =>
+                    t.agreementStartDate >= startDate.Value);
+            }
 
             if (endDate.HasValue)
-                query = query.Where(t => t.agreementEndDate <= endDate.Value);
+            {
+                query = query.Where(t =>
+                    t.agreementEndDate <= endDate.Value);
+            }
+
 
             if (propertyId.HasValue)
-                query = query.Where(t => t.propID == propertyId.Value);
+            {
+                query = query.Where(t =>
+                    t.propID == propertyId.Value);
+            }
+
 
             if (unitId.HasValue)
-                query = query.Where(t => t.unitID == unitId.Value);
+            {
+                query = query.Where(t =>
+                    t.unitID == unitId.Value);
+            }
+
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim().ToLower();
+
                 query = query.Where(t =>
                     t.Tenant.tenantName.ToLower().Contains(search) ||
                     t.Properties.propertyName.ToLower().Contains(search) ||
                     t.Unit.UnitName.ToLower().Contains(search));
             }
 
-            var assignments = await query.ToListAsync();
 
-            var result = assignments.Select(t => new TenantAssignmentGetDto
+            var totalRecords = await query.CountAsync();
+
+
+            var assignments = await query
+                .OrderByDescending(t => t.tenantAssignId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var data = assignments.Select(t => new TenantAssignmentGetDto
             {
                 tenantAssignId = t.tenantAssignId,
+
                 propID = t.propID,
+
                 PropName = t.Properties?.propertyName,
+
                 unitID = t.unitID,
+
                 UnitName = t.Unit?.UnitName,
+
                 tenantID = t.tenantID,
+
                 TenantName = t.Tenant?.tenantName,
+
                 TenantContactNo = t.Tenant?.phoneNumber,
+
                 rentAmt = t.rentAmt,
+
                 rentConcession = t.rentConcession,
+
                 messConcession = t.messConcession,
+
                 agreementStartDate = t.agreementStartDate,
+
                 agreementEndDate = t.agreementEndDate,
+
                 isActive = t.isActive,
+
                 isClosure = t.isClosure,
+
                 closureDate = t.closureDate,
+
                 closureReason = t.closureReason,
+
                 notes = t.notes,
+
                 BedSpaceID = t.bedSpaceID
             }).ToList();
 
-            return result;
-        }
+            return new
+            {
+                TotalRecords = totalRecords,
 
+                PageNumber = pageNumber,
+
+                PageSize = pageSize,
+
+                TotalPages = (int)Math.Ceiling(
+                    totalRecords / (double)pageSize),
+
+                Data = data
+            };
+        }
         public async Task<TenantAssignmentGetDto?> GetClosureById(int tenantAssignId)
         {
             var query = _context.TenantAssignemnts
@@ -300,7 +371,6 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 rentCollection = assignment.rentCollection,
                 escalationPer = assignment.escalationPer,
                 nextescalationDate = assignment.nextescalationDate,
-                rentDueDate = assignment.rentDueDate,
                 refundAmount = assignment.refundAmount,
                 dueAmount = 0,
                 charges = assignment.charges,
@@ -380,8 +450,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     dto.nextescalationDate.HasValue &&
                     dto.nextescalationDate.Value >= new DateTime(1753, 1, 1)
                         ? dto.nextescalationDate
-                        : null,
-                rentDueDate = dto.rentDueDate,
+                        : null,     
                 closureDate =
                     dto.closureDate.HasValue &&
                     dto.closureDate >= new DateTime(1753, 1, 1)
@@ -464,8 +533,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             entity.closureDate = dto.closureDate;
             entity.rentCollection = dto.rentCollection;
             entity.escalationPer = dto.escalationPer;
-            entity.nextescalationDate = dto.nextescalationDate;
-            entity.rentDueDate = dto.rentDueDate;
+            entity.nextescalationDate = dto.nextescalationDate;  
             entity.isActive = dto.isActive;
             entity.notes = dto.notes;
             entity.paymentMode = dto.paymentMode;
@@ -512,6 +580,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     chequeUrl = ch.chequeUrl,
                     chequeDate = ch.chequeDate,
                     issueBank = ch.issueBank,
+                    status = ch.status,
                     amount = ch.amount,
                     active = ch.active
                 }).ToList();
@@ -553,55 +622,99 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             return true;
         }
 
-        public async Task<List<TenantChequeListDto>> GetChequesByCompanyAsync( int companyId, string? search = null, DateTime? startDate = null, DateTime? endDate = null, string? status = null)
+        public async Task<object> GetChequesByCompanyAsync(int companyId, string? search = null, DateTime? startDate = null, DateTime? endDate = null, string? status = null, int pageNumber = 1, int pageSize = 25)
         {
             var query = from cheque in _context.TenantChequeRegisters
+
                         join tenant in _context.Tenants
                             on cheque.tenantID equals tenant.tenantID
+
                         join assign in _context.TenantAssignemnts
                             on tenant.tenantID equals assign.tenantID
+
                         where assign.companyID == companyId
+
                         select new TenantChequeListDto
                         {
                             ChequeRegisterId = cheque.chequeRegisterId,
+
                             PropID = cheque.propID,
+
                             UnitID = cheque.unitID,
+
                             TenantID = cheque.tenantID,
+
                             TenantName = tenant.tenantName,
+
                             ChequeNo = cheque.chequeNo,
+
                             IssueBank = cheque.issueBank,
+
                             Amount = cheque.amount,
+
                             ChequeDate = cheque.chequeDate,
+
                             ChequeUrl = cheque.chequeUrl,
+
                             Status = cheque.status,
+
                             Active = cheque.active
                         };
 
-        
             if (!string.IsNullOrEmpty(search))
             {
                 search = search.ToLower();
-                query = query.Where(x => x.TenantName.ToLower().Contains(search)
-                                      || x.ChequeNo.ToLower().Contains(search));
+
+                query = query.Where(x =>
+                    x.TenantName.ToLower().Contains(search)
+                    || x.ChequeNo.ToLower().Contains(search));
             }
 
+ 
             if (startDate.HasValue)
             {
-                query = query.Where(x => x.ChequeDate >= startDate.Value);
+                query = query.Where(x =>
+                    x.ChequeDate >= startDate.Value);
             }
 
+   
             if (endDate.HasValue)
             {
-                query = query.Where(x => x.ChequeDate <= endDate.Value);
+                query = query.Where(x =>
+                    x.ChequeDate <= endDate.Value);
             }
 
+   
             if (!string.IsNullOrWhiteSpace(status))
             {
                 status = status.ToLower();
-                query = query.Where(x => x.Status.ToLower() == status);
+
+                query = query.Where(x =>
+                    x.Status.ToLower() == status);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            var totalRecords = await query.CountAsync();
+
+            var data = await query
+                .OrderByDescending(x => x.ChequeDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return new
+            {
+                TotalRecords = totalRecords,
+
+                PageNumber = pageNumber,
+
+                PageSize = pageSize,
+
+                TotalPages = (int)Math.Ceiling(
+                    totalRecords / (double)pageSize),
+
+                Data = data
+            };
         }
 
         public async Task<bool> UpdateChequePayStatusAsync(int chequeRegisterId, string payStatus)

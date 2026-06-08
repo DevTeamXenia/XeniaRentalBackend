@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using XeniaRentalBackend.Models.Rental;
-using XeniaTenoraBackend.Models;
 namespace XeniaRentalBackend.Models
 {
     public class ApplicationDbContext : DbContext
@@ -92,9 +91,6 @@ namespace XeniaRentalBackend.Models
         public DbSet<XRS_MaintenancePhotos> MaintenancePhotos { get; set; }
 
         public DbSet<XRS_Area> Areas { get; set; }
-
-        public DbSet<XRS_PropertyAreas> PropertyAreas { get; set; }
-        public DbSet<XRS_CompanySubscriptionAddon> CompanySubscriptionAddon { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -37,14 +37,16 @@ namespace XeniaRentalBackend.Controllers
         [HttpGet("company/{companyId}")]
         public async Task<ActionResult<PagedResultDto<XRS_Properties>>> GetPropertyByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
-
             var accounts = await _propertyRepository.GetPropertiesByCompanyId(companyId, search, pageNumber, pageSize);
+
             if (accounts == null)
             {
                 return NotFound(new { Status = "Error", Message = "No properties found the given Company ID." });
             }
+
             return Ok(new { Status = "Success", Data = accounts });
         }
+
 
         [HttpGet("app/property")]
         public async Task<IActionResult> GetPropertyForApp()

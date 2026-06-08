@@ -24,7 +24,6 @@ using XeniaRentalBackend.Repositories.Module;
 using XeniaRentalBackend.Repositories.Properties;
 using XeniaRentalBackend.Repositories.Report;
 using XeniaRentalBackend.Repositories.Service;
-using XeniaRentalBackend.Repositories.Subscription;
 using XeniaRentalBackend.Repositories.Tenant;
 using XeniaRentalBackend.Repositories.TenantAssignment;
 using XeniaRentalBackend.Repositories.Unit;
@@ -40,81 +39,113 @@ using XeniaTenoraBackend.Service.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region ✅ Controllers + JSON
+#region Controllers + JSON
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
+
 #endregion
 
-#region ✅ Swagger
+#region Swagger
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Xenia Rental API", Version = "v1" });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT like: Bearer {your token}"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    c.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
         {
-            new OpenApiSecurityScheme
+            Title = "Xenia Rental API",
+            Version = "v1"
+        });
+
+    c.AddSecurityDefinition(
+        "Bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter JWT token"
+        });
+
+    c.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
 });
+
 #endregion
 
-#region ✅ CORS (ONLY ONE POLICY)
+#region CORS FIX
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials()
-              .SetIsOriginAllowed(_ => true);
-    });
+    options.AddPolicy(
+        "AllowFrontend",
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "https://rental.xeniapos.com",
+                    "http://localhost:3000",
+                    "http://localhost:5173"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
+
 #endregion
 
-#region ✅ SignalR (FIXED)
+#region SignalR
+
 builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
         options.PayloadSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+
 #endregion
 
-#region ✅ WebSockets
+#region WebSockets
+
 builder.Services.AddWebSockets(options => { });
+
 #endregion
 
-#region ✅ Database
+#region Database
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 #endregion
 
-#region ✅ Repositories
+#region Repositories
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -139,44 +170,64 @@ builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>(
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
-builder.Services.AddHttpClient<ISubscriptionRepository, SubscriptionRepository>();
-builder.Services.AddScoped<IPaymentService, PaymentService>(); // your actual impl class name
+
+builder.Services.AddHttpClient<IPaymentService, PaymentService>();
+
 #endregion
 
-#region ✅ Services
+#region Services
+
 builder.Services.AddScoped<INotificationService, OTPService>();
 builder.Services.AddScoped<ITenoraUpdateService, TenoraUpdateService>();
 builder.Services.AddScoped<JwtHelperService>();
+
 builder.Services.AddHttpContextAccessor();
-builder.Services.Configure<FtpSettings>(builder.Configuration.GetSection("FtpSettings"));
+
+builder.Services.Configure<FtpSettings>(
+    builder.Configuration.GetSection("FtpSettings"));
+
 #endregion
 
-#region ✅ Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+#region Authentication
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])
-            ),
-            RoleClaimType = ClaimTypes.Role
-        };
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer =
+                    builder.Configuration["JwtSettings:Issuer"],
+
+                ValidAudience =
+                    builder.Configuration["JwtSettings:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(
+                            builder.Configuration["JwtSettings:Key"]!
+                        )
+                    ),
+
+                RoleClaimType = ClaimTypes.Role
+            };
 
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
-                // ✅ IMPORTANT for SignalR + JWT
-                var accessToken = context.Request.Query["access_token"];
+                var accessToken =
+                    context.Request.Query["access_token"];
 
-                var path = context.HttpContext.Request.Path;
+                var path =
+                    context.HttpContext.Request.Path;
+
                 if (!string.IsNullOrEmpty(accessToken) &&
                     path.StartsWithSegments("/tenorahub"))
                 {
@@ -187,34 +238,45 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+
 #endregion
 
-#region ✅ Authorization
+#region Authorization
+
 builder.Services.AddAuthorization();
+
 #endregion
 
-// 🔥 BUILD APP
 var app = builder.Build();
 
-#region ✅ Middleware Pipeline
+#region Middleware
+
 app.UseSwagger();
+
 app.UseSwaggerUI();
 
-//app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-app.UseCors("AllowAll");
+
+app.UseCors("AllowFrontend");
+
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.UseWebSockets();
+
 #endregion
 
-#region ✅ Endpoints
+#region Endpoints
+
 app.MapHub<TenoraHub>("/tenorahub");
+
 app.MapControllers();
+
 #endregion
 
 app.Run();

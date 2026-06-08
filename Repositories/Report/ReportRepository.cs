@@ -69,7 +69,7 @@ namespace XeniaRentalBackend.Repositories.Report
                     Deposit = ta.securityAmt,
                     JoinDate = ta.agreementStartDate,
                     EndDate = ta.agreementEndDate,
-                    DueDate = ta.rentDueDate,
+                    DueDate = "",
                     Note = ta.notes
                 };
 
@@ -260,36 +260,113 @@ namespace XeniaRentalBackend.Repositories.Report
             return months;
         }
 
-        private TenantRowDto CreateTenantRow(dynamic t, Dictionary<int, decimal> tenantPaidAmounts)
+        private TenantRowDto CreateTenantRow(dynamic t,Dictionary<int, decimal> tenantPaidAmounts)
         {
             var today = DateTime.Today;
 
+            DateTime joinDate = today;
+
+            DateTime parsedJoinDate = today;
+
+            if (t.JoinDate != null &&
+                !string.IsNullOrWhiteSpace(t.JoinDate.ToString()) &&
+                DateTime.TryParse(t.JoinDate.ToString(), out parsedJoinDate))
+            {
+                joinDate = parsedJoinDate;
+            }
+
+            DateTime? endDate = null;
+
+            DateTime parsedEndDate = today;
+
+            if (t.EndDate != null &&
+                !string.IsNullOrWhiteSpace(t.EndDate.ToString()) &&
+                DateTime.TryParse(t.EndDate.ToString(), out parsedEndDate))
+            {
+                endDate = parsedEndDate;
+            }
+
             DateTime rentEndDate =
-                t.EndDate != null && t.EndDate < today
-                    ? t.EndDate
+                endDate.HasValue && endDate.Value < today
+                    ? endDate.Value
                     : today;
 
-            int months = GetMonthsBetween(t.JoinDate, rentEndDate);
-            decimal expectedRent = months * t.Rent;
+   
+            decimal rent = 0;
 
-            decimal paid = tenantPaidAmounts.TryGetValue(t.tenantID, out decimal amount)
-                ? amount
-                : 0m;
+            decimal parsedRent = 0;
+
+            if (t.Rent != null &&
+                decimal.TryParse(t.Rent.ToString(), out parsedRent))
+            {
+                rent = parsedRent;
+            }
+
+
+            int months = GetMonthsBetween(joinDate, rentEndDate);
+
+            decimal expectedRent = months * rent;
+
+            int tenantId = 0;
+
+            if (t.tenantID != null)
+            {
+                int.TryParse(t.tenantID.ToString(), out tenantId);
+            }
+
+  
+            decimal paid = tenantPaidAmounts.TryGetValue(
+                tenantId,
+                out decimal amount)
+                    ? amount
+                    : 0m;
+
+            decimal balance = expectedRent - paid;
+
+
+            DateTime? parsedDueDate = null;
+
+            DateTime dueDate = today;
+
+            if (t.DueDate != null &&
+                !string.IsNullOrWhiteSpace(t.DueDate.ToString()) &&
+                DateTime.TryParse(t.DueDate.ToString(), out dueDate))
+            {
+                parsedDueDate = dueDate;
+            }
+
+            decimal deposit = 0;
+
+            if (t.Deposit != null)
+            {
+                decimal.TryParse(t.Deposit.ToString(), out deposit);
+            }
 
             return new TenantRowDto
             {
-                TenantId = t.tenantID,
-                TenantName = t.TenantName,
-                Phone = t.Phone,
-                Deposit = t.Deposit,
-                Rent = t.Rent,
-                Balance = expectedRent - paid,
-                JoinDate = t.JoinDate,
-                EndDate = t.EndDate,
-                RentDueDate = t.DueDate,
-                Note = t.Note,
+                TenantId = tenantId,
 
-                Status = (expectedRent - paid) > 0 ? "Pending" : "Clear"
+                TenantName = t.TenantName?.ToString(),
+
+                Phone = t.Phone?.ToString(),
+
+                Deposit = deposit,
+
+                Rent = rent,
+
+                Balance = balance,
+
+                JoinDate = joinDate,
+
+                EndDate = endDate,
+
+                RentDueDate = parsedDueDate,
+
+                Note = t.Note?.ToString(),
+
+                Status = balance > 0
+                    ? "Pending"
+                    : "Clear"
             };
         }
 

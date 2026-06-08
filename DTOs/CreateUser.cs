@@ -6,21 +6,12 @@ namespace XeniaRentalBackend.DTOs
     {
         public int CompanyId { get; set; }
 
-        /// <summary>
-        /// UserType for storing user type like admin,tenant,landonwer
-        /// </summary>
         public int UserType { get; set; }
 
-        /// <summary>
-        /// Required
-        /// </summary>
         [Required]
         [StringLength(50)]
         public required string UserName { get; set; }
 
-        /// <summary>
-        /// Required
-        /// </summary>
         [Required]
         [StringLength(50)]
         public required string Password { get; set; }
@@ -29,22 +20,18 @@ namespace XeniaRentalBackend.DTOs
 
         public string Email { get; set; }
 
-        /// <summary>
-        /// Is Active
-        /// Required
-        /// </summary>
         public bool IsActive { get; set; }
 
-        /// <summary>
-        /// Created Date
-        /// Optional
-        /// </summary>
         public DateTime CreatedDate { get; set; }
 
-        /// <summary>
-        /// Modified date
-        /// Optional
-        /// </summary>
         public DateTime Modifieddate { get; set; }
+        public List<UserMappingDto>? UserMappings { get; set; }
+    }
+
+    public class UserMappingDto
+    {
+        public int PropID { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

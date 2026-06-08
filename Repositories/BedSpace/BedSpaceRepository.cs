@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.Design;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 
@@ -119,7 +118,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
             var updatebedSpace = await _context.BedSpaces.FirstOrDefaultAsync(u => u.bedID == id);
             if (updatebedSpace == null) return false;
 
-            updatebedSpace.bedSpaceName = bedSpace.bedSpaceName ?? bedSpace.bedSpaceName;
+            updatebedSpace.bedSpaceName = bedSpace.bedSpaceName;
             updatebedSpace.bedSpaceCount = bedSpace.bedSpaceCount;
             updatebedSpace.companyID = bedSpace.companyID;
             updatebedSpace.planID = bedSpace.planID;

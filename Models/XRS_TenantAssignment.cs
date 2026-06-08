@@ -30,7 +30,6 @@ namespace XeniaRentalBackend.Models
         public int rentCollection { get; set; }
         public int escalationPer { get; set; }
         public DateTime? nextescalationDate { get; set; }
-        public DateTime rentDueDate { get; set; }
         public string? closureReason { get; set; }
         public DateTime? closureDate { get; set; }
         public decimal refundAmount { get; set; }

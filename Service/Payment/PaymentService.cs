@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using XeniaRentalBackend.Dtos;
-using XeniaTenoraBackend.DTOs;
 
 
 namespace XeniaRentalBackend.Service.Payment
@@ -38,7 +39,6 @@ namespace XeniaRentalBackend.Service.Payment
             return await GeneratePaymentLink(orderId, netAmount, token);
         }
 
-
         private async Task<string> GenerateAuthToken()
         {
             var tokenRequest = new
@@ -65,143 +65,63 @@ namespace XeniaRentalBackend.Service.Payment
             return tokenResult.token;
         }
 
-        //private async Task<string> GeneratePaymentLink(string orderId, decimal? netAmount, string token)
-        //{
-        //    var json = $@"
-        //    {{
-        //      ""amount"": ""{netAmount:F2}"",
-        //      ""mobileno"": ""9999999999"",
-        //      ""custcode"": ""{MERCHANT_CODE}"",
-        //      ""user_id"": ""{MSWIPE_USER_ID}"",
-        //      ""sessiontoken"": ""{token}"",
-        //      ""versionno"": ""VER4.0.0"",
-        //      ""email_id"": ""customer@test.com"",
-        //      ""invoice_id"": ""{orderId}"",
-        //      ""request_id"": ""{Guid.NewGuid():N}"",
-        //      ""ApplicationId"": ""api"",
-        //      ""ChannelId"": ""pbl"",
-        //      ""ClientId"": ""{MSWIPE_CLIENT_ID}""
-        //    }}";
-
-        //    using var content = new StringContent(
-        //        json,
-        //        Encoding.UTF8,
-        //        "application/json");
-
-        //    var response = await _httpClient.PostAsync(
-        //        UAT_PAYMENT_URL,
-        //        content);
-
-        //    var rawJson = await response.Content.ReadAsStringAsync();
-
-        //    if (!response.IsSuccessStatusCode)
-        //        throw new Exception($"HTTP ERROR: {rawJson}");
-
-        //    var result = JsonSerializer.Deserialize<MswipePaymentResponse>(
-        //        rawJson,
-        //        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        //    if (result == null || result.status != "True")
-        //        throw new Exception($"MSWIPE ERROR: {result?.responsemessage}");
-
-        //    return result.smslink;
-        //}
-
         private async Task<string> GeneratePaymentLink(string orderId, decimal? netAmount, string token)
         {
-            if (!netAmount.HasValue)
-                throw new Exception("Amount is null");
+            var json = $@"
+            {{
+              ""amount"": ""{netAmount:F2}"",
+              ""mobileno"": ""9999999999"",
+              ""custcode"": ""{MERCHANT_CODE}"",
+              ""user_id"": ""{MSWIPE_USER_ID}"",
+              ""sessiontoken"": ""{token}"",
+              ""versionno"": ""VER4.0.0"",
+              ""email_id"": ""customer@test.com"",
+              ""invoice_id"": ""{orderId}"",
+              ""request_id"": ""{Guid.NewGuid():N}"",
+              ""ApplicationId"": ""api"",
+              ""ChannelId"": ""pbl"",
+              ""ClientId"": ""{MSWIPE_CLIENT_ID}""
+            }}";
 
-            var request = new MswipePaymentRequest
-            {
-                Amount = netAmount.Value.ToString("F2"),
-                MobileNo = "9999999999",
-                CustCode = MERCHANT_CODE,
-                UserId = MSWIPE_USER_ID,
-                SessionToken = token,
-                VersionNo = "VER4.0.0",
-                EmailId = "customer@test.com",
-                InvoiceId = orderId,
-                RequestId = Guid.NewGuid().ToString("N"),
-                ApplicationId = "api",
-                ChannelId = "pbl",
-                ClientId = MSWIPE_CLIENT_ID
-            };
+            using var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
 
-            var response = await _httpClient.PostAsJsonAsync(UAT_PAYMENT_URL, request);
+            var response = await _httpClient.PostAsync(
+                UAT_PAYMENT_URL,
+                content);
 
             var rawJson = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"MSWIPE FAILED: HTTP {(int)response.StatusCode} | RESPONSE: {rawJson}");
-            }
-            var result = JsonSerializer.Deserialize<MswipePaymentResponse>(
+                throw new Exception($"HTTP ERROR: {rawJson}");
+
+            var result = System.Text.Json.JsonSerializer.Deserialize<MswipePaymentResponse>(
                 rawJson,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (result == null || result.status != "True")
-                throw new Exception($"MSWIPE ERROR: {result?.responsemessage} | RAW: {rawJson}");
+                throw new Exception($"MSWIPE ERROR: {result?.responsemessage}");
 
             return result.smslink;
         }
 
 
-        //public async Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId)
-        //{
-
-        //    var statusRequest = new { id = transId };
-
-        //    var statusResponse = await _httpClient.PostAsJsonAsync(
-        //        "https://pbl.mswipe.com/ipg/api/getPBLTransactionDetails",
-        //        statusRequest);
-
-        //    var rawJson = await statusResponse.Content.ReadAsStringAsync();
-
-        //    if (!statusResponse.IsSuccessStatusCode)
-        //        throw new Exception($"Transaction status failed. Raw: {rawJson}");
-
-        //    var result = JsonSerializer.Deserialize<MswipeTransactionStatusResponse>(
-        //        rawJson,
-        //        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        //    if (result == null || !string.Equals(result.Status, "True", StringComparison.OrdinalIgnoreCase))
-        //        throw new Exception("Transaction status check failed: " + result?.ResponseMessage);
-
-        //    return result;
-        //}
-
-
         public async Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId)
         {
-            // ✅ Extract MSwipe TransID from payment link URL if needed
-            if (transId.Contains("TransID="))
-                transId = transId.Split("TransID=")[1];
+            var statusRequest = new { id = transId };
 
-            // ✅ Get auth token
-            string token = await GenerateAuthToken();
-
-            var statusRequest = new
-            {
-                id = transId,
-                sessiontoken = token,        // ✅ auth
-                user_id = MSWIPE_USER_ID,    // ✅ auth
-                ClientId = MSWIPE_CLIENT_ID, // ✅ auth
-                ApplicationId = "api",
-                ChannelId = "pbl"
-            };
-
-            // ✅ UAT URL not PROD
             var statusResponse = await _httpClient.PostAsJsonAsync(
-                "https://dcuat.mswipetech.co.in/ipg/api/getPBLTransactionDetails",
+                "https://pbl.mswipe.com/ipg/api/getPBLTransactionDetails",
                 statusRequest);
 
             var rawJson = await statusResponse.Content.ReadAsStringAsync();
-            Console.WriteLine("RAW STATUS RESPONSE: " + rawJson); // ✅ check terminal
 
             if (!statusResponse.IsSuccessStatusCode)
                 throw new Exception($"Transaction status failed. Raw: {rawJson}");
 
-            var result = JsonSerializer.Deserialize<MswipeTransactionStatusResponse>(
+            var result = System.Text.Json.JsonSerializer.Deserialize<MswipeTransactionStatusResponse>(
                 rawJson,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
@@ -210,7 +130,63 @@ namespace XeniaRentalBackend.Service.Payment
 
             return result;
         }
+
+
+
+        public async Task<string> CreateOrderAsync(decimal amount, string currency, string apiKey, string apiSecret, string receiptNo, string customerName, string mobileNumber)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
+
+            var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            var orderData = new
+            {
+                amount = (int)(amount * 100),
+                currency,
+                receipt = receiptNo,
+                payment_capture = 1,
+                notes = new
+                {
+                    customer_name = customerName,
+                    customer_mobile = mobileNumber,
+                }
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(orderData), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("https://api.razorpay.com/v1/orders", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Razorpay Error ({response.StatusCode}): {errorResponse}");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            dynamic order = JsonConvert.DeserializeObject(json);
+
+            return order.id;
+        }
+
+        public async Task<string> GetOrderStatusAsync(string razorpayOrderId, string apiKey, string apiSecret)
+        {
+            using (var client = new HttpClient())
+            {
+                var byteArray = Encoding.ASCII.GetBytes($"{apiKey}:{apiSecret}");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+                var response = await client.GetAsync($"https://api.razorpay.com/v1/orders/{razorpayOrderId}");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<dynamic>(json);
+                string status = obj["status"];
+
+                return status;
+            }
+        }
     }
-
 }
-

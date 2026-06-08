@@ -9,7 +9,6 @@ namespace XeniaRentalBackend.Repositories.Subscription
         Task<MswipeTransactionStatusResponse> CheckTransactionStatusAsync(string transId);
    
         Task<bool> UpdatePaymentStatusAsync(string transactionRefId, bool isSuccess);
-
       
     }
 }

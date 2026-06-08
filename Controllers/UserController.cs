@@ -21,7 +21,6 @@ namespace XeniaRentalBackend.Controllers
         }
 
                
-        //[Authorize(Roles = "Admin,SuperAdmin")]
         [HttpGet("company/{companyId}")]
         public async Task<ActionResult<IEnumerable<XRS_Users>>> GetUserByCompanyId(int companyId)
 
@@ -35,8 +34,6 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-       
-        //[Authorize(Roles = "Admin,SuperAdmin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<XRS_Users>> GetUserById(int id)
         {
@@ -51,7 +48,6 @@ namespace XeniaRentalBackend.Controllers
                
 
 
-        //[Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] DTOs.CreateUser user)
         {
@@ -67,7 +63,6 @@ namespace XeniaRentalBackend.Controllers
 
                
 
-        //[Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUserSetting(int id, [FromBody] XRS_Users user)
         {
@@ -89,7 +84,6 @@ namespace XeniaRentalBackend.Controllers
 
        
 
-        //[Authorize(Roles = "Admin,SuperAdmin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserSettings(int id)
         {
@@ -101,6 +95,7 @@ namespace XeniaRentalBackend.Controllers
 
             return Ok(new { Status = "Success", Message = "User deleted successfully." });
         }
+
 
         [HttpGet("usertypes")]
         public IActionResult GetUserTypes()

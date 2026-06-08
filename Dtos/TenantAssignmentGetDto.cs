@@ -18,7 +18,6 @@
         public int rentCollection { get; set; }
         public int escalationPer { get; set; }
         public DateTime? nextescalationDate { get; set; }
-        public DateTime rentDueDate { get; set; }
         public decimal refundAmount { get; set; }
         public decimal dueAmount { get; set; }
         public decimal charges { get; set; }

@@ -27,13 +27,12 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("company/{companyId}")]
-        public async Task<IActionResult> GetByCompanyId( int companyId, bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null,int? propertyId = null, int? unitId = null, string? search = null)
+        public async Task<IActionResult> GetByCompanyId(int companyId, bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _tenantAssignmentRepository.GetByCompanyIdAsync( companyId,isBedSpace,startDate, endDate, propertyId,unitId, search);
+            var data = await _tenantAssignmentRepository.GetByCompanyIdAsync(companyId, isBedSpace, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
 
             return Ok(data);
         }
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -63,9 +62,10 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("company/closure/{companyId}")]
-        public async Task<IActionResult> GeClosure(int companyId,DateTime? startDate = null, DateTime? endDate = null,int ? propertyId = null, int? unitId = null, string? search = null)
+        public async Task<IActionResult> GeClosure( int companyId, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _tenantAssignmentRepository.GeClosure(companyId, startDate, endDate, propertyId, unitId, search);
+            var data = await _tenantAssignmentRepository.GeClosure( companyId, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
+
             return Ok(data);
         }
 
@@ -97,12 +97,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("cheque/{companyId}")]
-        public async Task<IActionResult> GetChequesByCompany(int companyId,string? search = null, DateTime? startDate = null,DateTime? endDate = null, string? status = null)
+        public async Task<IActionResult> GetChequesByCompany(int companyId, string? search = null, DateTime? startDate = null, DateTime? endDate = null, string? status = null, int pageNumber = 1, int pageSize = 25)
         {
-            var result = await _tenantAssignmentRepository.GetChequesByCompanyAsync( companyId, search, startDate, endDate, status);
-
-            if (result == null || !result.Any())
-                return NotFound(new { message = "No cheques found for this company." });
+            var result = await _tenantAssignmentRepository.GetChequesByCompanyAsync( companyId, search, startDate, endDate, status, pageNumber, pageSize);
 
             return Ok(result);
         }

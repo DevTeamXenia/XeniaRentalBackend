@@ -32,6 +32,7 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = accountGroups });
         }
 
+
         [HttpGet("company/{companyId}")]
         public async Task<ActionResult<IEnumerable<XRS_AccountGroup>>> GetAccountGroupsByCompanyId(int companyId)
         {
@@ -43,6 +44,7 @@ namespace XeniaRentalBackend.Controllers
             }
             return Ok(new { Status = "Success", Data = accountGroups });
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<XRS_AccountGroup>> GetaccountGroup(int id)

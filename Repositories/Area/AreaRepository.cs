@@ -12,10 +12,10 @@ namespace XeniaTenoraBackend.Repositories.Area
             _context = context;
         }
 
-        public async Task<IEnumerable<XRS_Area>> GetAllAreas()
+        public async Task<IEnumerable<XRS_Area>> GetAllAreas(int companyId)
         {
             return await _context.Areas
-                .Where(a => a.Active)
+                .Where(a => a.Active && a.CompanyID == companyId)
                 .ToListAsync();
         }
 
@@ -45,31 +45,6 @@ namespace XeniaTenoraBackend.Repositories.Area
 
             area.Active = false;
             return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> MapAreaToProperty(int propId, List<int> areaIds)
-        {
-            var existing = _context.PropertyAreas.Where(x => x.PropId == propId);
-            _context.PropertyAreas.RemoveRange(existing);
-
-            var mappings = areaIds.Select(areaId => new XRS_PropertyAreas
-            {
-                PropId = propId,
-                AreaId = areaId
-            });
-
-            await _context.PropertyAreas.AddRangeAsync(mappings);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<IEnumerable<XRS_Area>> GetAreasByProperty(int propId)
-        {
-            var query = from pa in _context.PropertyAreas
-                        join a in _context.Areas on pa.AreaId equals a.AreaId
-                        where pa.PropId == propId
-                        select a;
-
-            return await query.ToListAsync();
         }
     }
 }

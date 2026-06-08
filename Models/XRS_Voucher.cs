@@ -21,6 +21,10 @@ namespace XeniaRentalBackend.Models
 
         public DateTime VoucherDate { get; set; }
 
+        public int RentMonth { get; set; }
+
+        public int RentYear { get; set; }
+
         public string? VoucherType { get; set; }
 
         public int DrID { get; set; }
@@ -46,6 +50,7 @@ namespace XeniaRentalBackend.Models
         public bool? ChequeStatus { get; set; }
 
         public DateTime? ReconcilDate { get; set; }
+        public string? transcationId { get; set; }
 
         public DateTime? CreatedOn { get; set; }
 

@@ -9,12 +9,12 @@ namespace XeniaRentalBackend.Controllers
     [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
-    public class BedSpacePlan : ControllerBase
+    public class BedSpacePlanController : ControllerBase
     {
         private readonly IBedSpacePlanRepository _bedSpacePlanRepository;
 
 
-        public BedSpacePlan(IBedSpacePlanRepository bedSpacePlanRepository)
+        public BedSpacePlanController(IBedSpacePlanRepository bedSpacePlanRepository)
         {
             _bedSpacePlanRepository = bedSpacePlanRepository;
         }

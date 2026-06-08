@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Voucher;
+using XeniaTenoraBackend.Dtos;
 
 
 namespace XeniaRentalBackend.Controllers
@@ -55,21 +56,23 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("collectionStatus/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_Voucher>>> GetAllVouchers(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search)
+        public async Task<IActionResult> GetAllVouchers(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search, int pageNumber = 1, int pageSize = 25)
         {
-            var vouchers = await _voucherRepository.GetAllVouchersAsync(companyId, fromDate, toDate, propertyId, unitId, voucherStatus, search);
+            var vouchers = await _voucherRepository.GetCollectionStatusAsync(companyId, fromDate, toDate, propertyId, unitId, voucherStatus, search, pageNumber, pageSize);
+
             return Ok(vouchers);
         }
 
-        [HttpPut("collectionStatus/{id}")]
-        public async Task<IActionResult> UpdatePaymentVoucher(int id, [FromBody] VoucherDto dto)
+
+        [HttpPost("collectionStatus")]
+        public async Task<IActionResult> UpdatePaymentVoucher([FromBody] UpdatePaymentVoucherDto dto)
         {
             if (dto == null)
                 return BadRequest("Invalid voucher data.");
 
             try
             {
-                var result = await _voucherRepository.UpdatePaymentVoucherAsync(id,dto);
+                var result = await _voucherRepository.UpdatePaymentVoucherAsync(dto);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -83,9 +86,10 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("rent/initiate/{companyId:int}/{month:int}/{year:int}")]
-        public async Task<IActionResult> GetTenantCharges(int companyId , int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null)
+        public async Task<IActionResult> GetTenantCharges( int companyId, int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _voucherRepository.GetTenantChargesByMonthAsync(companyId, month, year, propertyId , unitId , bedSpaceId, search);
+            var data = await _voucherRepository.GetTenantChargesByMonthAsync( companyId, month, year, propertyId, unitId, bedSpaceId, search, pageNumber, pageSize);
+
             return Ok(data);
         }
 
@@ -115,6 +119,59 @@ namespace XeniaRentalBackend.Controllers
             return Ok(updatedVoucher);
         }
 
+
+        [HttpPost("rent/createPayment/{companyId:int}/{tenantId:int}/{unitId:int}/{month:int}/{year:int}")]
+        public async Task<IActionResult> CreateOrder(int companyId, int tenantId, int unitId, int month, int year)
+        {
+            try
+            {
+                var result = await _voucherRepository.CreatePaymentAsync(companyId, tenantId, unitId, month, year);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("rent/checkStatus/{companyId:int}")]
+        public async Task<IActionResult> GetRazorpayStatus(int companyId,[FromQuery] string razorpayOrderId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(razorpayOrderId))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "razorpayOrderId is required"
+                    });
+                }
+
+                var status = await _voucherRepository.CheckRazorpayOrderStatusAsync(companyId,razorpayOrderId);
+
+                return Ok(new
+                {
+                    success = true,
+                    status = status
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
 
     }
 }
