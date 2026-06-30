@@ -17,17 +17,17 @@ namespace XeniaRentalBackend.Controllers
         }
 
         [HttpGet("all/{companyId}")]
-        public async Task<IActionResult> GetUnits(int companyId, int? propertyId = null)
+        public async Task<IActionResult> GetUnits(int companyId, int userId, int? propertyId = null)
         {
-            var result = await _unitRepository.GetUnits(companyId, propertyId);
+            var result = await _unitRepository.GetUnits(companyId, userId, propertyId);
             return Ok(result);
         }
 
 
         [HttpGet("company/{companyId}")]
-        public async Task<IActionResult> GetUnitsByCompany(int companyId, string? search, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> GetUnitsByCompany(int companyId, int userId, string? search, int pageNumber = 1, int pageSize = 10)
         {
-            var result = await _unitRepository.GetUnitByCompanyId(companyId, search, pageNumber, pageSize);
+            var result = await _unitRepository.GetUnitByCompanyId(companyId, userId, search, pageNumber, pageSize);
             return Ok(result);
         }
 

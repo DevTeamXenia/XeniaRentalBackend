@@ -19,17 +19,17 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("company/all/{companyId}")]
-        public async Task<IActionResult> GetByCompanyAllId(int companyId, int? unitId = null)
+        public async Task<IActionResult> GetByCompanyAllId(int companyId, int userId ,int? unitId = null)
         {
-            var data = await _tenantAssignmentRepository.GetByCompanyAllId(companyId, unitId);
+            var data = await _tenantAssignmentRepository.GetByCompanyAllId(companyId, userId, unitId);
             return Ok(data);
         }
 
 
         [HttpGet("company/{companyId}")]
-        public async Task<IActionResult> GetByCompanyId(int companyId, bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
+        public async Task<IActionResult> GetByCompanyId(int companyId, int userId, bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _tenantAssignmentRepository.GetByCompanyIdAsync(companyId, isBedSpace, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
+            var data = await _tenantAssignmentRepository.GetByCompanyIdAsync(companyId, userId, isBedSpace, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
 
             return Ok(data);
         }
@@ -62,9 +62,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("company/closure/{companyId}")]
-        public async Task<IActionResult> GeClosure( int companyId, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
+        public async Task<IActionResult> GeClosure( int companyId, int userId, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _tenantAssignmentRepository.GeClosure( companyId, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
+            var data = await _tenantAssignmentRepository.GeClosure( companyId, userId, startDate, endDate, propertyId, unitId, search, pageNumber, pageSize);
 
             return Ok(data);
         }

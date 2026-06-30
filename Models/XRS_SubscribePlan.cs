@@ -18,7 +18,7 @@ namespace XeniaRentalBackend.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal PlanPrice { get; set; }
 
-        public int PlanDurationDays { get; set; }
+        public int? PlanDurationDays { get; set; }
 
         public int? PlanCreatedBy { get; set; }
 

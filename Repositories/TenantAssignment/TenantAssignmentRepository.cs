@@ -12,8 +12,17 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             _context = context;
 
         }
-        public async Task<IEnumerable<TenantAssignmentGetDto>> GetByCompanyAllId(int companyId, int? unitId = null)
+        public async Task<IEnumerable<TenantAssignmentGetDto>> GetByCompanyAllId(int companyId, int userId , int ? unitId = null)
         {
+
+           List<int>? userPropertyIds = null;
+
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             IQueryable<XRS_TenantAssignment> query = _context.TenantAssignemnts
                 .Include(t => t.Properties)
                 .Include(t => t.Unit)
@@ -21,11 +30,11 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     .ThenInclude(tenant => tenant.TenantDocuments)
                         .ThenInclude(td => td.Documents)
                 .AsNoTracking()
-                .Where(t => t.companyID == companyId && t.isClosure == false);
+                .Where(t => t.companyID == companyId && t.isClosure == false &&
+                            (userPropertyIds == null || userPropertyIds.Contains(t.propID)));  
 
             if (unitId.HasValue)
                 query = query.Where(t => t.unitID == unitId.Value);
-
 
             var assignments = await query.ToListAsync();
 
@@ -53,8 +62,16 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
             return result;
         }
 
-        public async Task<object> GetByCompanyIdAsync(int companyId, bool isBedSpace = false,DateTime? startDate = null, DateTime? endDate = null,int? propertyId = null,int? unitId = null, string? search = null, int pageNumber = 1,int pageSize = 25)
+        public async Task<object> GetByCompanyIdAsync(int companyId, int userId , bool isBedSpace = false, DateTime? startDate = null, DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
+            List<int>? userPropertyIds = null;
+     
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             IQueryable<XRS_TenantAssignment> query = _context.TenantAssignemnts
                 .Include(t => t.Properties)
                 .Include(t => t.Unit)
@@ -62,7 +79,8 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                     .ThenInclude(tenant => tenant.TenantDocuments)
                         .ThenInclude(td => td.Documents)
                 .AsNoTracking()
-                .Where(t => t.companyID == companyId && t.isClosure == false);
+                .Where(t => t.companyID == companyId && t.isClosure == false &&
+                            (userPropertyIds == null || userPropertyIds.Contains(t.propID)));  
 
             if (isBedSpace)
             {
@@ -107,10 +125,8 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 );
             }
 
-            // Total Count
             var totalRecords = await query.CountAsync();
 
-            // Pagination
             query = query
                 .OrderByDescending(t => t.tenantAssignId)
                 .Skip((pageNumber - 1) * pageSize)
@@ -177,8 +193,17 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 Data = result
             };
         }
-        public async Task<object> GeClosure( int companyId, DateTime? startDate = null,  DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
+
+        public async Task<object> GeClosure( int companyId, int userId, DateTime? startDate = null,  DateTime? endDate = null, int? propertyId = null, int? unitId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
+
+            List<int>? userPropertyIds = null;
+
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
             IQueryable<XRS_TenantAssignment> query = _context.TenantAssignemnts
                 .Include(t => t.Properties)
                 .Include(t => t.Unit)
@@ -188,7 +213,8 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 .AsNoTracking()
                 .Where(t =>
                     t.companyID == companyId &&
-                    t.isClosure == true);
+                    t.isClosure == true &&
+                  (userPropertyIds == null || userPropertyIds.Contains(t.propID)));
 
 
             if (startDate.HasValue)
@@ -293,6 +319,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 Data = data
             };
         }
+     
         public async Task<TenantAssignmentGetDto?> GetClosureById(int tenantAssignId)
         {
             var query = _context.TenantAssignemnts
@@ -334,7 +361,6 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 BedSpaceID = entity.bedSpaceID
             };
         }
-
 
         public async Task<TenantAssignmentGetDto?> GetByIdAsync(int tenantAssignId)
         {

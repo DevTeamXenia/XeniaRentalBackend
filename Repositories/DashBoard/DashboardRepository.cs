@@ -20,17 +20,26 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             _jwtHelperService = jwtHelperService;
         }
 
-        public async Task<RentDashboardDto> GetRentDashboardAsync(int companyId, DateTime fromDate, DateTime toDate)
+        public async Task<RentDashboardDto> GetRentDashboardAsync(int companyId, int userId , DateTime fromDate, DateTime toDate)
         {
             var from = fromDate.Date;
             var to = toDate.Date;
+
+            List<int>? userPropertyIds = null;
+
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
 
             var activeAssignments = await _context.TenantAssignemnts
                 .Where(t =>
                     t.companyID == companyId &&
                     !t.isClosure &&
                     t.agreementStartDate.Date <= to &&
-                    t.agreementEndDate.Date >= from
+                    t.agreementEndDate.Date >= from &&
+                    (userPropertyIds == null || userPropertyIds.Contains(t.propID))  
                 )
                 .ToListAsync();
 
@@ -38,7 +47,8 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 .Where(v => v.CompanyID == companyId &&
                             v.VoucherType == "Pay Rent" &&
                             v.VoucherDate >= fromDate &&
-                            v.VoucherDate <= toDate)
+                            v.VoucherDate <= toDate &&
+                            (userPropertyIds == null || userPropertyIds.Contains(v.PropID))) 
                 .ToListAsync();
 
             int paidCount = 0;
@@ -65,11 +75,13 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             var occupiedUnitIds = activeAssignments.Select(t => t.unitID).Distinct().Count();
 
             var totalPropertiesCount = await _context.Properties
-                .Where(p => p.CompanyId == companyId)
+                .Where(p => p.CompanyId == companyId &&
+                            (userPropertyIds == null || userPropertyIds.Contains(p.PropID)))  
                 .CountAsync();
 
             var totalUnitsCount = await _context.Units
-                .Where(u => u.CompanyId == companyId)
+                .Where(u => u.CompanyId == companyId &&
+                            (userPropertyIds == null || userPropertyIds.Contains(u.PropID))) 
                 .CountAsync();
 
             int vacantProperties = totalPropertiesCount - occupiedPropertyIds;
@@ -127,7 +139,6 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 CollectionRate = Math.Round(collectionRate, 2)
             };
         }
-
         public async Task<MonthlyRevenueResponseDto> GetMonthlyRentRevenueAsync(int companyid, int year)
         {
             var company = await _context.Company
@@ -195,9 +206,9 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             int intervalMonths = assignment.collectionType?.ToLower() switch
             {
                 "monthly" => 1,
-                "2 months" => 2,
+                "2months" => 2,
                 "quarterly" => 3,
-                "6 months" => 6,
+                "6months" => 6,
                 "yearly" => 12,
                 _ => 1
             };
@@ -226,7 +237,11 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 firstMonth.Month,
                 firstValidDay);
 
-   
+            // chargeAnchorDate mirrors the "first due month" anchor used in the
+            // other endpoints' IsChargeDue fallback (when a charge has never been
+            // actually invoiced yet).
+            DateTime chargeAnchorDate = firstMonth;
+
             var vouchers = await _context.Vouchers
                 .AsNoTracking()
                 .Where(v =>
@@ -244,7 +259,6 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 })
                 .ToListAsync();
 
-          
             var paidVoucherLookup = vouchers
                 .Where(v =>
                     v.VoucherStatus != null &&
@@ -256,15 +270,13 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 })
                 .ToDictionary(
                     g => $"{g.Key.RentYear}_{g.Key.RentMonth}",
-                    g => g.First()
-                );
+                    g => g.First());
 
             var voucherIds = vouchers
                 .Select(v => v.VoucherID)
                 .Distinct()
                 .ToList();
 
-           
             var voucherDetails = await (
                 from detail in _context.VoucherDetails.AsNoTracking()
 
@@ -288,7 +300,45 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 .GroupBy(x => x.voucherId)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.ToList()
+                    g => g.ToList());
+
+            // FIX (same pattern as GetTenantChargesByMonthAsync):
+            // Build a lookup of the last actual RentYear/RentMonth a given charge
+            // was invoiced for, plus the amount it was invoiced at, so that:
+            //  1) due-date checks for periodic (2Months/Quarterly/etc.) charges are
+            //     anchored to when the charge was actually last billed, not just a
+            //     simple modulo off the agreement start date (which drifts/repeats
+            //     incorrectly once a voucher has been raised mid-cycle).
+            //  2) variable charges in the "Not Initiated" preview show the last real
+            //     billed amount instead of the (often 0) placeholder configured in
+            //     UnitChargesMappings.
+            var voucherInfoLookup = vouchers
+                .ToDictionary(v => v.VoucherID, v => new { v.RentYear, v.RentMonth });
+
+            var voucherChargeHistory = (
+                from vd in voucherDetails
+                where voucherInfoLookup.ContainsKey(vd.voucherId)
+                let info = voucherInfoLookup[vd.voucherId]
+                select new
+                {
+                    vd.chargeID,
+                    info.RentYear,
+                    info.RentMonth,
+                    vd.amount
+                }
+            ).ToList();
+
+            var lastChargedLookup = voucherChargeHistory
+                .GroupBy(x => x.chargeID)
+                .ToDictionary(
+                    g => g.Key,
+                    g =>
+                    {
+                        var latest = g.OrderByDescending(x => x.RentYear)
+                                      .ThenByDescending(x => x.RentMonth)
+                                      .First();
+                        return (RentYear: latest.RentYear, RentMonth: latest.RentMonth, Amount: latest.amount);
+                    }
                 );
 
             var unitCharges = await (
@@ -301,30 +351,66 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                       && mapping.isActive
                       && charge.isActive
 
-                select new ChargeDetailDto
+                select new
                 {
                     ChargeId = mapping.chargeID,
-
                     ChargeName = charge.chargeName,
-
                     ChargeAmount = mapping.amount,
-
+                    Frequency = mapping.frequency,
                     IsVariable = charge.isVariable
                 }
             ).ToListAsync();
 
+            int GetFrequencyMonths(string? frequency) => frequency?.Trim().ToLower() switch
+            {
+                "monthly" => 1,
+                "2months" => 2,
+                "quarterly" => 3,
+                "6months" => 6,
+                "yearly" => 12,
+                _ => 1
+            };
+
+            // FIX: replaced the simple "months-since-agreementStart % interval == 0"
+            // check with the same last-actual-charge-anchored logic used elsewhere.
+            // The old version always measured from agreementStart, so once a charge
+            // had actually been billed mid-cycle (off the original anchor), it would
+            // keep firing/skipping on the wrong months going forward. This version
+            // anchors to the last real invoice date for that charge once one exists,
+            // and falls back to the agreement-start anchor only before the first
+            // invoice ever happens.
+            bool IsChargeDue(int chargeId, string? frequency, DateTime dueDate)
+            {
+                int intervalMonthsForCharge = GetFrequencyMonths(frequency);
+
+                if (!lastChargedLookup.TryGetValue(chargeId, out var last))
+                {
+                    int monthsSinceStart =
+                        ((dueDate.Year - chargeAnchorDate.Year) * 12) +
+                        (dueDate.Month - chargeAnchorDate.Month);
+
+                    if (monthsSinceStart < 0)
+                    {
+                        return false;
+                    }
+
+                    return monthsSinceStart % intervalMonthsForCharge == 0;
+                }
+
+                int monthsSinceLast =
+                    ((dueDate.Year - last.RentYear) * 12) + (dueDate.Month - last.RentMonth);
+
+                return monthsSinceLast > 0 && monthsSinceLast % intervalMonthsForCharge == 0;
+            }
+
             var rentSchedule = new List<UpcomingPaymentDto>();
 
-            var currentDueDate = firstDueDate;
-
-            while (currentDueDate <= agreementEnd)
+            var currentDueDate = firstDueDate; while (currentDueDate <= agreementEnd)
             {
-                string key =
-                    $"{currentDueDate.Year}_{currentDueDate.Month}";
+                string key = $"{currentDueDate.Year}_{currentDueDate.Month}";
 
                 paidVoucherLookup.TryGetValue(key, out var paidVoucher);
 
-    
                 if (paidVoucher == null)
                 {
                     decimal totalAmount = assignment.rentAmt;
@@ -333,35 +419,25 @@ namespace XeniaRentalBackend.Repositories.Dashboard
 
                     List<ChargeDetailDto> charges = new();
 
-                    var monthVoucher = vouchers
-                        .FirstOrDefault(v =>
-                            v.RentYear == currentDueDate.Year &&
-                            v.RentMonth == currentDueDate.Month);
+                    var monthVoucher = vouchers.FirstOrDefault(v =>
+                        v.RentYear == currentDueDate.Year &&
+                        v.RentMonth == currentDueDate.Month);
 
-                
                     if (monthVoucher != null)
                     {
                         remarks = string.IsNullOrWhiteSpace(monthVoucher.VoucherStatus)
                             ? "Initiated"
                             : monthVoucher.VoucherStatus;
 
-                        if (voucherChargeLookup.ContainsKey(monthVoucher.VoucherID))
+                        if (voucherChargeLookup.TryGetValue(monthVoucher.VoucherID, out var voucherCharges))
                         {
-                            var voucherCharges =
-                                voucherChargeLookup[monthVoucher.VoucherID];
-
                             charges = voucherCharges
-                                .Where(x => x.isVariable)
                                 .Select(x => new ChargeDetailDto
                                 {
                                     ChargeId = x.chargeID,
-
                                     ChargeName = x.chargeName,
-
                                     ChargeAmount = x.amount,
-
                                     IsVariable = x.isVariable,
-
                                     Status = remarks
                                 })
                                 .ToList();
@@ -372,17 +448,18 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                     else
                     {
                         charges = unitCharges
-                            .Where(x => x.IsVariable)
+                            .Where(x => IsChargeDue(x.ChargeId, x.Frequency, currentDueDate))
                             .Select(x => new ChargeDetailDto
                             {
                                 ChargeId = x.ChargeId,
-
                                 ChargeName = x.ChargeName,
-
-                                ChargeAmount = x.ChargeAmount,
-
+                                // FIX: variable charges now carry forward the last actually
+                                // invoiced amount (when one exists) instead of always using
+                                // the UnitChargesMappings placeholder amount, which is often 0.
+                                ChargeAmount = x.IsVariable && lastChargedLookup.TryGetValue(x.ChargeId, out var lastCharge)
+                                    ? lastCharge.Amount
+                                    : x.ChargeAmount,
                                 IsVariable = x.IsVariable,
-
                                 Status = "Not Initiated"
                             })
                             .ToList();
@@ -397,44 +474,36 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                     rentSchedule.Add(new UpcomingPaymentDto
                     {
                         RentDueDate = currentDueDate.ToString("dd MMM yyyy"),
-
                         RentAmount = totalAmount,
-
                         Remarks = remarks,
-
                         Charges = charges
                     });
                 }
 
-   
                 var nextMonth = currentDueDate.AddMonths(intervalMonths);
 
                 int validDay = Math.Min(
                     dueDay,
-                    DateTime.DaysInMonth(
-                        nextMonth.Year,
-                        nextMonth.Month));
+                    DateTime.DaysInMonth(nextMonth.Year, nextMonth.Month));
 
                 currentDueDate = new DateTime(
                     nextMonth.Year,
                     nextMonth.Month,
                     validDay);
             }
-
             var previousUnpaidPayments = rentSchedule
-                .Where(x =>
-                    DateTime.ParseExact(
-                        x.RentDueDate,
-                        "dd MMM yyyy",
-                        null) < today)
-                .OrderByDescending(x =>
-                    DateTime.ParseExact(
-                        x.RentDueDate,
-                        "dd MMM yyyy",
-                        null))
-                .ToList();
+        .Where(x =>
+            DateTime.ParseExact(
+                x.RentDueDate,
+                "dd MMM yyyy",
+                null) < today)
+        .OrderByDescending(x =>
+            DateTime.ParseExact(
+                x.RentDueDate,
+                "dd MMM yyyy",
+                null))
+        .ToList();
 
-      
             var nextUpcomingPayment = rentSchedule
                 .Where(x =>
                     DateTime.ParseExact(
@@ -448,7 +517,6 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                         null))
                 .FirstOrDefault();
 
-
             var previousPaidPayments = await _context.Vouchers
                 .AsNoTracking()
                 .Where(v =>
@@ -461,9 +529,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 .Select(v => new PaidPaymentDto
                 {
                     VoucherId = v.VoucherID,
-
                     VoucherDate = v.VoucherDate,
-
                     Amount = v.Amount
                 })
                 .ToListAsync();
@@ -471,9 +537,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             return new TenantPaymentSummaryDto
             {
                 PreviousUnpaidPayments = previousUnpaidPayments,
-
                 NextUpcomingPayment = nextUpcomingPayment,
-
                 PreviousPaidPayments = previousPaidPayments
             };
         }

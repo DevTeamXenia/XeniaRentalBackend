@@ -101,17 +101,26 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .ToListAsync<object>();
         }
 
-        public async Task<object> GetCollectionStatusAsync(int companyId,DateTime? fromDate, DateTime? toDate,int? propertyId, int? unitId, string? voucherStatus, string? search, int pageNumber = 1, int pageSize = 10)
+        public async Task<object> GetCollectionStatusAsync(int companyId, int userId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search, int pageNumber = 1, int pageSize = 10)
         {
+            List<int>? userPropertyIds = null;
+
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+
+
             DateTime from = (fromDate ?? DateTime.Today).Date;
             DateTime to = (toDate ?? DateTime.Today).Date;
 
             var tenantQuery = _context.TenantAssignemnts
-                .AsNoTracking()
-                .Where(t =>
-                    t.companyID == companyId &&
-                    t.isActive &&
-                    !t.isClosure);
+           .AsNoTracking()
+           .Where(t =>
+               t.companyID == companyId &&
+               t.isActive &&
+               !t.isClosure &&
+           (userPropertyIds == null || userPropertyIds.Contains(t.propID)));
 
             if (propertyId.HasValue)
             {
@@ -207,7 +216,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     g => g.First()
                 );
 
-        
+
 
             var chequeRegisters = await _context.TenantChequeRegisters
                 .AsNoTracking()
@@ -229,7 +238,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 })
                 .ToListAsync();
 
-     
+
             var chequeLookup = chequeRegisters
                 .Where(x => x.chequeDate.HasValue)
                 .GroupBy(x => new
@@ -243,21 +252,21 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     g => g.First()
                 );
 
-      
+
 
             var voucherIds = vouchers
                 .Select(v => v.VoucherID)
                 .Distinct()
                 .ToList();
 
-            var voucherVariableCharges = await (
+  
+            var voucherChargeDetails = await (
                 from vd in _context.VoucherDetails.AsNoTracking()
 
                 join charge in _context.Charges.AsNoTracking()
                     on vd.chargeId equals charge.chargeID
 
                 where voucherIds.Contains(vd.voucherId)
-                      && charge.isVariable
 
                 select new
                 {
@@ -265,18 +274,47 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     vd.chargeId,
                     ChargeName = charge.chargeName,
                     Amount = vd.amount,
-                    charge.isVariable
+                    IsVariable = charge.isVariable
                 }
             ).ToListAsync();
 
-            var voucherVariableChargeLookup = voucherVariableCharges
+            var voucherChargeDetailLookup = voucherChargeDetails
                 .GroupBy(x => x.voucherId)
                 .ToDictionary(
                     g => g.Key,
                     g => g.ToList()
                 );
 
-      
+            var voucherInfoLookup = vouchers
+                .ToDictionary(v => v.VoucherID, v => new { v.CrID, v.RentYear, v.RentMonth });
+
+            var voucherChargeHistory = (
+                from vd in voucherChargeDetails
+                where voucherInfoLookup.ContainsKey(vd.voucherId)
+                let info = voucherInfoLookup[vd.voucherId]
+                select new
+                {
+                    info.CrID,
+                    vd.chargeId,
+                    info.RentYear,
+                    info.RentMonth
+                }
+            ).ToList();
+
+            var lastChargedLookup = voucherChargeHistory
+                .GroupBy(x => $"{x.CrID}_{x.chargeId}")
+                .ToDictionary(
+                    g => g.Key,
+                    g =>
+                    {
+                        var latest = g.OrderByDescending(x => x.RentYear)
+                                      .ThenByDescending(x => x.RentMonth)
+                                      .First();
+                        return (RentYear: latest.RentYear, RentMonth: latest.RentMonth);
+                    }
+                );
+
+
 
             var allCharges = await (
                 from mapping in _context.UnitChargesMappings.AsNoTracking()
@@ -298,7 +336,9 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                     Amount = mapping.amount,
 
-                    IsVariable = charge.isVariable
+                    IsVariable = charge.isVariable,
+
+                    Frequency = mapping.frequency
                 }
             ).ToListAsync();
 
@@ -327,7 +367,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
             var variableChargeSet = variableChargeUnits.ToHashSet();
 
-   
+
             var result = new List<dynamic>();
 
             foreach (var tenant in tenants)
@@ -335,9 +375,9 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 int intervalMonths = tenant.collectionType?.ToLower() switch
                 {
                     "monthly" => 1,
-                    "2 months" => 2,
-                    "quarterly" => 3,
-                    "6 months" => 6,
+                    "2months" => 2,
+                    "quaterly" => 3,
+                    "6months" => 6,
                     "yearly" => 12,
                     _ => 1
                 };
@@ -347,9 +387,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     : tenant.rentCollection;
 
                 DateTime currentMonth = new DateTime(
-                    tenant.agreementStartDate.Year,
-                    tenant.agreementStartDate.Month,
-                    1);
+                     tenant.agreementStartDate.Year,
+                     tenant.agreementStartDate.Month,
+                     1).AddMonths(intervalMonths);
+
+                DateTime chargeAnchorDate = currentMonth;
 
                 while (currentMonth <= tenant.agreementEndDate.Date)
                 {
@@ -384,7 +426,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
 
                         string status = "Pending";
-  
+
                         if (voucher != null)
                         {
                             status = string.IsNullOrWhiteSpace(voucher.VoucherStatus)
@@ -410,48 +452,68 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 : "Pending";
                         }
 
+
                         if (!string.IsNullOrWhiteSpace(voucherStatus))
                         {
-                            if (!status.Equals(
-                                voucherStatus,
-                                StringComparison.OrdinalIgnoreCase))
+                            if (voucherStatus.Equals("Pending", StringComparison.OrdinalIgnoreCase))
                             {
-                                currentMonth = currentMonth.AddMonths(intervalMonths);
-                                continue;
+                                if (status.Equals("Paid", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    currentMonth = currentMonth.AddMonths(intervalMonths);
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                if (!status.Equals(voucherStatus, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    currentMonth = currentMonth.AddMonths(intervalMonths);
+                                    continue;
+                                }
                             }
                         }
 
-
-
                         var chargeItems = new List<object>();
 
-                        if (chargeLookup.ContainsKey(tenant.unitID))
+                        if (voucher != null)
+                        {
+                            if (voucherChargeDetailLookup.TryGetValue(voucher.VoucherID, out var invoicedCharges))
+                            {
+                                foreach (var vc in invoicedCharges)
+                                {
+                                    chargeItems.Add(new
+                                    {
+                                        ChargeID = vc.chargeId,
+                                        ChargeName = vc.ChargeName,
+                                        Amount = vc.Amount,
+                                        IsVariable = vc.IsVariable
+                                    });
+                                }
+                            }
+                        }
+                        else if (chargeLookup.ContainsKey(tenant.unitID))
                         {
                             foreach (var charge in chargeLookup[tenant.unitID])
                             {
-                                decimal amount = charge.Amount;
+                                bool isDue = IsChargeDueByDate(
+                                          lastChargedLookup,
+                                          tenant.tenantID,
+                                          charge.ChargeID,
+                                          charge.Frequency,
+                                          dueDate.Year,
+                                          dueDate.Month,
+                                           chargeAnchorDate);
 
-                                if (charge.IsVariable)
+                                if (!isDue)
                                 {
-                                    if (voucher != null &&
-                                        voucherVariableChargeLookup.ContainsKey(voucher.VoucherID))
-                                    {
-                                        var voucherCharge =
-                                            voucherVariableChargeLookup[voucher.VoucherID]
-                                            .FirstOrDefault(x =>
-                                                x.chargeId == charge.ChargeID);
-
-                                        amount = voucherCharge != null
-                                            ? voucherCharge.Amount
-                                            : 0;
-                                    }
+                                    continue;
                                 }
 
                                 chargeItems.Add(new
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = amount,
+                                    Amount = charge.Amount,
                                     charge.IsVariable
                                 });
                             }
@@ -556,6 +618,32 @@ namespace XeniaRentalBackend.Repositories.Voucher
             };
         }
 
+        private static bool IsChargeDueByDate(Dictionary<string, (int RentYear, int RentMonth)> lastChargedLookup, int tenantId, int chargeId, string? frequency, int currentYear, int currentMonth, DateTime agreementStartDate)
+        {
+            var key = $"{tenantId}_{chargeId}";
+
+            int intervalMonths = GetFrequencyMonths(frequency);
+
+            if (!lastChargedLookup.TryGetValue(key, out var last))
+            {
+                int monthsSinceStart =
+                    ((currentYear - agreementStartDate.Year) * 12) +
+                    (currentMonth - agreementStartDate.Month);
+
+                if (monthsSinceStart < 0)
+                {
+                    return false;
+                }
+
+                return monthsSinceStart % intervalMonths == 0;
+            }
+
+            int monthsSinceLast =
+                ((currentYear - last.RentYear) * 12) + (currentMonth - last.RentMonth);
+
+            return monthsSinceLast > 0 && monthsSinceLast % intervalMonths == 0;
+        }
+     
         public async Task<object?> GetVoucherByIdAsync(int id)
         {
             var query = from v in _context.Vouchers
@@ -788,35 +876,25 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
         public async Task<XRS_Voucher> UpdatePaymentVoucherAsync(UpdatePaymentVoucherDto dto)
         {
-            using var transaction =
-                await _context.Database.BeginTransactionAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
                 var now = DateTime.Now;
 
-                var voucher = await _context.Vouchers
-                    .FirstOrDefaultAsync(v =>
-                        v.VoucherID == dto.VoucherID);
-
-                if (voucher == null)
-                    throw new Exception("Voucher not found.");
-
                 bool isManualRef =
                     string.IsNullOrWhiteSpace(dto.RefNo) ||
-                    dto.RefNo.Trim().Equals(
-                        "MANUAL",
-                        StringComparison.OrdinalIgnoreCase);
+                    dto.RefNo.Trim().Equals("MANUAL", StringComparison.OrdinalIgnoreCase);
 
                 var cashLedger = await _context.Ledgers
                     .FirstOrDefaultAsync(l =>
                         l.ledgerCode == "Cash" &&
-                        l.companyID == voucher.CompanyID);
+                        l.companyID == dto.companyId);
 
                 var bankLedger = await _context.Ledgers
                     .FirstOrDefaultAsync(l =>
                         l.ledgerCode == "Bank" &&
-                        l.companyID == voucher.CompanyID);
+                        l.companyID == dto.companyId);
 
                 if (cashLedger == null)
                     throw new Exception("Cash ledger not found.");
@@ -824,51 +902,94 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 if (bankLedger == null)
                     throw new Exception("Bank ledger not found.");
 
-                var paymentLedger =
-                    isManualRef ? cashLedger : bankLedger;
+                var paymentLedger = isManualRef ? cashLedger : bankLedger;
 
-
-                voucher.VoucherDate = dto.VoucherDate;
-                voucher.RefNo = dto.RefNo;
-                voucher.Remarks = dto.Remarks;
-                voucher.IssueingBank = dto.IssuingBank;
-                voucher.ChequeNo = dto.ChequeNo;
-                voucher.Cancelled = dto.Cancelled;
-                voucher.IsReconcil = dto.IsReconcil;
-                voucher.ChequeStatus = dto.ChequeStatus;
-                voucher.ReconcilDate = dto.ReconcilDate;
-                voucher.VoucherStatus = dto.VoucherStatus;
-                voucher.ModifiedOn = now;
-                voucher.ModificationBy =
-                    dto.ModificationBy ?? "System";
-
-                voucher.DrID = paymentLedger.ledgerID;
-
-                await _context.SaveChangesAsync();
-
-  
-                var oldAccounts = await _context.Accounts
-                    .Where(a => a.VoucherId == voucher.VoucherID)
-                    .ToListAsync();
-
-                if (oldAccounts.Any())
-                {
-                    _context.Accounts.RemoveRange(oldAccounts);
-
-                    await _context.SaveChangesAsync();
-                }
-
-                var indirectIncomeGroup =
-                    await _context.AccountGroups
+                var indirectIncomeGroup = await _context.AccountGroups
                     .FirstOrDefaultAsync(g =>
                         g.groupName == "INDIRECT INCOME" &&
-                        g.companyID == voucher.CompanyID);
+                        g.companyID == dto.companyId);
 
                 if (indirectIncomeGroup == null)
-                    throw new Exception(
-                        "Indirect Income group not found.");
+                    throw new Exception("Indirect Income group not found.");
 
+                XRS_Voucher? voucher;
 
+           
+                if (dto.voucherId == 0 || dto.voucherId == null)
+                {
+                    var lastVoucher = await _context.Vouchers
+                        .Where(v => v.CompanyID == dto.companyId && v.VoucherType == "Pay Rent")
+                        .OrderByDescending(v => v.VoucherID)
+                        .FirstOrDefaultAsync();
+
+                    string newVoucherNo = GenerateVoucherNo(lastVoucher?.VoucherNo);
+
+                    voucher = new XRS_Voucher
+                    {
+                        CompanyID = dto.companyId,
+                        VoucherNo = newVoucherNo,
+                        VoucherType = "Pay Rent",
+                        VoucherDate = dto.VoucherDate,
+                        RefNo = dto.RefNo,
+                        Remarks = dto.Remarks,
+                        IssueingBank = dto.IssuingBank,
+                        ChequeNo = dto.ChequeNo,
+                        Cancelled = dto.Cancelled,
+                        IsReconcil = dto.IsReconcil,
+                        ChequeStatus = dto.ChequeStatus,
+                        ReconcilDate = dto.ReconcilDate,
+                        VoucherStatus = dto.VoucherStatus,
+                        DrID = paymentLedger.ledgerID,
+                        CrID = dto.tenantId,   
+                        Amount = dto.amount,
+                        unitID = dto.unitId,
+                        PropID = dto.propId,
+                        RentMonth = dto.rentMonth,
+                        RentYear = dto.rentYear,
+                        isActive = true,
+                        CreatedOn = now,
+                        CreatedBy = dto.ModificationBy ?? "System",
+                        ModifiedOn = now,
+                        ModificationBy = dto.ModificationBy ?? "System"
+                    };
+
+                    _context.Vouchers.Add(voucher);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    voucher = await _context.Vouchers
+                        .FirstOrDefaultAsync(v => v.VoucherID == dto.voucherId);
+
+                    if (voucher == null)
+                        throw new Exception("Voucher not found.");
+
+                    voucher.VoucherDate = dto.VoucherDate;
+                    voucher.RefNo = dto.RefNo;
+                    voucher.Remarks = dto.Remarks;
+                    voucher.IssueingBank = dto.IssuingBank;
+                    voucher.ChequeNo = dto.ChequeNo;
+                    voucher.Cancelled = dto.Cancelled;
+                    voucher.IsReconcil = dto.IsReconcil;
+                    voucher.ChequeStatus = dto.ChequeStatus;
+                    voucher.ReconcilDate = dto.ReconcilDate;
+                    voucher.VoucherStatus = dto.VoucherStatus;
+                    voucher.ModifiedOn = now;
+                    voucher.ModificationBy = dto.ModificationBy ?? "System";
+                    voucher.DrID = paymentLedger.ledgerID;
+
+                    await _context.SaveChangesAsync();
+        
+                    var oldAccounts = await _context.Accounts
+                        .Where(a => a.VoucherId == voucher.VoucherID)
+                        .ToListAsync();
+
+                    if (oldAccounts.Any())
+                    {
+                        _context.Accounts.RemoveRange(oldAccounts);
+                        await _context.SaveChangesAsync();
+                    }
+                }
                 var debitEntry = new XRS_Accounts
                 {
                     companyID = voucher.CompanyID,
@@ -911,11 +1032,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     isActive = true
                 };
 
-                _context.Accounts.AddRange(
-                    debitEntry,
-                    creditEntry
-                );
-
+                _context.Accounts.AddRange(debitEntry, creditEntry);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
@@ -927,6 +1044,18 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        private string GenerateVoucherNo(string? lastVoucherNo)
+        {
+            if (string.IsNullOrWhiteSpace(lastVoucherNo))
+                return "PAY-0001";
+
+            var parts = lastVoucherNo.Split('-');
+            if (parts.Length == 2 && int.TryParse(parts[1], out int num))
+                return $"{parts[0]}-{(num + 1):D4}";
+
+            return "PAY-0001";
         }
 
         public async Task<XRS_Voucher> CreateIntiateAsync(VoucherCreateRequest request)
@@ -1048,13 +1177,22 @@ namespace XeniaRentalBackend.Repositories.Voucher
             }
         }
 
-        public async Task<object> GetTenantChargesByMonthAsync( int companyId, int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
+        public async Task<object> GetTenantChargesByMonthAsync(int companyId, int userId, int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
+            List<int>? userPropertyIds = null;
+
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+
+
             var tenantQuery = _context.TenantAssignemnts
                 .AsNoTracking()
                 .Where(t =>
                     !t.isClosure &&
-                    t.companyID == companyId);
+                    t.companyID == companyId &&
+                    (userPropertyIds == null || userPropertyIds.Contains(t.propID)));
 
             if (propertyId.HasValue)
             {
@@ -1087,27 +1225,15 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .Select(t => new
                 {
                     t.tenantID,
-
                     TenantName = t.Tenant.tenantName,
-
                     t.unitID,
-
                     UnitName = t.Unit.UnitName,
-
                     PropertyName = t.Unit.Property.propertyName,
-
                     PropertyId = t.Unit.Property.PropID,
-
-                    BedSpaceName = t.BedSpace != null
-                        ? t.BedSpace.bedSpaceName
-                        : null,
-
+                    BedSpaceName = t.BedSpace != null ? t.BedSpace.bedSpaceName : null,
                     t.agreementStartDate,
-
                     t.rentCollection,
-
                     t.collectionType,
-
                     t.rentAmt
                 })
                 .ToListAsync();
@@ -1124,15 +1250,9 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 };
             }
 
-            var tenantIds = tenants
-                .Select(x => x.tenantID)
-                .Distinct()
-                .ToList();
+            var tenantIds = tenants.Select(x => x.tenantID).Distinct().ToList();
+            var unitIds = tenants.Select(x => x.unitID).Distinct().ToList();
 
-            var unitIds = tenants
-                .Select(x => x.unitID)
-                .Distinct()
-                .ToList();
 
             var vouchers = await _context.Vouchers
                 .AsNoTracking()
@@ -1150,23 +1270,16 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .Select(v => new
                 {
                     v.VoucherID,
-
                     v.CrID,
-
                     v.VoucherDate,
-
                     v.RentMonth,
-
                     v.RentYear,
-
                     v.VoucherStatus
                 })
                 .ToListAsync();
 
-            var voucherIds = vouchers
-                .Select(v => v.VoucherID)
-                .Distinct()
-                .ToList();
+            var voucherIds = vouchers.Select(v => v.VoucherID).Distinct().ToList();
+
 
             var voucherDetails = await _context.VoucherDetails
                 .AsNoTracking()
@@ -1174,51 +1287,85 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .Select(d => new
                 {
                     d.voucherId,
-
-                    Charge = new ChargeDto
-                    {
-                        ChargeId = d.chargeId,
-
-                        ChargeName = d.Charge.chargeName,
-
-                        ChargeAmount = d.amount,
-
-                        IsVariable = d.Charge.isVariable
-                    }
+                    d.chargeId,
+                    d.amount,
+                    ChargeName = d.Charge.chargeName,
+                    IsVariable = d.Charge.isVariable,
+                    IsRentCharge = d.Charge.chargeName == "Rent"
                 })
                 .ToListAsync();
+
 
             var voucherDetailLookup = voucherDetails
                 .GroupBy(x => x.voucherId)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(x => x.Charge).ToList()
+                    g => g.Select(x => new ChargeDto
+                    {
+                        ChargeId = x.chargeId,
+                        ChargeName = x.ChargeName,
+                        ChargeAmount = x.amount,
+                        IsVariable = x.IsVariable
+                    }).ToList()
                 );
 
+
+            var voucherRentLookup = voucherDetails
+                .Where(x => x.IsRentCharge)
+                .GroupBy(x => x.voucherId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.First().amount
+                );
+
+            var voucherCrIdLookup = vouchers
+                .ToDictionary(v => v.VoucherID, v => v.CrID);
+
+
+            var voucherChargeHistory = (
+                from vd in voucherDetails
+                where voucherCrIdLookup.ContainsKey(vd.voucherId)
+                let v = vouchers.First(x => x.VoucherID == vd.voucherId)
+                select new
+                {
+                    CrID = v.CrID,
+                    vd.chargeId,
+                    v.RentYear,
+                    v.RentMonth,
+                    vd.amount
+                }
+            ).ToList();
+
+            var lastChargedLookup = voucherChargeHistory
+                .GroupBy(x => $"{x.CrID}_{x.chargeId}")
+                .ToDictionary(
+                    g => g.Key,
+                    g =>
+                    {
+                        var latest = g.OrderByDescending(x => x.RentYear)
+                                      .ThenByDescending(x => x.RentMonth)
+                                      .First();
+                        return (RentYear: latest.RentYear, RentMonth: latest.RentMonth, Amount: latest.amount);
+                    }
+                );
             var unitCharges = await (
                 from mapping in _context.UnitChargesMappings.AsNoTracking()
-
                 join charge in _context.Charges.AsNoTracking()
                     on mapping.chargeID equals charge.chargeID
-
                 where unitIds.Contains(mapping.unitID)
                       && mapping.isActive
                       && charge.isActive
-
                 select new
                 {
                     mapping.unitID,
-
                     Charge = new ChargeDto
                     {
                         ChargeId = charge.chargeID,
-
                         ChargeName = charge.chargeName,
-
                         ChargeAmount = charge.chargeAmt,
-
                         IsVariable = charge.isVariable
-                    }
+                    },
+                    Frequency = mapping.frequency
                 }
             ).ToListAsync();
 
@@ -1226,16 +1373,15 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .GroupBy(x => x.unitID)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(x => x.Charge).ToList()
+                    g => g.Select(x =>
+                    {
+                        x.Charge.Frequency = x.Frequency;
+                        return x.Charge;
+                    }).ToList()
                 );
 
             var voucherLookup = vouchers
-                .GroupBy(v => new
-                {
-                    v.CrID,
-                    v.RentYear,
-                    v.RentMonth
-                })
+                .GroupBy(v => new { v.CrID, v.RentYear, v.RentMonth })
                 .ToDictionary(
                     g => $"{g.Key.CrID}_{g.Key.RentYear}_{g.Key.RentMonth}",
                     g => g.First()
@@ -1253,20 +1399,32 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     year
                 );
 
+                int chargeIntervalAnchorMonths = tenant.collectionType?.ToLower() switch
+                {
+                    "monthly" => 1,
+                    "2months" => 2,
+                    "quaterly" => 3,
+                    "6months" => 6,
+                    "yearly" => 12,
+                    _ => 1
+                };
+
+                DateTime chargeAnchorDate = new DateTime(
+                    tenant.agreementStartDate.Year,
+                    tenant.agreementStartDate.Month,
+                    1).AddMonths(chargeIntervalAnchorMonths);
+
                 foreach (var nextDueDate in dueDates)
                 {
-                    var key =
-                        $"{tenant.tenantID}_{nextDueDate.Year}_{nextDueDate.Month}";
+                    var key = $"{tenant.tenantID}_{nextDueDate.Year}_{nextDueDate.Month}";
 
                     voucherLookup.TryGetValue(key, out var voucher);
 
                     string status;
-
                     List<ChargeDto> variableCharges;
-
                     List<ChargeDto> fixedCharges;
-
                     decimal totalCharges;
+                    decimal rentAmount;
 
                     if (voucher != null)
                     {
@@ -1278,18 +1436,19 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             ? voucherChargeList
                             : new List<ChargeDto>();
 
-                        variableCharges = details
-                            .Where(c => c.IsVariable)
-                            .ToList();
 
-                        fixedCharges = details
-                            .Where(c => !c.IsVariable)
-                            .ToList();
+                        if (voucherRentLookup.TryGetValue(voucher.VoucherID, out var voucherRentAmount))
+                        {
+                            rentAmount = voucherRentAmount;
+                        }
+                        else
+                        {
+                            rentAmount = tenant.rentAmt;
+                        }
 
-                        totalCharges =
-                            tenant.rentAmt +
-                            variableCharges.Sum(c => c.ChargeAmount) +
-                            fixedCharges.Sum(c => c.ChargeAmount);
+                        variableCharges = details.Where(c => c.IsVariable && c.ChargeName != "Rent").ToList();
+                        fixedCharges = details.Where(c => !c.IsVariable && c.ChargeName != "Rent").ToList();
+                        totalCharges = rentAmount + variableCharges.Sum(c => c.ChargeAmount) + fixedCharges.Sum(c => c.ChargeAmount);
                     }
                     else
                     {
@@ -1298,69 +1457,61 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         var charges = unitChargeLookup.TryGetValue(
                             tenant.unitID,
                             out var unitChargeList)
-                            ? unitChargeList
+                            ? unitChargeList.Select(c => new ChargeDto
+                            {
+                                ChargeId = c.ChargeId,
+                                ChargeName = c.ChargeName,
+                                ChargeAmount = c.ChargeAmount,
+                                IsVariable = c.IsVariable,
+                                Frequency = c.Frequency
+                            }).ToList()
                             : new List<ChargeDto>();
 
-                        variableCharges = charges
-                            .Where(c => c.IsVariable)
+                        charges = charges
+                            .Where(c => IsChargeDue(
+                                lastChargedLookup,
+                                tenant.tenantID,
+                                c.ChargeId,
+                                c.Frequency,
+                                nextDueDate.Year,
+                                nextDueDate.Month,
+                                chargeAnchorDate))
                             .ToList();
 
-                        fixedCharges = charges
-                            .Where(c => !c.IsVariable)
-                            .ToList();
-
-                        if (!variableCharges.Any() &&
-                            !fixedCharges.Any())
+                
+                        foreach (var c in charges.Where(c => c.IsVariable))
                         {
-                            continue;
+                            var lastKey = $"{tenant.tenantID}_{c.ChargeId}";
+                            if (lastChargedLookup.TryGetValue(lastKey, out var lastCharge))
+                            {
+                                c.ChargeAmount = lastCharge.Amount;
+                            }
                         }
 
-                        if (!variableCharges.Any() &&
-                            fixedCharges.Any())
-                        {
-                            continue;
-                        }
+                        variableCharges = charges.Where(c => c.IsVariable).ToList();
+                        fixedCharges = charges.Where(c => !c.IsVariable).ToList();
 
-                        totalCharges =
-                            tenant.rentAmt +
-                            variableCharges.Sum(c => c.ChargeAmount) +
-                            fixedCharges.Sum(c => c.ChargeAmount);
+                        rentAmount = tenant.rentAmt;
+                        totalCharges = rentAmount + variableCharges.Sum(c => c.ChargeAmount) + fixedCharges.Sum(c => c.ChargeAmount);
                     }
 
                     result.Add(new
                     {
-                        VoucherID = voucher != null
-                            ? voucher.VoucherID
-                            : 0,
-
+                        VoucherID = voucher != null ? voucher.VoucherID : 0,
                         tenant.tenantID,
-
                         tenant.TenantName,
-
                         tenant.PropertyId,
-
                         tenant.unitID,
-
                         tenant.UnitName,
-
                         tenant.PropertyName,
-
                         tenant.BedSpaceName,
-
                         tenant.rentCollection,
-
                         Frequency = tenant.collectionType,
-
                         NextRentDueDate = nextDueDate,
-
                         VariableCharges = variableCharges,
-
                         FixedCharges = fixedCharges,
-
-                        RentAmount = tenant.rentAmt,
-
+                        RentAmount = rentAmount,
                         TotalCharges = totalCharges,
-
                         Status = status
                     });
                 }
@@ -1381,17 +1532,49 @@ namespace XeniaRentalBackend.Repositories.Voucher
             return new
             {
                 TotalRecords = totalRecords,
-
                 PageNumber = pageNumber,
-
                 PageSize = pageSize,
-
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
-
                 Data = pagedData
             };
         }
 
+        private static int GetFrequencyMonths(string? frequency) => frequency?.ToLower() switch
+        {
+            "monthly" => 1,
+            "2months" => 2,
+            "quaterly" => 3,
+            "6months" => 6,
+            "yearly" => 12,
+            _ => 1
+        };
+
+        private static bool IsChargeDue(Dictionary<string, (int RentYear, int RentMonth, decimal Amount)> lastChargedLookup, int tenantId, int chargeId, string? frequency, int currentYear, int currentMonth, DateTime agreementStartDate)
+        {
+            var key = $"{tenantId}_{chargeId}";
+
+            int intervalMonths = GetFrequencyMonths(frequency);
+
+            if (!lastChargedLookup.TryGetValue(key, out var last))
+            {
+                int monthsSinceStart =
+                    ((currentYear - agreementStartDate.Year) * 12) +
+                    (currentMonth - agreementStartDate.Month);
+
+                if (monthsSinceStart < 0)
+                {
+                    return false;
+                }
+
+                return monthsSinceStart % intervalMonths == 0;
+            }
+
+            int monthsSinceLast =
+                ((currentYear - last.RentYear) * 12) + (currentMonth - last.RentMonth);
+
+            return monthsSinceLast > 0 && monthsSinceLast % intervalMonths == 0;
+        }
+     
         private List<DateTime> GenerateDueDates(DateTime agreementStart, int dueDay, string frequency, int filterMonth, int filterYear)
         {
             var dueDates = new List<DateTime>();
@@ -1481,7 +1664,145 @@ namespace XeniaRentalBackend.Repositories.Voucher
             if (string.IsNullOrWhiteSpace(razorpaySecret))
                 throw new Exception("Razorpay Secret not configured.");
 
-            decimal amount = assignment.rentAmt;
+
+            var dueDate = new DateTime(year, month, 1);
+
+            int intervalMonths = assignment.collectionType?.ToLower() switch
+            {
+                "monthly" => 1,
+                "2months" => 2,
+                "quarterly" => 3,
+                "6months" => 6,
+                "yearly" => 12,
+                _ => 1
+            };
+
+            DateTime chargeAnchorDate = new DateTime(
+                assignment.agreementStartDate.Year,
+                assignment.agreementStartDate.Month,
+                1).AddMonths(intervalMonths);
+
+            var pastVouchers = await _context.Vouchers
+                .AsNoTracking()
+                .Where(v =>
+                    v.CompanyID == companyId &&
+                    v.CrID == tenantId &&
+                    v.unitID == unitId &&
+                    !v.Cancelled &&
+                    (
+                        v.RentYear < year ||
+                        (v.RentYear == year && v.RentMonth <= month)
+                    ))
+                .Select(v => new { v.VoucherID, v.RentYear, v.RentMonth })
+                .ToListAsync();
+
+            var pastVoucherIds = pastVouchers.Select(v => v.VoucherID).Distinct().ToList();
+
+            var pastVoucherDetails = await (
+                from detail in _context.VoucherDetails.AsNoTracking()
+
+                join charge in _context.Charges.AsNoTracking()
+                    on detail.chargeId equals charge.chargeID
+
+                where pastVoucherIds.Contains(detail.voucherId)
+
+                select new
+                {
+                    detail.voucherId,
+                    detail.chargeId,
+                    detail.amount
+                }
+            ).ToListAsync();
+
+            var pastVoucherInfoLookup = pastVouchers
+                .ToDictionary(v => v.VoucherID, v => new { v.RentYear, v.RentMonth });
+
+            var lastChargedLookup = (
+                from vd in pastVoucherDetails
+                where pastVoucherInfoLookup.ContainsKey(vd.voucherId)
+                let info = pastVoucherInfoLookup[vd.voucherId]
+                select new
+                {
+                    vd.chargeId,
+                    info.RentYear,
+                    info.RentMonth,
+                    vd.amount
+                }
+            )
+            .GroupBy(x => x.chargeId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var latest = g.OrderByDescending(x => x.RentYear)
+                                  .ThenByDescending(x => x.RentMonth)
+                                  .First();
+                    return (RentYear: latest.RentYear, RentMonth: latest.RentMonth, Amount: latest.amount);
+                }
+            );
+
+            var unitCharges = await (
+                from mapping in _context.UnitChargesMappings.AsNoTracking()
+
+                join charge in _context.Charges.AsNoTracking()
+                    on mapping.chargeID equals charge.chargeID
+
+                where mapping.unitID == unitId
+                      && mapping.isActive
+                      && charge.isActive
+
+                select new
+                {
+                    ChargeId = mapping.chargeID,
+                    ChargeAmount = mapping.amount,
+                    Frequency = mapping.frequency,
+                    IsVariable = charge.isVariable
+                }
+            ).ToListAsync();
+
+            int GetFrequencyMonths(string? frequency) => frequency?.Trim().ToLower() switch
+            {
+                "monthly" => 1,
+                "2months" => 2,
+                "quaterly" => 3,
+                "quarterly" => 3,
+                "6months" => 6,
+                "yearly" => 12,
+                _ => 1
+            };
+
+            bool IsChargeDue(int chargeId, string? frequency)
+            {
+                int intervalMonthsForCharge = GetFrequencyMonths(frequency);
+
+                if (!lastChargedLookup.TryGetValue(chargeId, out var last))
+                {
+                    int monthsSinceStart =
+                        ((dueDate.Year - chargeAnchorDate.Year) * 12) +
+                        (dueDate.Month - chargeAnchorDate.Month);
+
+                    if (monthsSinceStart < 0)
+                    {
+                        return false;
+                    }
+
+                    return monthsSinceStart % intervalMonthsForCharge == 0;
+                }
+
+                int monthsSinceLast =
+                    ((dueDate.Year - last.RentYear) * 12) + (dueDate.Month - last.RentMonth);
+
+                return monthsSinceLast > 0 && monthsSinceLast % intervalMonthsForCharge == 0;
+            }
+
+            decimal applicableChargesTotal = unitCharges
+                .Where(c => IsChargeDue(c.ChargeId, c.Frequency))
+                .Sum(c =>
+                    c.IsVariable && lastChargedLookup.TryGetValue(c.ChargeId, out var lastCharge)
+                        ? lastCharge.Amount
+                        : c.ChargeAmount);
+
+            decimal amount = assignment.rentAmt + applicableChargesTotal;
 
             XRS_Voucher voucher;
 
@@ -1505,7 +1826,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         throw new Exception("Already paid for this month.");
                     }
 
-             
+
                     await InsertVoucherDetails(voucher, companyId, unitId);
 
                     return new
@@ -1520,6 +1841,9 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 }
                 else
                 {
+                    voucher.Amount = amount;
+                    voucher.CrAmount = amount;
+
                     string newOrderId = await _paymentService.CreateOrderAsync(
                         amount: voucher.Amount,
                         currency: "INR",
@@ -1535,7 +1859,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                     await _context.SaveChangesAsync();
 
-           
+
                     await InsertVoucherDetails(voucher, companyId, unitId);
 
                     return new
@@ -1597,7 +1921,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 await _context.SaveChangesAsync();
 
-            
+
                 await InsertVoucherDetails(voucher, companyId, unitId);
 
                 return new

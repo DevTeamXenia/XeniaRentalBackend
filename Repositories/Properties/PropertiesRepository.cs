@@ -18,8 +18,40 @@ namespace XeniaRentalBackend.Repositories.Properties
 
         }
 
-        public async Task<IEnumerable<PropertyListDto>> GetProperties( int companyId)
+        public async Task<IEnumerable<PropertyListDto>> GetProperties(int companyId, int userId)
         {
+            List<int>? userPropertyIds = null;
+           
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
+            return await (
+                from p in _context.Properties
+                join a in _context.Areas
+                    on p.propertyAreaId equals a.AreaId into areaGroup
+                from area in areaGroup.DefaultIfEmpty()
+                where p.CompanyId == companyId &&
+                      (userPropertyIds == null || userPropertyIds.Contains(p.PropID)) 
+                select new PropertyListDto
+                {
+                    PropID = p.PropID,
+                    propertyName = p.propertyName,
+                    propertyType = p.propertyType,
+                    propertyPrefix = p.propertyPrefix,
+                    propertyAreaId = p.propertyAreaId,
+                    AreaName = area != null ? area.AreaName : null,
+                    IsActive = p.IsActive,
+                    CompanyId = p.CompanyId
+                }
+            ).ToListAsync();
+        }
+
+        public async Task<IEnumerable<PropertyListDto>> GetUserMapProperties(int companyId)
+        {
+       
             return await (
                 from p in _context.Properties
                 join a in _context.Areas
@@ -33,23 +65,30 @@ namespace XeniaRentalBackend.Repositories.Properties
                     propertyType = p.propertyType,
                     propertyPrefix = p.propertyPrefix,
                     propertyAreaId = p.propertyAreaId,
-                    AreaName = area != null
-                        ? area.AreaName
-                        : null,
+                    AreaName = area != null ? area.AreaName : null,
                     IsActive = p.IsActive,
                     CompanyId = p.CompanyId
                 }
             ).ToListAsync();
         }
 
-        public async Task<PagedResultDto<PropertyListDto>> GetPropertiesByCompanyId( int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<PagedResultDto<PropertyListDto>> GetPropertiesByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
+            List<int>? userPropertyIds = null;
+           
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             var query =
                 from p in _context.Properties
                 join a in _context.Areas
                     on p.propertyAreaId equals a.AreaId into areaGroup
                 from area in areaGroup.DefaultIfEmpty()
-                where p.CompanyId == companyId
+                where p.CompanyId == companyId &&
+                      (userPropertyIds == null || userPropertyIds.Contains(p.PropID))  
                 select new PropertyListDto
                 {
                     PropID = p.PropID,
@@ -57,9 +96,7 @@ namespace XeniaRentalBackend.Repositories.Properties
                     propertyType = p.propertyType,
                     propertyPrefix = p.propertyPrefix,
                     propertyAreaId = p.propertyAreaId,
-                    AreaName = area != null
-                        ? area.AreaName
-                        : null,
+                    AreaName = area != null ? area.AreaName : null,
                     IsActive = p.IsActive,
                     CompanyId = p.CompanyId
                 };
@@ -124,10 +161,7 @@ namespace XeniaRentalBackend.Repositories.Properties
             return properties;
         }
 
-
-
-        public async Task<IEnumerable<PropertyListDto>> GetPrpoertiesbyId(
-         int propertyId)
+        public async Task<IEnumerable<PropertyListDto>> GetPrpoertiesbyId(int propertyId)
         {
             var result =
                 from p in _context.Properties
@@ -181,7 +215,6 @@ namespace XeniaRentalBackend.Repositories.Properties
             return properties;
         }
 
-
         public async Task<IEnumerable<PropertyWithUnitsDto>> GetPropertyForApp()
         {
             int tenantId = _jwtHelperService.GetCustomerId();
@@ -214,8 +247,6 @@ namespace XeniaRentalBackend.Repositories.Properties
 
             return result;
         }
-
-
 
         public async Task<bool> UpDateProperties(int id, XRS_Properties properties)
         {

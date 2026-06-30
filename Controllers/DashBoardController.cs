@@ -20,9 +20,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("dashboard/rent")]
-        public async Task<IActionResult> GetRentDashboard(int companyid, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> GetRentDashboard(int companyid, int userId, DateTime fromDate, DateTime toDate)
         {
-            var data = await _dashboardRepsitory.GetRentDashboardAsync(companyid,fromDate, toDate);
+            var data = await _dashboardRepsitory.GetRentDashboardAsync(companyid, userId, fromDate, toDate);
             return Ok(data);
         }
 

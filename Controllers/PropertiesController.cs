@@ -23,9 +23,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("all/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_Properties>>> Get(int companyId)
+        public async Task<ActionResult<IEnumerable<XRS_Properties>>> Get(int companyId, int userId)
         {
-            var properties = await _propertyRepository.GetProperties(companyId);
+            var properties = await _propertyRepository.GetProperties(companyId, userId);
             if (properties == null || !properties.Any())
             {
                 return NotFound(new { Status = "Error", Message = "No properties found." });
@@ -33,11 +33,23 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = properties });
         }
 
-        
-        [HttpGet("company/{companyId}")]
-        public async Task<ActionResult<PagedResultDto<XRS_Properties>>> GetPropertyByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
+
+        [HttpGet("userMap/{companyId}")]
+        public async Task<ActionResult<IEnumerable<XRS_Properties>>> GetUserMap(int companyId, int userId)
         {
-            var accounts = await _propertyRepository.GetPropertiesByCompanyId(companyId, search, pageNumber, pageSize);
+            var properties = await _propertyRepository.GetUserMapProperties(companyId);
+            if (properties == null || !properties.Any())
+            {
+                return NotFound(new { Status = "Error", Message = "No properties found." });
+            }
+            return Ok(new { Status = "Success", Data = properties });
+        }
+
+
+        [HttpGet("company/{companyId}/{userId}")]
+        public async Task<ActionResult<PagedResultDto<XRS_Properties>>> GetPropertyByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var accounts = await _propertyRepository.GetPropertiesByCompanyId(companyId, userId, search, pageNumber, pageSize);
 
             if (accounts == null)
             {

@@ -56,9 +56,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("collectionStatus/{companyId}")]
-        public async Task<IActionResult> GetAllVouchers(int companyId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search, int pageNumber = 1, int pageSize = 25)
+        public async Task<IActionResult> GetAllVouchers(int companyId,int userId, DateTime? fromDate, DateTime? toDate, int? propertyId, int? unitId, string? voucherStatus, string? search, int pageNumber = 1, int pageSize = 25)
         {
-            var vouchers = await _voucherRepository.GetCollectionStatusAsync(companyId, fromDate, toDate, propertyId, unitId, voucherStatus, search, pageNumber, pageSize);
+            var vouchers = await _voucherRepository.GetCollectionStatusAsync(companyId, userId, fromDate, toDate, propertyId, unitId, voucherStatus, search, pageNumber, pageSize);
 
             return Ok(vouchers);
         }
@@ -86,9 +86,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("rent/initiate/{companyId:int}/{month:int}/{year:int}")]
-        public async Task<IActionResult> GetTenantCharges( int companyId, int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
+        public async Task<IActionResult> GetTenantCharges( int companyId, int userId, int month, int year, int? propertyId = null, int? unitId = null, int? bedSpaceId = null, string? search = null, int pageNumber = 1, int pageSize = 25)
         {
-            var data = await _voucherRepository.GetTenantChargesByMonthAsync( companyId, month, year, propertyId, unitId, bedSpaceId, search, pageNumber, pageSize);
+            var data = await _voucherRepository.GetTenantChargesByMonthAsync( companyId, userId, month, year, propertyId, unitId, bedSpaceId, search, pageNumber, pageSize);
 
             return Ok(data);
         }

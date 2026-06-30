@@ -22,10 +22,15 @@ namespace XeniaRentalBackend.Repositories.BedSpace
         }
 
 
-        public async Task<PagedResultDto<XRS_Bedspace>> GetBedSpacesByCompanyId(int companyId, string? search = null,int pageNumber = 1,int pageSize = 10)
+        public async Task<PagedResultDto<XRS_Bedspace>> GetBedSpacesByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
+            var mappedProperties = _context.UserMapping
+                .Where(x => x.UserID == userId && x.IsActive)
+                .Select(x => x.PropID);
+
             var query = _context.BedSpaces
-                .Where(b => b.companyID == companyId)
+                .Where(b => b.companyID == companyId &&
+                            mappedProperties.Contains(b.propID))
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -34,9 +39,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
                 query = query.Where(b => b.bedSpaceName.ToLower().Contains(lowerSearch));
             }
 
-
             var totalRecords = await query.CountAsync();
-
 
             var items = await query
                 .OrderBy(b => b.bedSpaceName)

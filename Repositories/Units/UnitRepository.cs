@@ -14,26 +14,33 @@ namespace XeniaRentalBackend.Repositories.Unit
             _context = context;
         }
 
-        public async Task<List<UnitDto>> GetUnits(int companyId, int? propertyId = null)
+        public async Task<List<UnitDto>> GetUnits(int companyId, int userId, int? propertyId = null)
         {
+            List<int>? userPropertyIds = null;
+
+          
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             var query = _context.Units
                 .AsNoTracking()
                 .Include(u => u.Property)
                 .Include(u => u.Category)
-                .Where(u => u.CompanyId == companyId && u.IsActive);
-
+                .Where(u => u.CompanyId == companyId && u.IsActive &&
+                            (userPropertyIds == null || userPropertyIds.Contains(u.PropID)));  
 
             if (propertyId.HasValue)
             {
                 query = query.Where(u => u.PropID == propertyId.Value);
             }
 
- 
             var units = await query
                 .OrderBy(u => u.UnitName)
                 .ToListAsync();
 
-       
             var unitsDto = units.Select(u => new UnitDto
             {
                 UnitId = u.UnitId,
@@ -50,18 +57,27 @@ namespace XeniaRentalBackend.Repositories.Unit
                 FloorNo = u.FloorNo,
                 DefaultRent = u.DefaultRent,
                 escalationper = u.escalationper,
-                UnitCharges = null 
+                UnitCharges = null
             }).ToList();
 
             return unitsDto;
         }
 
-        public async Task<PagedResultDto<UnitDto>> GetUnitByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
-        {
+        public async Task<PagedResultDto<UnitDto>> GetUnitByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1, int pageSize = 10)
+        {       
+            List<int>? userPropertyIds = null;
+            
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             var query = _context.Units
                 .Include(u => u.Property)
                 .Include(u => u.Category)
-                .Where(u => u.CompanyId == companyId)
+                .Where(u => u.CompanyId == companyId &&
+                            (userPropertyIds == null || userPropertyIds.Contains(u.PropID)))  
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search))

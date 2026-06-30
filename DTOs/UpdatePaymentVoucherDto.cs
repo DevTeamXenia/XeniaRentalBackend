@@ -2,7 +2,17 @@
 {
     public class UpdatePaymentVoucherDto
     {
-        public int VoucherID { get; set; }
+        public int voucherId { get; set; }
+
+        public int companyId { get; set; }
+
+        public int tenantId { get; set; }
+
+        public decimal amount { get; set; }
+        public int rentYear { get; set; }
+        public int rentMonth { get; set; }
+        public int unitId { get; set; }
+        public int propId { get; set; }
 
         public DateTime VoucherDate { get; set; }
 

@@ -7,7 +7,7 @@ namespace XeniaRentalBackend.Repositories.BedSpace
     {
         Task<IEnumerable<XRS_Bedspace>> GetBedSpaces(int companyId, int? unitId = null);
 
-        Task<PagedResultDto<XRS_Bedspace>> GetBedSpacesByCompanyId(int companyId, string? search = null, int pageNumber = 1, int pageSize = 10);
+        Task<PagedResultDto<XRS_Bedspace>> GetBedSpacesByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1, int pageSize = 10);
 
         Task<XRS_Bedspace> GetBedSpaceById(int id);
 

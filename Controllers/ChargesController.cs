@@ -34,11 +34,11 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("charges/{companyId}")]
-        public async Task<ActionResult<PagedResultDto<ChargesDto>>> GetChargesByCompanyId(int companyId, int? propertyId = null, string? search = null, int pageNumber = 1,
+        public async Task<ActionResult<PagedResultDto<ChargesDto>>> GetChargesByCompanyId(int companyId, int userId , int? propertyId = null, string? search = null, int pageNumber = 1,
             int pageSize = 10)
         {
 
-            var charges = await _chargesRepository.GetChargesByCompanyId(companyId, propertyId, search,pageNumber, pageSize);
+            var charges = await _chargesRepository.GetChargesByCompanyId(companyId, userId, propertyId, search,pageNumber, pageSize);
             if (charges == null)
             {
                 return NotFound(new { Status = "Error", Message = "No charges found the given Company ID." });

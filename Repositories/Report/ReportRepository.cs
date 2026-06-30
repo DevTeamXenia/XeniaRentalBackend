@@ -15,8 +15,16 @@ namespace XeniaRentalBackend.Repositories.Report
         }
 
 
-        public async Task<List<TenantOccupancyReportDto>> GetTenantOccupancyReportAsync(int companyId, int? propertyId, int? unitId, int? bedSpaceId, bool isBedSpace, string? search)
+        public async Task<List<TenantOccupancyReportDto>> GetTenantOccupancyReportAsync(int companyId, int userId , int? propertyId, int? unitId, int? bedSpaceId, bool isBedSpace, string? search)
         {
+            List<int>? userPropertyIds = null;
+            
+            userPropertyIds = await _context.UserMapping
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+            
+
             var today = DateTime.Today;
 
             var tenantPaidAmounts = await _context.Vouchers
@@ -44,7 +52,6 @@ namespace XeniaRentalBackend.Repositories.Report
                 bedSpaces = new List<XRS_Bedspace>();
             }
 
- 
             var unitIdsWithBedSpaces = await _context.BedSpaces
                 .AsNoTracking()
                 .Where(b => b.companyID == companyId && b.isActive)
@@ -52,11 +59,11 @@ namespace XeniaRentalBackend.Repositories.Report
                 .Distinct()
                 .ToListAsync();
 
-      
             var tenantQuery =
                 from ta in _context.TenantAssignemnts.AsNoTracking()
                 join t in _context.Tenants on ta.tenantID equals t.tenantID
-                where ta.companyID == companyId && !ta.isClosure
+                where ta.companyID == companyId && !ta.isClosure &&
+                      (userPropertyIds == null || userPropertyIds.Contains(ta.propID))  
                 select new
                 {
                     ta.propID,
@@ -82,11 +89,12 @@ namespace XeniaRentalBackend.Repositories.Report
                     x.Phone.Contains(search));
 
             var tenants = await tenantQuery.ToListAsync();
-      
+
             var properties = await (
                 from p in _context.Properties
                 join u in _context.Units on p.PropID equals u.PropID
                 where p.CompanyId == companyId
+                      && (userPropertyIds == null || userPropertyIds.Contains(p.PropID))  
                       && (
                             isBedSpace
                                 ? unitIdsWithBedSpaces.Contains(u.UnitId)
@@ -106,7 +114,6 @@ namespace XeniaRentalBackend.Repositories.Report
             if (unitId.HasValue)
                 properties = properties.Where(x => x.UnitId == unitId).ToList();
 
-  
             return properties
                 .GroupBy(p => new { p.PropID, p.PropertyName })
                 .Select(prop => new TenantOccupancyReportDto
@@ -155,7 +162,7 @@ namespace XeniaRentalBackend.Repositories.Report
                                             .ToList()
                                     };
                                 }).ToList();
-                            }                    
+                            }
                             else
                             {
                                 unitDto.Tenants = unitTenants

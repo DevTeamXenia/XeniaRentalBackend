@@ -39,25 +39,26 @@ namespace XeniaRentalBackend.Repositories.Charges
                 .ToListAsync();
         }
 
-        public async Task<PagedResultDto<ChargesDto>> GetChargesByCompanyId(int companyId,int? propertyId = null,string? search = null,int pageNumber = 1,int pageSize = 10)
+        public async Task<PagedResultDto<ChargesDto>> GetChargesByCompanyId( int companyId, int userId, int? propertyId = null, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
+            var mappedPropertyIds = await _context.UserMapping
+                .Where(x => x.UserID == userId && x.IsActive)
+                .Select(x => x.PropID)
+                .ToListAsync();
 
             var query = _context.Charges
-                .Where(c => c.companyID == companyId)
-                .AsQueryable();
+                .Where(c => c.companyID == companyId &&
+                            mappedPropertyIds.Contains(c.PropID));
 
             if (propertyId.HasValue)
             {
                 query = query.Where(c => c.PropID == propertyId.Value);
             }
 
-   
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string lowerSearch = search.ToLower();
-                query = query.Where(c =>
-                    c.chargeName.ToLower().Contains(lowerSearch)
-                );
+                query = query.Where(c => c.chargeName.ToLower().Contains(lowerSearch));
             }
 
             var totalRecords = await query.CountAsync();
@@ -67,8 +68,11 @@ namespace XeniaRentalBackend.Repositories.Charges
                     _context.Properties,
                     charges => charges.PropID,
                     prop => prop.PropID,
-                    (charges, props) => new { charges, prop = props.FirstOrDefault() }
-                )
+                    (charges, props) => new
+                    {
+                        charges,
+                        prop = props.FirstOrDefault()
+                    })
                 .OrderBy(x => x.charges.chargeName)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)

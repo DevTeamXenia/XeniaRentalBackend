@@ -5,6 +5,7 @@
         public int ChargeId { get; set; }
         public string ChargeName { get; set; }
         public decimal ChargeAmount { get; set; }
+        public string Frequency { get; set; }
         public bool IsVariable { get; set; }
     }
 }

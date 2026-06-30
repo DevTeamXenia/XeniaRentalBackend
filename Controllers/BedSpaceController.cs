@@ -34,10 +34,10 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("company/{companyId}")]
-        public async Task<ActionResult<PagedResultDto<XRS_Bedspace>>> GetBedSpacesByCompanyId(int companyId, string? search = null, int pageNumber = 1,int pageSize = 10)
+        public async Task<ActionResult<PagedResultDto<XRS_Bedspace>>> GetBedSpacesByCompanyId(int companyId, int userId, string? search = null, int pageNumber = 1,int pageSize = 10)
         {
 
-            var bedSpaces = await _bedSpaceRepository.GetBedSpacesByCompanyId(companyId, search, pageNumber,pageSize);
+            var bedSpaces = await _bedSpaceRepository.GetBedSpacesByCompanyId(companyId, userId, search, pageNumber,pageSize);
             if (bedSpaces == null)
             {
                 return NotFound(new { Status = "Error", Message = "No bedspaces found the given Company ID." });
