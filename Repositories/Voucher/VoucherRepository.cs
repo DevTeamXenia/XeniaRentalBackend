@@ -514,9 +514,12 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 .Take(pageSize)
                 .ToList();
 
+            decimal totalRent = orderedResult.Sum(x => (decimal)x.RentAmount);
+
             return new
             {
                 TotalRecords = totalRecords,
+                TotalRent = totalRent,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
