@@ -468,10 +468,16 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         decimal totalChargeAmount = fixedChargeAmount + variableChargeAmount;
                         decimal totalRentAmount = tenant.rentAmt + totalChargeAmount;
 
+                        //Select property prefix
+                        var PPrefix = await _context.Properties
+                        .Where(p => p.PropID == propertyId)
+                        .Select(p => p.propertyPrefix)
+                        .FirstOrDefaultAsync();
+
                         result.Add(new
                         {
                             VoucherID = voucher?.VoucherID ?? 0,
-                            VoucherNo = voucher?.VoucherNo,
+                            VoucherNo = PPrefix + voucher?.VoucherNo,
                             VoucherStatus = voucher?.VoucherStatus,
                             ChequeSubmitted = cheque != null,
                             ChequeRegisterId = cheque?.chequeRegisterId,
