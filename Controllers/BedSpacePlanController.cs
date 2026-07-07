@@ -36,9 +36,9 @@ namespace XeniaRentalBackend.Controllers
         }
 
         [HttpGet("company/{companyId}")]
-        public async Task<IActionResult> GetByCompanyId(int companyId)
+        public async Task<IActionResult> GetByCompanyId( int companyId, [FromQuery] string searchParam = null)
         {
-            var data = await _bedSpacePlanRepository.GetByCompanyIdAsync(companyId);
+            var data = await _bedSpacePlanRepository.GetByCompanyIdAsync(companyId, searchParam);
             return Ok(data);
         }
 

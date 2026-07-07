@@ -139,7 +139,7 @@ namespace XeniaRentalBackend.Repositories.Dashboard
                 CollectionRate = Math.Round(collectionRate, 2)
             };
         }
-        public async Task<MonthlyRevenueResponseDto> GetMonthlyRentRevenueAsync(int companyid, int year)
+        public async Task<MonthlyRevenueResponseDto> GetMonthlyRentRevenueAsync(int companyid, int userId ,int year)
         {
             var company = await _context.Company
                 .Where(c => c.companyID == companyid && c.IsActive)
@@ -154,11 +154,18 @@ namespace XeniaRentalBackend.Repositories.Dashboard
             if (company == null)
                 throw new Exception("Company not found");
 
+            
+            var mappedPropertyIds = await _context.UserMapping
+                .Where(x => x.UserID == userId && x.IsActive)
+                .Select(x => x.PropID)
+                .ToListAsync();
+
             var vouchers = await _context.Vouchers
                 .Where(v =>
+                    v.CompanyID == companyid &&
                     v.VoucherType == "Pay Rent" &&
                     v.VoucherDate.Year == year &&
-                    v.CompanyID == companyid)
+                    mappedPropertyIds.Contains(v.PropID))
                 .ToListAsync();
 
             var monthlyRevenue = Enumerable.Range(1, 12)

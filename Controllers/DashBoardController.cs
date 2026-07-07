@@ -28,9 +28,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("rent/monthly")]
-        public async Task<IActionResult> GetMonthlyRevenue(int companyid,[FromQuery] int year)
+        public async Task<IActionResult> GetMonthlyRevenue(int companyid, int userId, [FromQuery] int year)
         {
-            var revenue = await _dashboardRepsitory.GetMonthlyRentRevenueAsync(companyid,year);
+            var revenue = await _dashboardRepsitory.GetMonthlyRentRevenueAsync(companyid, userId, year);
             return Ok(revenue);
         }
 

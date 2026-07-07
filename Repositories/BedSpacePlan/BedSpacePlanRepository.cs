@@ -115,45 +115,68 @@ namespace XeniaRentalBackend.Repositories.BedSpacePlan
             return result;
         }
 
-        public async Task<IEnumerable<object>> GetByCompanyIdAsync(int companyID)
+        public async Task<IEnumerable<object>> GetByCompanyIdAsync(int companyID, string searchParam = null)
         {
-            var result = await (from plan in _context.BedSpacePlans
-                                where plan.companyID == companyID
-                                join mapping in _context.BedspacePlanMessMappings
-                                    on plan.bedPlanID equals mapping.bedPlanID into pm
-                                from mapping in pm.DefaultIfEmpty()
-                                join mess in _context.MessTypes
-                                    on mapping.messID equals mess.messID into mm
-                                from mess in mm.DefaultIfEmpty()
-                                select new
+            var query = from plan in _context.BedSpacePlans
+                        where plan.companyID == companyID
+                        join mapping in _context.BedspacePlanMessMappings
+                            on plan.bedPlanID equals mapping.bedPlanID into pm
+                        from mapping in pm.DefaultIfEmpty()
+                        join mess in _context.MessTypes
+                            on mapping.messID equals mess.messID into mm
+                        from mess in mm.DefaultIfEmpty()
+                        select new
+                        {
+                            plan.bedPlanID,
+                            plan.companyID,
+                            plan.planName,
+                            plan.enableTax,
+                            plan.calculatedays,
+                            plan.enableAdjustRent,
+                            plan.calculateAdjustRent,
+                            plan.calculatePartialRent,
+                            plan.enableMess,
+                            plan.messCharge,
+                            plan.includeMess,
+                            plan.messChargeDays,
+                            plan.consumedDays,
+                            plan.isActive,
+                            Mess = mapping != null
+                                ? new
                                 {
-                                    plan.bedPlanID,
-                                    plan.companyID,
-                                    plan.planName,
-                                    plan.enableTax,
-                                    plan.calculatedays,
-                                    plan.enableAdjustRent,
-                                    plan.calculateAdjustRent,
-                                    plan.calculatePartialRent,
-                                    plan.enableMess,
-                                    plan.messCharge,
-                                    plan.includeMess,
-                                    plan.messChargeDays,
-                                    plan.consumedDays,
-                                    plan.isActive,
-                                    Mess = mapping != null
-                                        ? new
-                                        {
-                                            mapping.bpmID,
-                                            mapping.messID,
-                                            messTypeName = mess != null ? mess.MessName : string.Empty,
-                                            mapping.active
-                                        }
-                                        : null
-                                })
-                                .ToListAsync();
+                                    mapping.bpmID,
+                                    mapping.messID,
+                                    messTypeName = mess != null ? mess.MessName : string.Empty,
+                                    mapping.active
+                                }
+                                : null
+                        };
+
+  
+            if (!string.IsNullOrWhiteSpace(searchParam))
+            {
+                query = query.Where(x => x.planName.Contains(searchParam));
+            }
+
+            var result = await query.ToListAsync();
+
             var grouped = result
-                .GroupBy(r => new { r.bedPlanID, r.planName, r.companyID, r.enableTax, r.calculatedays, r.enableAdjustRent, r.calculateAdjustRent, r.calculatePartialRent, r.enableMess, r.messCharge, r.includeMess, r.messChargeDays, r.consumedDays, r.isActive })
+                .GroupBy(r => new {
+                    r.bedPlanID,
+                    r.planName,
+                    r.companyID,
+                    r.enableTax,
+                    r.calculatedays,
+                    r.enableAdjustRent,
+                    r.calculateAdjustRent,
+                    r.calculatePartialRent,
+                    r.enableMess,
+                    r.messCharge,
+                    r.includeMess,
+                    r.messChargeDays,
+                    r.consumedDays,
+                    r.isActive
+                })
                 .Select(g => new
                 {
                     g.Key.bedPlanID,

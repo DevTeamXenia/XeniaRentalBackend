@@ -12,10 +12,25 @@ namespace XeniaRentalBackend.Repositories.UserRole
             _context = context;
         }
 
-        public async Task<IEnumerable<XRS_Users>> GetUserByCompanyId(int companyId)
+        public async Task<IEnumerable<XRS_Users>> GetUserByCompanyId(int companyId, int userId)
         {
+            var propIds = await _context.UserMapping
+                .Where(m => m.UserID == userId
+                         && m.PropID != null
+                         && m.User.CompanyId == companyId)
+                .Select(m => m.PropID)
+                .Distinct()
+                .ToListAsync();
+
+            if (!propIds.Any())
+            {
+                return Enumerable.Empty<XRS_Users>();
+            }
+
+          
             return await _context.Users
-                .Where(u => u.CompanyId == companyId)
+                .Where(u => u.CompanyId == companyId
+                         && u.UserMappings.Any(m => m.PropID != null && propIds.Contains(m.PropID)))
                 .Select(u => new XRS_Users
                 {
                     UserId = u.UserId,
@@ -32,18 +47,19 @@ namespace XeniaRentalBackend.Repositories.UserRole
                     Email = u.Email,
                     Phone = u.Phone,
 
-                    UserMappings = u.UserMappings.Select(m => new XRS_UserMapping
-                    {
-                        UnitMapID = m.UnitMapID,
-                        UserID = m.UserID,
-                        PropID = m.PropID,
-                        IsActive = m.IsActive,
+                    UserMappings = u.UserMappings
+                                    .Where(m => m.PropID != null && propIds.Contains(m.PropID))
+                                    .Select(m => new XRS_UserMapping
+                                    {
+                                        UnitMapID = m.UnitMapID,
+                                        UserID = m.UserID,
+                                        PropID = m.PropID,
+                                        IsActive = m.IsActive,
 
-                        PropertyName = m.Property != null
-                                        ? m.Property.propertyName
-                                        : null
-
-                    }).ToList()
+                                        PropertyName = m.Property != null
+                                                        ? m.Property.propertyName
+                                                        : null
+                                    }).ToList()
 
                 }).ToListAsync();
         }

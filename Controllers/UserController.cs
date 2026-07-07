@@ -22,10 +22,10 @@ namespace XeniaRentalBackend.Controllers
 
                
         [HttpGet("company/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_Users>>> GetUserByCompanyId(int companyId)
+        public async Task<ActionResult<IEnumerable<XRS_Users>>> GetUserByCompanyId(int companyId, int userId)
 
         {
-            var branches = await _userRepository.GetUserByCompanyId(companyId);
+            var branches = await _userRepository.GetUserByCompanyId(companyId, userId);
             if (branches == null || !branches.Any())
             {
                 return NotFound(new { Status = "Error", Message = "No User found for the given Company ID." });

@@ -89,7 +89,7 @@ namespace XeniaRentalBackend.Repositories.MessTypes
             if (updatedMessTypes == null) return false;
 
             updatedMessTypes.MessName = types.MessName;
-            updatedMessTypes.messID = types.messID;
+            updatedMessTypes.MessCode = types.MessCode;
             updatedMessTypes.CompanyId = types.CompanyId;
             updatedMessTypes.IsActive = types.IsActive;
             await _context.SaveChangesAsync();
