@@ -1459,26 +1459,37 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         rentAmount = tenant.rentAmt;
                         totalCharges = rentAmount + variableCharges.Sum(c => c.ChargeAmount) + fixedCharges.Sum(c => c.ChargeAmount);
                     }
-
-                    result.Add(new
+                    if (rentAmount == 0 && variableCharges.Sum(c => c.ChargeAmount) == 0 && fixedCharges.Sum(c => c.ChargeAmount) > 0)
                     {
-                        VoucherID = voucher != null ? voucher.VoucherID : 0,
-                        tenant.tenantID,
-                        tenant.TenantName,
-                        tenant.PropertyId,
-                        tenant.unitID,
-                        tenant.UnitName,
-                        tenant.PropertyName,
-                        tenant.BedSpaceName,
-                        tenant.rentCollection,
-                        Frequency = tenant.collectionType,
-                        NextRentDueDate = nextDueDate,
-                        VariableCharges = variableCharges,
-                        FixedCharges = fixedCharges,
-                        RentAmount = rentAmount,
-                        TotalCharges = totalCharges,
-                        Status = status
-                    });
+                       //No row
+                    }
+                    else
+                    if (rentAmount > 0 && variableCharges.Sum(c => c.ChargeAmount) == 0 && fixedCharges.Sum(c => c.ChargeAmount) == 0)
+                    {
+                       //No row
+                    }
+                    else
+                    {
+                        result.Add(new
+                        {
+                            VoucherID = voucher != null ? voucher.VoucherID : 0,
+                            tenant.tenantID,
+                            tenant.TenantName,
+                            tenant.PropertyId,
+                            tenant.unitID,
+                            tenant.UnitName,
+                            tenant.PropertyName,
+                            tenant.BedSpaceName,
+                            tenant.rentCollection,
+                            Frequency = tenant.collectionType,
+                            NextRentDueDate = nextDueDate,
+                            VariableCharges = variableCharges,
+                            FixedCharges = fixedCharges,
+                            RentAmount = rentAmount,
+                            TotalCharges = totalCharges,
+                            Status = status
+                        });
+                    }
                 }
             }
 
