@@ -4,18 +4,16 @@ using XeniaRentalBackend.Models;
 
 namespace XeniaRentalBackend.Repositories.EmployeeMaster
 {
-    public class EmployeeMasterRepository : IEmployeeMasterRepository
+    public class EmployeeRepository : IEmployeeRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public EmployeeMasterRepository(ApplicationDbContext context)
+        public EmployeeRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // ─────────────────────────────────────────
-        // GET ALL — for dropdowns in other modules
-        // ─────────────────────────────────────────
+
         public async Task<IEnumerable<XRS_Employee>> GetAllEmployees(int companyId)
         {
             return await _context.Employee
@@ -31,14 +29,12 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     AreaZone = e.AreaZone,
                     MobileNumber = e.MobileNumber,
                     IsActive = e.IsActive
-                    // Password NOT returned
+       
                 })
                 .ToListAsync();
         }
 
-        // ─────────────────────────────────────────
-        // GET PAGED — for listing page with search
-        // ─────────────────────────────────────────
+     
         public async Task<PagedResultDto<XRS_Employee>> GetEmployeesByCompanyId(
             int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
@@ -46,7 +42,6 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                 .Where(e => e.CompanyId == companyId)
                 .AsQueryable();
 
-            // Search by name or employee code
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(e =>
@@ -72,7 +67,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     Specialization = e.Specialization,
                     AreaZone = e.AreaZone,
                     MobileNumber = e.MobileNumber,
-                    Password = e.Password, // hashed
+                    Password = e.Password, 
                     IsActive = e.IsActive
                 })
                 .ToListAsync();

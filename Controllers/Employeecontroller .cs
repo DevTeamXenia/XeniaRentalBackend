@@ -12,14 +12,14 @@ namespace XeniaRentalBackend.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeMasterRepository _employeeMasterRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly ApplicationDbContext _context;
 
         public EmployeeController(
-       IEmployeeMasterRepository employeeMasterRepository,
+       IEmployeeRepository employeeRepository,
        ApplicationDbContext context)
         {
-            _employeeMasterRepository = employeeMasterRepository;
+            _employeeRepository = employeeRepository;
             _context = context;
         }
 
@@ -28,7 +28,7 @@ namespace XeniaRentalBackend.Controllers
         public async Task<ActionResult<PagedResultDto<XRS_Employee>>> GetByCompany(
             int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
         {
-            var employees = await _employeeMasterRepository.GetEmployeesByCompanyId(
+            var employees = await _employeeRepository.GetEmployeesByCompanyId(
                 companyId, search, pageNumber, pageSize);
 
             if (employees == null)
@@ -45,7 +45,7 @@ namespace XeniaRentalBackend.Controllers
             if (dto == null)
                 return BadRequest(new { Status = "Error", Message = "Invalid employee data." });
 
-            var created = await _employeeMasterRepository.CreateEmployee(dto);
+            var created = await _employeeRepository.CreateEmployee(dto);
             return Ok(new { Status = "Success", Data = created });
         }
       
@@ -74,7 +74,7 @@ namespace XeniaRentalBackend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var employee = await _employeeMasterRepository.GetEmployeeById(id);
+            var employee = await _employeeRepository.GetEmployeeById(id);
 
             if (employee == null)
                 return NotFound(new { Status = "Error", Message = "Employee not found." });
@@ -89,7 +89,7 @@ namespace XeniaRentalBackend.Controllers
             if (dto == null)
                 return BadRequest(new { Status = "Error", Message = "Invalid employee data." });
 
-            var updated = await _employeeMasterRepository.UpdateEmployee(id, dto);
+            var updated = await _employeeRepository.UpdateEmployee(id, dto);
 
             if (!updated)
                 return NotFound(new { Status = "Error", Message = "Employee not found." });

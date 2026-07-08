@@ -3,7 +3,7 @@ using XeniaRentalBackend.Models;
 
 namespace XeniaRentalBackend.Repositories.EmployeeMaster
 {
-    public interface IEmployeeMasterRepository
+    public interface IEmployeeRepository
     {
         // Listing Page + Search
         Task<PagedResultDto<XRS_Employee>> GetEmployeesByCompanyId(
