@@ -148,6 +148,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     UnitName = t.Unit.UnitName,
                     PropertyId = t.Unit.PropID,
                     PropertyName = t.Unit.Property.propertyName,
+                    propertyPrefix = t.Unit.Property.propertyPrefix,
                     t.collectionType,
                     t.rentCollection,
                     t.rentAmt,
@@ -256,7 +257,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 }
             ).ToList();
 
-            // key: "{tenantID}_{chargeID}" -> LATEST RentYear/RentMonth this charge was actually invoiced
             var lastChargedLookup = voucherChargeHistory
                 .GroupBy(x => $"{x.CrID}_{x.chargeId}")
                 .ToDictionary(
@@ -328,12 +328,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 DateTime chargeAnchorDate = currentMonth;
 
-                // Runtime tracker: for THIS tenant, tracks the last month (as totalMonths)
-                // up to which each charge has been accounted for — either from real
-                // invoice history (lastChargedLookup) or from previous iterations of
-                // this same loop (so charges are never double-counted across due dates
-                // generated in this run).
-                var chargeProgress = new Dictionary<int, int>(); // chargeId -> lastCoveredTotalMonths
+                var chargeProgress = new Dictionary<int, int>(); 
 
                 while (currentMonth <= tenant.agreementEndDate.Date)
                 {
@@ -398,8 +393,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                         if (voucher != null)
                         {
-                            // Real voucher already exists for this due date — show exactly
-                            // what was invoiced, don't recompute.
                             if (voucherChargeDetailLookup.TryGetValue(voucher.VoucherID, out var invoicedCharges))
                             {
                                 foreach (var vc in invoicedCharges)
@@ -414,9 +407,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 }
                             }
 
-                            // Even though a voucher exists, keep chargeProgress in sync so
-                            // that IF another due date is processed later for this tenant,
-                            // it doesn't re-count months already covered by this voucher.
+          
                             if (invoicedCharges != null)
                             {
                                 foreach (var vc in invoicedCharges)
@@ -440,9 +431,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                     chargeAnchorDate);
 
                                 if (occurrences <= 0)
-                                {
-                                    // Nothing new due for this charge this cycle — skip it,
-                                    // no charge added (per your requirement).
+                                {             
                                     continue;
                                 }
 
@@ -450,7 +439,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = charge.Amount * occurrences, // e.g. monthly charge x2 for a 2-month gap
+                                    Amount = charge.Amount * occurrences,
                                     charge.IsVariable,
                                     Occurrences = occurrences
                                 });
@@ -468,16 +457,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         decimal totalChargeAmount = fixedChargeAmount + variableChargeAmount;
                         decimal totalRentAmount = tenant.rentAmt + totalChargeAmount;
 
-                        //Select property prefix
-                        var PPrefix = await _context.Properties
-                        .Where(p => p.PropID == propertyId)
-                        .Select(p => p.propertyPrefix)
-                        .FirstOrDefaultAsync();
 
                         result.Add(new
                         {
                             VoucherID = voucher?.VoucherID ?? 0,
-                            VoucherNo = PPrefix + voucher?.VoucherNo,
+                            VoucherNo = tenant.propertyPrefix + voucher?.VoucherNo,
                             VoucherStatus = voucher?.VoucherStatus,
                             ChequeSubmitted = cheque != null,
                             ChequeRegisterId = cheque?.chequeRegisterId,
@@ -493,6 +477,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             tenant.UnitName,
                             tenant.PropertyId,
                             tenant.PropertyName,
+                            tenant.propertyPrefix,
                             RentDueDate = dueDate,
                             RentAmount = totalRentAmount,
                             BaseRentAmount = tenant.rentAmt,
