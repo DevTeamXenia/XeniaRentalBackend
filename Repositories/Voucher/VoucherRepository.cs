@@ -1469,6 +1469,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
                        //No row
                     }
                     else
+                    if (rentAmount > 0 && variableCharges.Sum(c => c.ChargeAmount) == 0 && fixedCharges.Sum(c => c.ChargeAmount) > 0)
+                    {
+
+                    }
+                    else
                     {
                         result.Add(new
                         {
