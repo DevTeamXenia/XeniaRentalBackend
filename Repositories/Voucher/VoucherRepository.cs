@@ -518,15 +518,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
             };
         }
 
-        /// <summary>
-        /// Returns how many charge-periods (based on the charge's OWN frequency) have
-        /// elapsed and are still uncharged, up to and including the given due date.
-        /// Example: charge frequency = monthly, rent gap = 2 months → returns 2
-        /// (both months' worth of charge get added together on this due date),
-        /// unless one of those months was already invoiced, in which case it's excluded.
-        /// Also updates chargeProgress so the SAME months are never counted again on a
-        /// later due date within this same run.
-        /// </summary>
+      
         private int GetChargeOccurrences(
             Dictionary<string, (int RentYear, int RentMonth)> lastChargedLookup,
             Dictionary<int, int> chargeProgress,
@@ -552,7 +544,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
             if (chargeProgress.TryGetValue(chargeId, out var runtimeLast))
             {
-                // Already advanced during this run (a previous due date covered up to here)
                 baselineTotalMonths = runtimeLast;
             }
             else
@@ -561,13 +552,10 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                 if (lastChargedLookup.TryGetValue(key, out var lastInvoiced))
                 {
-                    // Real invoice history exists — start counting AFTER that.
                     baselineTotalMonths = lastInvoiced.RentYear * 12 + lastInvoiced.RentMonth;
                 }
                 else
                 {
-                    // Never charged before — count from one interval BEFORE the anchor,
-                    // so the first due date itself yields exactly 1 occurrence.
                     int anchorTotalMonths = chargeAnchorDate.Year * 12 + chargeAnchorDate.Month;
                     baselineTotalMonths = anchorTotalMonths - intervalMonths;
                 }
@@ -586,8 +574,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
             {
                 return 0;
             }
-
-            // Advance progress so these months aren't counted again later in this run.
             chargeProgress[chargeId] = baselineTotalMonths + (occurrences * intervalMonths);
 
             return occurrences;

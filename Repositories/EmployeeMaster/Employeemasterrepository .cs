@@ -86,32 +86,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
             };
         }
 
-        // ─────────────────────────────────────────
-        // GET BY ID — for edit modal pre-fill
-        // ─────────────────────────────────────────
-        //public async Task<XRS_EmployeeMaster?> GetEmployeeById(int employeeId)
-        //{
-        //    return await _context.EmployeeMasters
-        //        .Where(e => e.EmployeeId == employeeId)
-        //        .Select(e => new XRS_EmployeeMaster
-        //        {
-        //            EmployeeId = e.EmployeeId,
-        //            CompanyId = e.CompanyId,
-        //            EmployeeCode = e.EmployeeCode,
-        //            Name = e.Name,
-        //            Department = e.Department,
-        //            Specialization = e.Specialization,
-        //            AreaZone = e.AreaZone,
-        //            MobileNumber = e.MobileNumber,
-        //            IsActive = e.IsActive
-        //            // Password NOT returned for security
-        //        })
-        //        .FirstOrDefaultAsync();
-        //}
 
-        // ─────────────────────────────────────────
-        // CREATE — Save button in modal
-        // ─────────────────────────────────────────
         public async Task<XRS_Employee> CreateEmployee(EmployeeMasterDto dto)
         {
             var employee = new XRS_Employee
@@ -150,8 +125,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     Specialization = e.Specialization,
                     AreaZone = e.AreaZone,
                     MobileNumber = e.MobileNumber,
-                    IsActive = e.IsActive
-                    // Password NOT returned
+                    IsActive = e.IsActive             
                 })
                 .FirstOrDefaultAsync();
         }

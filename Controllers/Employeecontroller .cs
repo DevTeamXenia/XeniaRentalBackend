@@ -22,8 +22,8 @@ namespace XeniaRentalBackend.Controllers
             _employeeMasterRepository = employeeMasterRepository;
             _context = context;
         }
-        // GET /api/EmployeeMaster/company/{companyId}
-        // Listing Page + Search
+
+
         [HttpGet("company/{companyId}")]
         public async Task<ActionResult<PagedResultDto<XRS_Employee>>> GetByCompany(
             int companyId, string? search = null, int pageNumber = 1, int pageSize = 10)
@@ -37,8 +37,8 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = employees });
         }
 
-        // POST /api/EmployeeMaster
-        // Create New Employee
+     
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] EmployeeMasterDto dto)
         {
@@ -48,7 +48,8 @@ namespace XeniaRentalBackend.Controllers
             var created = await _employeeMasterRepository.CreateEmployee(dto);
             return Ok(new { Status = "Success", Data = created });
         }
-        // GET /api/Employee/zones/{companyId}
+      
+
         [HttpGet("zones/{companyId}")]
         public async Task<IActionResult> GetZones(int companyId)
         {
@@ -69,7 +70,7 @@ namespace XeniaRentalBackend.Controllers
         }
 
 
-        // GET /api/Employee/{id}
+ 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -81,7 +82,7 @@ namespace XeniaRentalBackend.Controllers
             return Ok(new { Status = "Success", Data = employee });
         }
 
-        // PUT /api/Employee/{id}
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] EmployeeMasterDto dto)
         {
