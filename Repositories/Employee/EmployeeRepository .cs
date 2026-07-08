@@ -25,8 +25,8 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     EmployeeCode = e.EmployeeCode,
                     Name = e.Name,
                     Department = e.Department,
-                    Specialization = e.Specialization,
-                    AreaZone = e.AreaZone,
+                    CategoryId = e.CategoryId,
+                    WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
                     IsActive = e.IsActive
        
@@ -64,8 +64,8 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     EmployeeCode = e.EmployeeCode,
                     Name = e.Name,
                     Department = e.Department,
-                    Specialization = e.Specialization,
-                    AreaZone = e.AreaZone,
+                    CategoryId = e.CategoryId,
+                    WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
                     Password = e.Password, 
                     IsActive = e.IsActive
@@ -90,10 +90,10 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                 EmployeeCode = dto.EmployeeCode,
                 Name = dto.Name,
                 Department = dto.Department,
-                Specialization = dto.Specialization,
-                AreaZone = string.Join(",", dto.AreaZone), 
+                CategoryId = dto.CategoryId,
+                WhatAppNumber = string.Join(",", dto.WhatAppNumber), 
                 MobileNumber = dto.MobileNumber,
-                 Password = dto.Password,
+                Password = dto.Password,
                 IsActive = dto.IsActive,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -117,8 +117,8 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     EmployeeCode = e.EmployeeCode,
                     Name = e.Name,
                     Department = e.Department,
-                    Specialization = e.Specialization,
-                    AreaZone = e.AreaZone,
+                    CategoryId = e.CategoryId,
+                    WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
                     IsActive = e.IsActive             
                 })
@@ -135,8 +135,8 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
             employee.EmployeeCode = dto.EmployeeCode;
             employee.Name = dto.Name;
             employee.Department = dto.Department;
-            employee.Specialization = dto.Specialization;
-            employee.AreaZone = string.Join(",", dto.AreaZone);
+            employee.CategoryId = dto.CategoryId;
+            employee.WhatAppNumber = string.Join(",", dto.WhatAppNumber);
             employee.MobileNumber = dto.MobileNumber;
             employee.IsActive = dto.IsActive;
             employee.UpdatedAt = DateTime.Now;

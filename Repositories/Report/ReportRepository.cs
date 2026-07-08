@@ -378,7 +378,7 @@ namespace XeniaRentalBackend.Repositories.Report
         }
 
 
-        public async Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status,DateTime? fromDate, DateTime? toDate, string? zone, string? search)
+        public async Task<List<MaintenanceReportDto>> GetMaintenanceReport(int companyId, int? tenantId, string? status,DateTime? fromDate, DateTime? toDate, int? CategoryId, string? search)
         {
             var now = DateTime.Now;
 
@@ -427,8 +427,8 @@ namespace XeniaRentalBackend.Repositories.Report
             if (toDate.HasValue)
                 query = query.Where(x => x.m.CreatedAt.Date <= toDate.Value.Date);
 
-            if (!string.IsNullOrEmpty(zone) && zone != "All")
-                query = query.Where(x => x.employee != null && x.employee.AreaZone.Contains(zone));
+            if (CategoryId.HasValue && CategoryId > 0)
+                query = query.Where(x => x.m.CategoryId == CategoryId);
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -454,7 +454,7 @@ namespace XeniaRentalBackend.Repositories.Report
                 Status = IsOverdue(x.m) ? "Overdue" : x.m.Status,
 
                 EngineerName = x.employee != null ? x.employee.Name : "Unassigned",
-                Zone = x.employee != null ? x.employee.AreaZone : "",
+               // Zone = x.employee != null ? x.employee.AreaZone : "",
                 UpdatedAt = x.m.UpdatedAt
             }).ToList();
             if (!string.IsNullOrEmpty(status) && status != "All")

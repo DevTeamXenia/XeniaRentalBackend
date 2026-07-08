@@ -11,6 +11,8 @@ namespace XeniaRentalBackend.Models
 
         public int CompanyId { get; set; }
 
+        public int CategoryId { get; set; }
+
         [Required]
         [StringLength(50)]
         public string EmployeeCode { get; set; } = string.Empty;
@@ -24,17 +26,12 @@ namespace XeniaRentalBackend.Models
         public string Department { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100)]
-        public string Specialization { get; set; } = string.Empty;
-
-        // Multiple zones stored as comma-separated: "North Zone,West Zone"
-        [Required]
-        [StringLength(255)]
-        public string AreaZone { get; set; } = string.Empty;
+        [StringLength(15)]
+        public string MobileNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(15)]
-        public string MobileNumber { get; set; } = string.Empty;
+        public string WhatAppNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(255)]

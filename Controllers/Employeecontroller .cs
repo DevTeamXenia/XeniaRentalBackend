@@ -50,24 +50,24 @@ namespace XeniaRentalBackend.Controllers
         }
       
 
-        [HttpGet("zones/{companyId}")]
-        public async Task<IActionResult> GetZones(int companyId)
-        {
-            var employees = await _context.Employee
-                .Where(e => e.CompanyId == companyId && e.IsActive == true)
-                .Select(e => e.AreaZone)
-                .ToListAsync();
+        //[HttpGet("zones/{companyId}")]
+        //public async Task<IActionResult> GetZones(int companyId)
+        //{
+        //    var employees = await _context.Employee
+        //        .Where(e => e.CompanyId == companyId && e.IsActive == true)
+        //        .Select(e => e.AreaZone)
+        //        .ToListAsync();
 
-            var zones = employees
-                .Where(z => !string.IsNullOrEmpty(z))
-                .SelectMany(z => z.Split(','))
-                .Select(z => z.Trim())
-                .Distinct()
-                .OrderBy(z => z)
-                .ToList();
+        //    var zones = employees
+        //        .Where(z => !string.IsNullOrEmpty(z))
+        //        .SelectMany(z => z.Split(','))
+        //        .Select(z => z.Trim())
+        //        .Distinct()
+        //        .OrderBy(z => z)
+        //        .ToList();
 
-            return Ok(new { Status = "Success", Data = zones });
-        }
+        //    return Ok(new { Status = "Success", Data = zones });
+        //}
 
 
  

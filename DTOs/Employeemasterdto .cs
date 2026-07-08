@@ -8,6 +8,9 @@ namespace XeniaRentalBackend.Dtos
         public int CompanyId { get; set; }
 
         [Required]
+        public int CategoryId { get; set; }
+
+        [Required]
         [StringLength(50, MinimumLength = 2)]
         public string EmployeeCode { get; set; } = string.Empty;
 
@@ -20,13 +23,8 @@ namespace XeniaRentalBackend.Dtos
         public string Department { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100)]
-        public string Specialization { get; set; } = string.Empty;
-
-        // List of selected zones from checkboxes
-        // Example: ["North Zone", "West Zone"]
-        [Required]
-        public List<string> AreaZone { get; set; } = new List<string>();
+        [StringLength(15, MinimumLength = 10)]
+        public string WhatAppNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(15, MinimumLength = 10)]

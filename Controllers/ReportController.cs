@@ -47,9 +47,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("MaintenanceReport/{companyId}")]
-        public async Task<IActionResult> MaintenanceReport(int companyId, [FromQuery] int? tenantId, [FromQuery] string? status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? zone, [FromQuery] string? search)
+        public async Task<IActionResult> MaintenanceReport(int companyId, [FromQuery] int? tenantId, [FromQuery] string? status, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int? CategoryId, [FromQuery] string? search)
         {
-            var result = await _reportRepository.GetMaintenanceReport(companyId, tenantId, status, fromDate, toDate, zone, search);
+            var result = await _reportRepository.GetMaintenanceReport(companyId, tenantId, status, fromDate, toDate, CategoryId, search);
             return Ok(new
             {
                 Status = "Success",
