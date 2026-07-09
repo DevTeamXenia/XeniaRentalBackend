@@ -69,7 +69,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
                     Password = e.Password, 
-                    IsActive = e.IsActive
+                    IsActive = e.IsActive,
                 })
                 .ToListAsync();
 
@@ -139,7 +139,18 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     CategoryId = e.CategoryId,
                     WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
-                    IsActive = e.IsActive             
+                    IsActive = e.IsActive ,
+                    EmployeeAreas = e.EmployeeAreas
+                .Select(a => new XRS_EmployeeArea
+                {
+                    EmployeeAreaId = a.EmployeeAreaId,
+                    EmployeeId = a.EmployeeId,
+                    AreaId = a.AreaId,
+                    IsPrimary = a.IsPrimary,
+                    CreatedAt = a.CreatedAt,
+                    UpdatedAt = a.UpdatedAt
+                })
+                .ToList()
                 })
                 .FirstOrDefaultAsync();
         }
@@ -159,6 +170,30 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
             employee.MobileNumber = dto.MobileNumber;
             employee.IsActive = dto.IsActive;
             employee.UpdatedAt = DateTime.Now;
+
+            // Delete existing employee-> area mapping
+            var existingAreas = await _context.EmployeeArea
+                .Where(x => x.EmployeeId == employee.EmployeeId)
+                .ToListAsync();
+
+            if (existingAreas.Any())
+            {
+                _context.EmployeeArea.RemoveRange(existingAreas);
+            }
+            //Add employee-> area mapping
+            if (dto.EmployeeAreas != null && dto.EmployeeAreas.Any())
+            {
+                var newAreas = dto.EmployeeAreas.Select(x => new XRS_EmployeeArea
+                {
+                    EmployeeId = employee.EmployeeId,
+                    AreaId = x.AreaId,
+                    IsPrimary = x.IsPrimary,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                });
+
+                await _context.EmployeeArea.AddRangeAsync(newAreas);
+            }
 
             if (!string.IsNullOrWhiteSpace(dto.Password))
                 employee.Password = dto.Password;
