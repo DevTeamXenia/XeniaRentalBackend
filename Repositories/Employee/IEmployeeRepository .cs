@@ -1,5 +1,6 @@
 ﻿using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
+using XeniaTenoraBackend.DTOs;
 
 namespace XeniaRentalBackend.Repositories.EmployeeMaster
 {
@@ -14,5 +15,6 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
         // IEmployeeMasterRepository.cs-ൽ Add ചെയ്യുക
         Task<XRS_Employee?> GetEmployeeById(int employeeId);
         Task<bool> UpdateEmployee(int id, EmployeeMasterDto dto);
+        Task<ResponseDto> ValidationByMobileNo(int companyId, string? mobileNumber);
     }
 }

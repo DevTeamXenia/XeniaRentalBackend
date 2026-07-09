@@ -96,5 +96,17 @@ namespace XeniaRentalBackend.Controllers
 
             return Ok(new { Status = "Success", Message = "Employee updated successfully." });
         }
+
+        [HttpGet("mobilenumber/{mobilenumber}")]
+        public async Task<ActionResult<PagedResultDto<XRS_Employee>>> MobileValidation(
+          int companyId, string? mobilenumber, string? search = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var msg = await _employeeRepository.ValidationByMobileNo(companyId,mobilenumber);
+
+            if (msg == null)
+                return NotFound(new { Status = "Error", Message = "No employees found." });
+
+            return Ok(new { Status = "Success", Data = msg });
+        }
     }
 }

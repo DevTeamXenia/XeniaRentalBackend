@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
+using XeniaTenoraBackend.DTOs;
 using XeniaTenoraBackend.Models;
 
 namespace XeniaRentalBackend.Repositories.EmployeeMaster
@@ -76,8 +77,8 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
 
             var items = await (
             from e in _context.Employee
-            join c in _context.Category
-            on e.CategoryId equals c.CatID
+            join c in _context.MaintenanceCategories
+            on e.CategoryId equals c.CategoryId
             where e.CompanyId == companyId
             orderby e.Name
             select new XRS_Employee
@@ -226,6 +227,21 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
 
             await _context.SaveChangesAsync();
             return true;
+        }
+        //Mobile number validation
+        public async Task<ResponseDto> ValidationByMobileNo(int companyId, string? mobilenumber)
+        {
+            bool exists = await _context.Employee
+                .AnyAsync(e => e.CompanyId == companyId &&
+                               e.MobileNumber == mobilenumber);
+
+            return new ResponseDto
+            {
+                Success = exists,
+                Message = exists
+                    ? "Mobile Number already exists."
+                    : "Mobile Number does not exist."
+            };
         }
     }
 }
