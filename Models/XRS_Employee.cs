@@ -46,5 +46,6 @@ namespace XeniaRentalBackend.Models
         public ICollection<XRS_EmployeeArea> EmployeeAreas { get; set; }
 
         = new List<XRS_EmployeeArea>();
+        public string? CategoryName { get; set; }
     }
 }

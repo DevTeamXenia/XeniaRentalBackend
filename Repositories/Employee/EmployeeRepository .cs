@@ -54,24 +54,49 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
 
             var totalRecords = await query.CountAsync();
 
-            var items = await query
-                .OrderBy(e => e.Name)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Select(e => new XRS_Employee
-                {
-                    EmployeeId = e.EmployeeId,
-                    CompanyId = e.CompanyId,
-                    EmployeeCode = e.EmployeeCode,
-                    Name = e.Name,
-                    Department = e.Department,
-                    CategoryId = e.CategoryId,
-                    WhatAppNumber = e.WhatAppNumber,
-                    MobileNumber = e.MobileNumber,
-                    Password = e.Password, 
-                    IsActive = e.IsActive,
-                })
-                .ToListAsync();
+
+            //var items = await query
+            //    .OrderBy(e => e.Name)
+            //    .Skip((pageNumber - 1) * pageSize)
+            //    .Take(pageSize)
+            //    .Select(e => new XRS_Employee
+            //    {
+            //        EmployeeId = e.EmployeeId,
+            //        CompanyId = e.CompanyId,
+            //        EmployeeCode = e.EmployeeCode,
+            //        Name = e.Name,
+            //        Department = e.Department,
+            //        CategoryId = e.CategoryId,
+            //        WhatAppNumber = e.WhatAppNumber,
+            //        MobileNumber = e.MobileNumber,
+            //        Password = e.Password, 
+            //        IsActive = e.IsActive,
+            //    })
+            //    .ToListAsync();
+
+            var items = await (
+            from e in _context.Employee
+            join c in _context.Category
+            on e.CategoryId equals c.CatID
+            where e.CompanyId == companyId
+            orderby e.Name
+            select new XRS_Employee
+            {
+                EmployeeId = e.EmployeeId,
+                CompanyId = e.CompanyId,
+                EmployeeCode = e.EmployeeCode,
+                Name = e.Name,
+                Department = e.Department,
+                CategoryId = e.CategoryId,
+                CategoryName = c.CategoryName,
+                WhatAppNumber = e.WhatAppNumber,
+                MobileNumber = e.MobileNumber,
+                Password = e.Password,
+                IsActive = e.IsActive
+            })
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
             return new PagedResultDto<XRS_Employee>
             {
@@ -139,6 +164,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                     CategoryId = e.CategoryId,
                     WhatAppNumber = e.WhatAppNumber,
                     MobileNumber = e.MobileNumber,
+                    Password = e.Password,
                     IsActive = e.IsActive ,
                     EmployeeAreas = e.EmployeeAreas
                 .Select(a => new XRS_EmployeeArea
