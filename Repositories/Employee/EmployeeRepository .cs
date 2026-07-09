@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
+using XeniaTenoraBackend.Models;
 
 namespace XeniaRentalBackend.Repositories.EmployeeMaster
 {
@@ -101,6 +102,24 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
 
             await _context.Employee.AddAsync(employee);
             await _context.SaveChangesAsync();
+
+            //Employee area mapping
+            int employeeId = employee.EmployeeId;
+            if (dto.EmployeeAreas != null && dto.EmployeeAreas.Any())
+            {
+                var areaMappings = dto.EmployeeAreas.Select(x => new XRS_EmployeeArea
+                {
+                    EmployeeId = employeeId,
+                    AreaId = x.AreaId,
+                    IsPrimary = x.IsPrimary,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }).ToList();
+
+                await _context.EmployeeArea.AddRangeAsync(areaMappings);
+                await _context.SaveChangesAsync();
+            }
+
             return employee;
         }
 

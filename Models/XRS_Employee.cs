@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using XeniaTenoraBackend.Models;
 
 namespace XeniaRentalBackend.Models
 {
@@ -42,5 +43,8 @@ namespace XeniaRentalBackend.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public ICollection<XRS_EmployeeArea> EmployeeAreas { get; set; }
+
+        = new List<XRS_EmployeeArea>();
     }
 }

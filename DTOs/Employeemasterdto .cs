@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using XeniaTenoraBackend.DTOs;
 
 namespace XeniaRentalBackend.Dtos
 {
@@ -35,6 +36,7 @@ namespace XeniaRentalBackend.Dtos
         public string Password { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
+        public List<EmployeeAreaDto> EmployeeAreas { get; set; } = new();
     }
 
     //// For toggle switch only
