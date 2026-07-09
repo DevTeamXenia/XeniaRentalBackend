@@ -166,7 +166,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IDashboardRepsitory, DashboardRepository>();
 builder.Services.AddScoped<IPropertiesRepository, PropertiesRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-//builder.Services.AddScoped<IEmployeeMasterRepository, EmployeeMasterRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();

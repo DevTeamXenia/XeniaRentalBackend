@@ -91,7 +91,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
                 Name = dto.Name,
                 Department = dto.Department,
                 CategoryId = dto.CategoryId,
-                WhatAppNumber = string.Join(",", dto.WhatAppNumber), 
+                WhatAppNumber = dto.WhatAppNumber, 
                 MobileNumber = dto.MobileNumber,
                 Password = dto.Password,
                 IsActive = dto.IsActive,
@@ -136,7 +136,7 @@ namespace XeniaRentalBackend.Repositories.EmployeeMaster
             employee.Name = dto.Name;
             employee.Department = dto.Department;
             employee.CategoryId = dto.CategoryId;
-            employee.WhatAppNumber = string.Join(",", dto.WhatAppNumber);
+            employee.WhatAppNumber = dto.WhatAppNumber;
             employee.MobileNumber = dto.MobileNumber;
             employee.IsActive = dto.IsActive;
             employee.UpdatedAt = DateTime.Now;
