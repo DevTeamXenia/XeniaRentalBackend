@@ -17,7 +17,7 @@ namespace XeniaRentalBackend.Controllers
             _repositoryCompanyRegistration = repositoryCompanyRegistration;
         }
 
-        [HttpPost("rental/register")]
+        [HttpPost("api/rental/register")]
         public async Task<IActionResult> RegisterRentalCompanyAsync([FromBody] CompanyRentalRegistrationRequestDto request)
         {
             var companyId = await _repositoryCompanyRegistration.RegisterRentalCompanyAsync(request);
