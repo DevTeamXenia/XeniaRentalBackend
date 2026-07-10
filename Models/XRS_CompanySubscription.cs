@@ -21,6 +21,7 @@ namespace XeniaRentalBackend.Models
 
         public decimal SubscriptionAmount { get; set; }
 
+        public int? SubscriptionUserCount { get; set; }
 
         public int SubscriptionDays { get; set; }
 
