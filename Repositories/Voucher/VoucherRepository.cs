@@ -480,7 +480,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             tenant.propertyPrefix,
                             RentDueDate = dueDate,
                             RentAmount = totalRentAmount,
-                            BaseRentAmount = (tenant.rentAmt * intervalMonths),
+                            BaseRentAmount = tenant.rentAmt,
                             ChargeAmount = (totalChargeAmount * intervalMonths),
                             FixedChargeAmount = (fixedChargeAmount * intervalMonths),
                             VariableChargeAmount = (variableChargeAmount * intervalMonths),
