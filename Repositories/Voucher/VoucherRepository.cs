@@ -439,7 +439,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = charge.Amount * occurrences,
+                                    Amount = charge.Amount,
                                     charge.IsVariable,
                                     Occurrences = occurrences
                                 });
@@ -455,7 +455,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             .Sum(x => (decimal)((dynamic)x).Amount);
 
                         decimal totalChargeAmount = fixedChargeAmount + variableChargeAmount;
-                        decimal totalRentAmount = tenant.rentAmt + totalChargeAmount;
+                        decimal totalRentAmount = (tenant.rentAmt * intervalMonths) + (totalChargeAmount * intervalMonths);
 
 
                         result.Add(new
@@ -480,10 +480,10 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             tenant.propertyPrefix,
                             RentDueDate = dueDate,
                             RentAmount = totalRentAmount,
-                            BaseRentAmount = tenant.rentAmt,
-                            ChargeAmount = totalChargeAmount,
-                            FixedChargeAmount = fixedChargeAmount,
-                            VariableChargeAmount = variableChargeAmount,
+                            BaseRentAmount = (tenant.rentAmt * intervalMonths),
+                            ChargeAmount = (totalChargeAmount * intervalMonths),
+                            FixedChargeAmount = (fixedChargeAmount * intervalMonths),
+                            VariableChargeAmount = (variableChargeAmount * intervalMonths),
                             Charges = chargeItems,
                             Status = status
                         });
