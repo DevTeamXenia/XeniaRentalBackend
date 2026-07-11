@@ -313,7 +313,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 {
                     "monthly" => 1,
                     "2months" => 2,
-                    "quaterly" => 3,
+                    "quarterly" => 3,
                     "6months" => 6,
                     "yearly" => 12,
                     _ => 1
@@ -1339,7 +1339,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                 {
                     "monthly" => 1,
                     "2months" => 2,
-                    "quaterly" => 3,
+                    "quarterly" => 3,
                     "6months" => 6,
                     "yearly" => 12,
                     _ => 1
@@ -1495,7 +1495,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
         {
             "monthly" => 1,
             "2months" => 2,
-            "quaterly" => 3,
+            "quarterly" => 3,
             "6months" => 6,
             "yearly" => 12,
             _ => 1
@@ -1716,7 +1716,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
             {
                 "monthly" => 1,
                 "2months" => 2,
-                "quaterly" => 3,
                 "quarterly" => 3,
                 "6months" => 6,
                 "yearly" => 12,
