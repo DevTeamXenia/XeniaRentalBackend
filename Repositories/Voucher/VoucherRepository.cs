@@ -471,6 +471,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             ChequeBank = cheque?.issueBank,
                             ChequeAmount = cheque?.amount,
                             ChequeStatus = cheque?.status,
+                            collectionType = tenant.collectionType,
                             tenant.tenantID,
                             tenant.TenantName,
                             tenant.unitID,
