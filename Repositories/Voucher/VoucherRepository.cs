@@ -390,6 +390,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         }
 
                         var chargeItems = new List<object>();
+                        var basechargeItems = new List<object>();
 
                         if (voucher != null)
                         {
@@ -419,29 +420,58 @@ namespace XeniaRentalBackend.Repositories.Voucher
                         }
                         else if (chargeLookup.ContainsKey(tenant.unitID))
                         {
-                            foreach (var charge in chargeLookup[tenant.unitID])
-                            {
-                                int occurrences = GetChargeOccurrences(
-                                    lastChargedLookup,
-                                    chargeProgress,
-                                    tenant.tenantID,
-                                    charge.ChargeID,
-                                    charge.Frequency,
-                                    dueDate,
-                                    chargeAnchorDate);
+                            //foreach (var charge in chargeLookup[tenant.unitID])
+                            //{
+                            //    int occurrences = GetChargeOccurrences(
+                            //        lastChargedLookup,
+                            //        chargeProgress,
+                            //        tenant.tenantID,
+                            //        charge.ChargeID,
+                            //        charge.Frequency,
+                            //        dueDate,
+                            //        chargeAnchorDate);
 
-                                if (occurrences <= 0)
-                                {             
-                                    continue;
-                                }
+                            //    if (occurrences <= 0)
+                            //    {             
+                            //        continue;
+                            //    }
+
+                            //    chargeItems.Add(new
+                            //    {
+                            //        charge.ChargeID,
+                            //        charge.ChargeName,
+                            //        Amount = charge.Amount,
+                            //        charge.IsVariable,
+                            //        Occurrences = occurrences
+                            //    });
+                            //}
+                            foreach (var charge in allCharges)
+                            {
+
+                                int unitinterval = charge.Frequency?.ToLower() switch
+                                {
+                                    "monthly" => 12,
+                                    "2months" => 6,
+                                    "quarterly" => 4,
+                                    "6months" => 2,
+                                    "yearly" => 1,
+                                    _ => 1
+                                };
 
                                 chargeItems.Add(new
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = charge.Amount,
-                                    charge.IsVariable,
-                                    Occurrences = occurrences
+                                    Amount = (charge.Amount * unitinterval),
+                                    charge.IsVariable
+                                });
+                                
+                                basechargeItems.Add(new
+                                {
+                                    charge.ChargeID,
+                                    charge.ChargeName,
+                                    Amount = charge.Amount ,
+                                    charge.IsVariable
                                 });
                             }
                         }
@@ -482,10 +512,10 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             RentDueDate = dueDate,
                             RentAmount = totalRentAmount,
                             BaseRentAmount = tenant.rentAmt,
-                            ChargeAmount = (totalChargeAmount * intervalMonths),
-                            FixedChargeAmount = (fixedChargeAmount * intervalMonths),
-                            VariableChargeAmount = (variableChargeAmount * intervalMonths),
-                            Charges = chargeItems,
+                            ChargeAmount = totalChargeAmount,
+                            FixedChargeAmount = fixedChargeAmount,
+                            VariableChargeAmount = variableChargeAmount,
+                            Charges = basechargeItems,
                             Status = status
                         });
                     }
