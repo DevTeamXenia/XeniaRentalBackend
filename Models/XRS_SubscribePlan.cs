@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using XeniaRentalBackend.Models.Rental;
 
 namespace XeniaRentalBackend.Models
 {
@@ -9,25 +10,25 @@ namespace XeniaRentalBackend.Models
         [Key]
         public int PlanId { get; set; }
 
-        [Required, MaxLength(200)]
-        public string PlanName { get; set; } = null!;
-
         [MaxLength(500)]
+        public string PlanName { get; set; }
+
+        [MaxLength(4000)]
         public string? PlanDescription { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal PlanPrice { get; set; }
+        public int? PlanUsers { get; set; }
+        public decimal? PlanPrice { get; set; }
+        public decimal? PlanDPrice { get; set; }
+        public decimal? PlanCPrice { get; set; }
 
-        public int? PlanDurationDays { get; set; }
+        public bool PlanIsAddOn { get; set; }
 
-        public int? PlanCreatedBy { get; set; }
+        public bool PlanActive { get; set; }
 
-        public DateTime PlanCreatedOn { get; set; } = DateTime.Now;
+        public DateTime? CreatedOn { get; set; } = DateTime.Now;
 
-        public int? PlanModifiedBy { get; set; }
-
-        public DateTime? PlanModifiedOn { get; set; }
-
-        public bool PlanActive { get; set; } = true;
+        public DateTime? ModifiedOn { get; set; }
+        public virtual ICollection<XRS_SubscribePlanDuration> PlanDurations { get; set; }
+            = new List<XRS_SubscribePlanDuration>();
     }
 }

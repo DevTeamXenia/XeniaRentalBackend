@@ -8,26 +8,35 @@ namespace XeniaRentalBackend.Models
     {
         [Key]
         public int SubId { get; set; }
-       
-        public int PlanId { get; set; }
 
-        public int CompanyId { get; set; }
+        public int? PlanId { get; set; }
 
-        public DateTime SubscriptionDate { get; set; } = DateTime.Now;
+        public int? PlanDurationId { get; set; }
 
-        public DateTime SubscriptionStartDate { get; set; }
+        public int? CompanyId { get; set; }
+        public DateTime? SubscriptionDate { get; set; }
 
-        public DateTime SubscriptionEndDate { get; set; }
+        public DateTime? SubscriptionStartDate { get; set; }
 
-        public decimal SubscriptionAmount { get; set; }
+        public DateTime? SubscriptionEndDate { get; set; }
+
+        public int? SubscriptionDays { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? SubscriptionAmount { get; set; }
+
+        [MaxLength(50)]
+        public string? RateType { get; set; }
 
         public int? SubscriptionUserCount { get; set; }
 
-        public int SubscriptionDays { get; set; }
-
-
         [MaxLength(50)]
-        public string Status { get; set; } = "ACTIVE";
+        public string? Status { get; set; } = "ACTIVE";
+
+        public int? CreatedBy { get; set; }
+
+        public DateTime? CreatedOn { get; set; } = DateTime.Now;
+
     }
 }
 

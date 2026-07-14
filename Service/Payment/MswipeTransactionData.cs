@@ -1,4 +1,4 @@
-﻿namespace XeniaRentalBackend.Dtos
+﻿namespace XeniaTenoraBackend.Service.Payment
 {
     public class MswipeTransactionData
     {

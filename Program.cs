@@ -24,6 +24,8 @@ using XeniaRentalBackend.Repositories.Module;
 using XeniaRentalBackend.Repositories.Properties;
 using XeniaRentalBackend.Repositories.Register;
 using XeniaRentalBackend.Repositories.Report;
+using XeniaRentalBackend.Repositories.Subscription;
+
 //using XeniaRentalBackend.Repositories.Service;
 using XeniaRentalBackend.Repositories.Tenant;
 using XeniaRentalBackend.Repositories.TenantAssignment;
@@ -172,6 +174,7 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
 builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
 builder.Services.AddHttpClient<IPaymentService, PaymentService>();
 

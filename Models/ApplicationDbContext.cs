@@ -62,12 +62,16 @@ namespace XeniaRentalBackend.Models
         public DbSet<XRS_SubscribePlanDuration> SubscribePlanDuration { get; set; }
 
         public DbSet<XRS_SubscriptionTransaction> SubscriptionTransaction { get; set; }
+        public DbSet<XRS_CompanySubscriptionSpecialRate> SubscriptionSpecialRate { get; set; }
+        public DbSet<XRS_SubscriptionTransaction> SubcriptionTransaction { get; set; }
 
         public DbSet<XRS_Voucher> Vouchers { get; set; }
 
         public DbSet<XRS_PlanModuleMap> PlanModuleMap { get; set; }
 
         public DbSet<XRS_Module> Module { get; set; }
+        public DbSet<XRS_CompanySubscription> CompanySubscriptions { get; set; }
+        public DbSet<XRS_CompanySubscriptionAddon> CompanySubscriptionAddon { get; set; }
 
         public DbSet<XRS_VoucherDetails> VoucherDetails { get; set; }
 

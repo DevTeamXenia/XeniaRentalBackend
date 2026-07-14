@@ -10,12 +10,13 @@
     public class SubscriptionDto
     {
         public int SubId { get; set; }
-        public int PlanId { get; set; }
+        public int? PlanId { get; set; }
         public DateTime? SubscriptionStartDate { get; set; }
         public DateTime? SubscriptionEndDate { get; set; }
-        public decimal SubscriptionAmount { get; set; }
-        public int SubscriptionDays { get; set; }
-        public string Status { get; set; } = string.Empty;
+        public decimal? SubscriptionAmount { get; set; }
+        public int? SubscriptionDays { get; set; }
+        public string? Status { get; set; } = string.Empty;
+       
     }
 
     public class SubscriptionAddonDto

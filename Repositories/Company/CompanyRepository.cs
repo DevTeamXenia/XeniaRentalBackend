@@ -78,7 +78,7 @@ namespace XeniaRentalBackend.Repositories.Company
                         PlanName = plan.PlanName,
                         PlanDescription = plan.PlanDescription,
                         PlanPrice = plan.PlanPrice,
-                        PlanDurationDays = plan.PlanDurationDays,
+                        //PlanDurationDays = plan.PlanDurationDays,
                         PlanActive = plan.PlanActive
                     };
 

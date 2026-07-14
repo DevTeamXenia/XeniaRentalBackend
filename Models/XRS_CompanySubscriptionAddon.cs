@@ -9,11 +9,27 @@ namespace XeniaTenoraBackend.Models
     {
         [Key]
         public int Id { get; set; }
-        public int CompanyId { get; set; }
-        public int PlanId { get; set; }
-        public decimal Amount { get; set; }
-        public int DepCount { get; set; }
-        public string? Status { get; set; }
-        public int MainPlanId { get; set; }
+
+        public int? MainPlanId { get; set; }
+
+        public int? PlanId { get; set; }
+
+        public int? CompanyId { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? Amount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? DealerAmount { get; set; }
+
+        [MaxLength(50)]
+        public string? RateType { get; set; }
+
+        public int? UserCount { get; set; }
+
+        [MaxLength(50)]
+        public string? Status { get; set; } = "ACTIVE";
+
+        public DateTime? CreatedOn { get; set; } = DateTime.Now;
     }
 }

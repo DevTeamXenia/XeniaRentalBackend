@@ -24,9 +24,11 @@ namespace XeniaRentalBackend.Service.Payment
 
         private const string UAT_AUTH_URL = "https://dcuat.mswipetech.co.in/ipg/api/CreatePBLAuthToken";
         private const string UAT_PAYMENT_URL = "https://dcuat.mswipetech.co.in/ipg/api/MswipePayment";
+        private const string UAT_STATUS_URL = "https://dcuat.mswipetech.co.in/ipg/api/getPBLTransactionDetails";
 
         private const string PROD_AUTH_URL = "https://pbl.mswipe.com/ipg/api/CreatePBLAuthToken";
         private const string PROD_PAYMENT_URL = "https://pbl.mswipe.com/ipg/api/MswipePayment";
+        private const string PROD_STATUS_URL = "https://pbl.mswipe.com/ipg/api/getPBLTransactionDetails\"";
 
         public PaymentService(HttpClient httpClient)
         {
@@ -132,7 +134,137 @@ namespace XeniaRentalBackend.Service.Payment
         }
 
 
+        #region MSWIPE SUBSCRIPTION
 
+        public async Task<string> CreateSubPaymentLink(string orderId, decimal? netAmount)
+        {
+            string token = await GenerateSubAuthToken();
+
+            string smsLink = await GenerateSubPaymentLink(orderId, netAmount, token);
+
+            return smsLink;
+        }
+
+        private async Task<string> GenerateSubAuthToken()
+        {
+            var tokenRequest = new
+            {
+                userId = MSWIPE_USER_ID,
+                clientId = MSWIPE_CLIENT_ID,
+                password = MSWIPE_CLIENT_SECRET,
+                applId = "api",
+                channelId = "pbl"
+            };
+
+            var tokenResponse = await _httpClient.PostAsJsonAsync(
+             UAT_AUTH_URL,
+              tokenRequest);
+
+            if (!tokenResponse.IsSuccessStatusCode)
+                throw new Exception("Failed to generate MSWIPE token.");
+
+            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<MswipeTokenResponse>();
+
+            if (tokenResult == null || string.IsNullOrEmpty(tokenResult.token))
+                throw new Exception("MSWIPE token generation failed: " + tokenResult?.msg);
+
+            return tokenResult.token;
+        }
+
+        private async Task<string> GenerateSubPaymentLink(string orderId, decimal? netAmount, string token)
+        {
+            var json = $@"
+            {{
+              ""amount"": ""{netAmount:F2}"",
+              ""mobileno"": ""9999999999"",
+              ""custcode"": ""{MERCHANT_CODE}"",
+              ""user_id"": ""{MSWIPE_USER_ID}"",
+              ""sessiontoken"": ""{token}"",
+              ""versionno"": ""VER4.0.0"",
+              ""email_id"": ""customer@test.com"",
+              ""invoice_id"": ""{orderId}"",
+              ""request_id"": ""{Guid.NewGuid():N}"",
+              ""ApplicationId"": ""api"",
+              ""ChannelId"": ""pbl"",
+              ""ClientId"": ""{MSWIPE_CLIENT_ID}""
+            }}";
+
+            using var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(
+                UAT_PAYMENT_URL,
+                content);
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"HTTP ERROR: {rawJson}");
+
+            var result = System.Text.Json.JsonSerializer.Deserialize<MswipePaymentResponse>(
+                rawJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (result == null || result.status != "True")
+                throw new Exception($"MSWIPE ERROR: {result?.responsemessage}");
+
+            return result.smslink;
+        }
+
+        public async Task<MswipeTransactionStatusResponse> CheckSubTransactionStatusAsync(string transId)
+        {
+            var statusRequest = new
+            {
+                id = transId,
+            };
+
+            var statusResponse = await _httpClient.PostAsJsonAsync(
+               UAT_STATUS_URL, statusRequest);
+
+            var rawJson = await statusResponse.Content.ReadAsStringAsync();
+
+            if (!statusResponse.IsSuccessStatusCode)
+                throw new Exception($"Failed to check transaction status. Raw Response: {rawJson}");
+
+            var result = System.Text.Json.JsonSerializer.Deserialize<MswipeTransactionStatusResponse>(
+                rawJson,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (result == null || !string.Equals(result.Status, "True", StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Transaction status check failed: " + result?.ResponseMessage);
+
+            if (result.Data == null || result.Data.Count == 0)
+                throw new Exception("Transaction status check failed: No transaction data returned.");
+
+            var latest = result.Data
+                .OrderByDescending(d => ParseTrxDateTime(d))
+                .First();
+
+
+            result.Data = new List<MswipeTransactionData> { latest };
+
+            return result;
+        }
+
+        private DateTime ParseTrxDateTime(MswipeTransactionData data)
+        {
+            if (!string.IsNullOrWhiteSpace(data.TrxDateTime) &&
+                DateTime.TryParse(data.TrxDateTime, System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None, out var trxDate))
+            {
+                return trxDate;
+            }
+
+            return data.Created_On ?? DateTime.MinValue;
+        }
+
+        #endregion
+        //razorpay
         public async Task<string> CreateOrderAsync(decimal amount, string currency, string apiKey, string apiSecret, string receiptNo, string customerName, string mobileNumber)
         {
             if (amount <= 0)
