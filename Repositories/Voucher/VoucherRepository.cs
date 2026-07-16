@@ -485,7 +485,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             .Sum(x => (decimal)((dynamic)x).Amount);
 
                         decimal totalChargeAmount = fixedChargeAmount + variableChargeAmount;
-                        decimal totalRentAmount = (tenant.rentAmt * intervalMonths) + (totalChargeAmount * intervalMonths);
+                        decimal totalRentAmount = (tenant.rentAmt * intervalMonths) + (totalChargeAmount);
 
 
                         result.Add(new
