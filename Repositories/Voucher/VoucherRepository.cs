@@ -462,7 +462,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = (charge.Amount * unitinterval),
+                                    Amount = (charge.Amount),
                                     charge.IsVariable
                                 });
                                 
