@@ -25,8 +25,8 @@ namespace XeniaRentalBackend.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? SubscriptionAmount { get; set; }
 
-        //[MaxLength(50)]
-        //public string? RateType { get; set; }
+        [MaxLength(50)]
+        public string? RateType { get; set; }
 
         public int? SubscriptionUserCount { get; set; }
 

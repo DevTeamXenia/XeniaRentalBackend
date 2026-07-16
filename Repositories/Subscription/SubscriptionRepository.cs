@@ -298,7 +298,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                     SubscriptionAmount = selectedDuration.Price,
                     SubscriptionDays = selectedDuration.DurationDays,
                     SubscriptionUserCount = mainPlan.PlanUsers,
-                    //RateType = "CUSTOMER DIRECT",
+                    RateType = "CUSTOMER DIRECT",
                     Status = "PENDING",
                     CreatedBy = userId,
                     CreatedOn = DateTime.Now
