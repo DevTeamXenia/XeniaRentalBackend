@@ -450,11 +450,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                                 int unitinterval = charge.Frequency?.ToLower() switch
                                 {
-                                    "monthly" => 12,
-                                    "2months" => 6,
+                                    "monthly" => 1,
+                                    "2months" => 2,
                                     "quarterly" => 4,
-                                    "6months" => 2,
-                                    "yearly" => 1,
+                                    "6months" => 6,
+                                    "yearly" => 12,
                                     _ => 1
                                 };
 
@@ -462,7 +462,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 {
                                     charge.ChargeID,
                                     charge.ChargeName,
-                                    Amount = (charge.Amount),
+                                    Amount = (charge.Amount * unitinterval),
                                     charge.IsVariable
                                 });
                                 
