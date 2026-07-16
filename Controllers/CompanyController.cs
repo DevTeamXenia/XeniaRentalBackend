@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Repositories.Company;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
 namespace XeniaRentalBackend.Controllers
@@ -34,24 +37,33 @@ namespace XeniaRentalBackend.Controllers
 
 
 
-        [HttpPut("UpdateCompany/{id}")]
-        public async Task<IActionResult> UpdateCompany(int id, [FromBody] Models.XRS_Company company)
+        //[HttpPut("UpdateCompany/{id}")]
+        //public async Task<IActionResult> UpdateCompany(int id, [FromBody] Models.XRS_Company company)
+        //{
+        //    if (company == null)
+        //    {
+        //        return BadRequest(new { Status = "Error", Message = "Invalid Company data" });
+        //    }
+
+        //    var updated = await _companyRepository.UpdateCompany(id, company);
+        //    if (!updated)
+        //    {
+        //        return NotFound(new { Status = "Error", Message = "company not found or update failed." });
+        //    }
+
+        //    return Ok(new { Status = "Success", Message = "Company updated successfully." });
+        //}
+
+        [HttpPut("UpdateCompany{id}")]
+        public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanySettingUpdateDto request)
         {
-            if (company == null)
+            if (request == null)
             {
                 return BadRequest(new { Status = "Error", Message = "Invalid Company data" });
             }
-
-            var updated = await _companyRepository.UpdateCompany(id, company);
-            if (!updated)
-            {
-                return NotFound(new { Status = "Error", Message = "company not found or update failed." });
-            }
-
+            var updated = await _companyRepository.UpdateCompany(id, request);
             return Ok(new { Status = "Success", Message = "Company updated successfully." });
         }
 
-
-      
     }
 }

@@ -452,7 +452,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 {
                                     "monthly" => 1,
                                     "2months" => 2,
-                                    "quarterly" => 4,
+                                    "quarterly" => 3,
                                     "6months" => 6,
                                     "yearly" => 12,
                                     _ => 1

@@ -23,8 +23,5 @@ namespace XeniaRentalBackend.Models
 
         public bool IsActive { get; set; }
         public string? Country { get; set; }
-
-
-
     }
 }

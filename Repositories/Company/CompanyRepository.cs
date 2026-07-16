@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
 
 
@@ -109,23 +110,70 @@ namespace XeniaRentalBackend.Repositories.Company
             };
         }
 
-        public async Task<bool> UpdateCompany(int id, XRS_Company company)
+        //public async Task<bool> UpdateCompany(int id, XRS_Company company)
+        //{
+        //    var updatedCompany = await _context.Company
+        //        .FirstOrDefaultAsync(u => u.companyID == id);
+
+        //    if (updatedCompany == null) return false;
+
+        //    updatedCompany.companyName = company.companyName;
+        //    updatedCompany.phoneNumber = company.phoneNumber;
+        //    updatedCompany.address = company.address;
+        //    updatedCompany.pin = company.pin;
+        //    updatedCompany.email = company.email;
+        //    updatedCompany.logo = company.logo;
+        //    updatedCompany.IsActive = company.IsActive;
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+        public async Task<XRS_Company> UpdateCompany(int id, CompanySettingUpdateDto request)
         {
-            var updatedCompany = await _context.Company
-                .FirstOrDefaultAsync(u => u.companyID == id);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (updatedCompany == null) return false;
+            try
+            {
+                var updatedCompany = await _context.Company
+                    .FirstOrDefaultAsync(v => v.companyID == id);
 
-            updatedCompany.companyName = company.companyName;
-            updatedCompany.phoneNumber = company.phoneNumber;
-            updatedCompany.address = company.address;
-            updatedCompany.pin = company.pin;
-            updatedCompany.email = company.email;
-            updatedCompany.logo = company.logo;
-            updatedCompany.IsActive = company.IsActive;
+                if (updatedCompany == null)
+                    throw new Exception("Voucher not found");
 
-            await _context.SaveChangesAsync();
-            return true;
+                updatedCompany.companyName = request.companyName;
+                updatedCompany.phoneNumber = request.phoneNumber;
+                updatedCompany.address = request.address;
+                updatedCompany.pin = request.pin;
+                updatedCompany.email = request.email;
+                updatedCompany.logo = request.logo;
+                updatedCompany.IsActive = request.IsActive;
+
+                var existingDetails = await _context.CompanySettings
+                    .Where(d => d.CompanyId == updatedCompany.companyID)
+                    .ToListAsync();
+
+                _context.CompanySettings.RemoveRange(existingDetails);
+
+                foreach (var detail in request.CompanyDetails)
+                {
+                    _context.CompanySettings.Add(new XRS_CompanySettings
+                    {
+                        CompanyId = updatedCompany.companyID,
+                        KeyCode = detail.KeyCode,
+                        Value = detail.Value
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return updatedCompany;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
     }

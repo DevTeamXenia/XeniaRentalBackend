@@ -1,4 +1,5 @@
 ﻿using XeniaRentalBackend.Dtos;
+using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Models;
 
 namespace XeniaRentalBackend.Repositories.Company
@@ -7,8 +8,7 @@ namespace XeniaRentalBackend.Repositories.Company
     {
 
         Task<CompanyWithSubscriptionDto?> GetCompanyWithSubscriptionAsync(int companyId);
-
-        Task<bool> UpdateCompany(int id, XRS_Company charges);
+        Task<XRS_Company> UpdateCompany(int id, CompanySettingUpdateDto request);
 
     }
 }

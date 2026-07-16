@@ -413,7 +413,7 @@ namespace XeniaRentalBackend.Repositories.TenantAssignment
                 notes = assignment.notes,
                 BedSpaceID = assignment.bedSpaceID ?? 0,
                 BedSpaceName = assignment.BedSpace?.bedSpaceName,
-
+                
                 Documents = assignment.Tenant?.TenantDocuments?
                    .Where(td => (td.Documents?.docPurpose ?? td.DocPurpose) == "Tenant Assignment")
                     .Select(td => new TenantDocumentDto
