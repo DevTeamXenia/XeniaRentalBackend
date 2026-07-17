@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace XeniaRentalBackend.Models
 {
     [Table("XRS_CompanySubscriptionTransaction", Schema = "dbo")]
-    public class XRS_SubscriptionTransaction
+    public class XRS_CompanySubscriptionTransaction
     {
         [Key]
         public int SubscriptionTransactionId { get; set; }

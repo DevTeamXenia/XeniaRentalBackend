@@ -114,7 +114,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
         }
         public async Task<RenewSubscriptionResponseDto?> RenewSubscriptionAsync(int userId, RenewSubscriptionDto dto)
         {
-            var existingTransaction = await _context.SubscriptionTransaction
+            var existingTransaction = await _context.CompanySubscriptionTransaction
                 .Where(t =>
                     t.CompanyId == dto.CompanyId &&
                     (t.Status == "INITIATED" || t.Status == "PENDING"))
@@ -220,7 +220,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                             .FirstOrDefault());
                 }
 
-                var transaction = new XRS_SubscriptionTransaction
+                var transaction = new XRS_CompanySubscriptionTransaction
                 {
                     CompanyId = dto.CompanyId,
                     Amount = totalAmount,
@@ -233,7 +233,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                     SubscriptionId = null
                 };
 
-                _context.SubscriptionTransaction.Add(transaction);
+                _context.CompanySubscriptionTransaction.Add(transaction);
                 await _context.SaveChangesAsync();
 
                 try
@@ -374,7 +374,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
         }
         public async Task<CancelSubscriptionResponseDto?> CancelPendingSubscriptionAsync(int userId, int companyId)
         {
-            var pendingTransactions = await _context.SubscriptionTransaction
+            var pendingTransactions = await _context.CompanySubscriptionTransaction
                 .Where(t =>
                     t.CompanyId == companyId &&
                     (t.Status == "INITIATED" || t.Status == "PENDING"))
@@ -436,7 +436,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
 
         public async Task<AddAddonResponseDto?> AddAddonToSubscriptionAsync(int userId, AddAddonDto dto)
         {
-            var existingTransaction = await _context.SubscriptionTransaction
+            var existingTransaction = await _context.CompanySubscriptionTransaction
                 .Where(t =>
                     t.CompanyId == dto.CompanyId &&
                     (t.Status == "INITIATED" || t.Status == "PENDING"))
@@ -540,7 +540,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                 var merchantTxnId =
                     $"TXN{DateTime.Now:yyyyMMddHHmmss}{Guid.NewGuid():N}".Substring(0, 30);
 
-                var transaction = new XRS_SubscriptionTransaction
+                var transaction = new XRS_CompanySubscriptionTransaction
                 {
                     CompanyId = dto.CompanyId,
                     Amount = totalAmount,
@@ -553,7 +553,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                     SubscriptionId = activeSubscription.SubId
                 };
 
-                _context.SubscriptionTransaction.Add(transaction);
+                _context.CompanySubscriptionTransaction.Add(transaction);
                 await _context.SaveChangesAsync();
 
                 try
@@ -633,7 +633,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
         }
         public async Task<PaymentStatusResponseDto?> CheckPaymentStatusAsync(string transactionId)
         {
-            var transaction = await _context.SubscriptionTransaction
+            var transaction = await _context.CompanySubscriptionTransaction
                 .FirstOrDefaultAsync(t => t.TransactionRefId == transactionId);
 
             if (transaction == null)
