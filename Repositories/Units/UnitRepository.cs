@@ -57,7 +57,18 @@ namespace XeniaRentalBackend.Repositories.Unit
                 FloorNo = u.FloorNo,
                 DefaultRent = u.DefaultRent,
                 escalationper = u.escalationper,
-                UnitCharges = null
+                //UnitCharges = null
+                UnitCharges = _context.UnitChargesMappings
+                .Where(c => c.unitID == u.UnitId)
+                .Select(c => new UnitChargeDto
+                {
+                    unitMapID = c.unitMapID,
+                    chargeID = c.chargeID,
+                    amount = c.amount,
+                    frequency = c.frequency,
+                    isActive = c.isActive
+                })
+                .ToList()
             }).ToList();
 
             return unitsDto;
