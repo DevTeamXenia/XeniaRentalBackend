@@ -40,7 +40,7 @@ namespace XeniaRentalBackend.Repositories.Company
 
             var subscription = await _context.CompanySubscription
                 .Where(s => s.CompanyId == companyId && s.Status != "PENDING")
-                .OrderByDescending(s => s.SubscriptionDate)
+                .OrderByDescending(s => s.SubscriptionStartDate)
                 .FirstOrDefaultAsync();
 
             SubscriptionDto? subscriptionDto = null;

@@ -5146,7 +5146,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\pc\\.nuget\\packages\\": {},
+    "C:\\Users\\hp\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -5155,14 +5155,14 @@
       "projectUniqueName": "D:\\GitHub\\XeniaTenoraBackend\\XeniaTenoraBackend.csproj",
       "projectName": "XeniaTenoraBackend",
       "projectPath": "D:\\GitHub\\XeniaTenoraBackend\\XeniaTenoraBackend.csproj",
-      "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
       "outputPath": "D:\\GitHub\\XeniaTenoraBackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

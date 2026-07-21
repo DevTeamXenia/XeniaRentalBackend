@@ -61,7 +61,6 @@ namespace XeniaRentalBackend.Repositories.Register
                 {
                     CompanyId = company.companyID,
                     PlanId = 0,
-                    SubscriptionDate = DateTime.Now,
                     SubscriptionStartDate = startDate,
                     SubscriptionEndDate = endDate,
                     SubscriptionDays = 14,

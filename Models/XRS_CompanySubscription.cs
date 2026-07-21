@@ -14,7 +14,6 @@ namespace XeniaRentalBackend.Models
         public int? PlanDurationId { get; set; }
 
         public int? CompanyId { get; set; }
-        public DateTime? SubscriptionDate { get; set; }
 
         public DateTime? SubscriptionStartDate { get; set; }
 
