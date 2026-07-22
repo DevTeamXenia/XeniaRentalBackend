@@ -123,60 +123,63 @@ namespace XeniaRentalBackend.Repositories.Subscription
 
             if (existingTransaction != null)
             {
-
-                var gatewayResponse = await _paymentService.CheckSubTransactionStatusAsync(existingTransaction.PaymentRef);
-
-                if (gatewayResponse?.Data == null || gatewayResponse.Data.Count == 0)
+                if (existingTransaction.PaymentRef != null)
                 {
-                    throw new Exception("Unable to retrieve payment status from gateway.");
-                }
+                    var gatewayResponse = await _paymentService.CheckSubTransactionStatusAsync(existingTransaction.PaymentRef);
 
-                var latestTxn = gatewayResponse.Data.First();
-
-                if (latestTxn.Payment_Status == 1)
-                {
-                    return new RenewSubscriptionResponseDto
+                    if (gatewayResponse?.Data == null || gatewayResponse.Data.Count == 0)
                     {
-                        TransactionId = existingTransaction.TransactionRefId,
-                        PaymentLink = existingTransaction.PaymentLink,
-                        PaymentStatus = latestTxn.Payment_Desc ?? "SUCCESS",
-                        Message = "Payment already completed successfully for this subscription."
-                    };
-                }
+                        throw new Exception("Unable to retrieve payment status from gateway.");
+                    }
 
-                if (latestTxn.Payment_Status == 2)
-                {
-                    var minutesElapsed = (DateTime.Now - existingTransaction.CreatedOn.GetValueOrDefault()).TotalMinutes;
+                    var latestTxn = gatewayResponse.Data.First();
 
-                    if (minutesElapsed <= 15)
+                    if (latestTxn.Payment_Status == 1)
                     {
                         return new RenewSubscriptionResponseDto
                         {
                             TransactionId = existingTransaction.TransactionRefId,
                             PaymentLink = existingTransaction.PaymentLink,
-                            PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
-                            Message = "A payment is already in progress. Please try after sometimes."
+                            PaymentStatus = latestTxn.Payment_Desc ?? "SUCCESS",
+                            Message = "Payment already completed successfully for this subscription."
                         };
                     }
-                    else
-                    {
-                        return new RenewSubscriptionResponseDto
-                        {
-                            TransactionId = existingTransaction.TransactionRefId,
-                            PaymentLink = existingTransaction.PaymentLink,
-                            PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
-                            Message = "A payment is in pending. Please wait for confirmation."
-                        };
-                    }
-                }
-                else if (latestTxn.Payment_Status == 0)
-                {
-                    await ExpirePendingSubscriptions(
-                        existingTransaction.CompanyId,
-                        existingTransaction.SubscriptionId);
 
-                    existingTransaction.Status = "FAILED";
-                    await _context.SaveChangesAsync();
+                    if (latestTxn.Payment_Status == 2)
+                    {
+                        var minutesElapsed = (DateTime.Now - existingTransaction.CreatedOn.GetValueOrDefault()).TotalMinutes;
+
+                        if (minutesElapsed <= 15)
+                        {
+                            return new RenewSubscriptionResponseDto
+                            {
+                                TransactionId = existingTransaction.TransactionRefId,
+                                PaymentLink = existingTransaction.PaymentLink,
+                                PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
+                                Message = "A payment is already in progress. Please try after sometimes."
+                            };
+                        }
+                        else
+                        {
+                            return new RenewSubscriptionResponseDto
+                            {
+                                TransactionId = existingTransaction.TransactionRefId,
+                                PaymentLink = existingTransaction.PaymentLink,
+                                PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
+                                Message = "A payment is in pending. Please wait for confirmation."
+                            };
+                        }
+                    }
+                    else if (latestTxn.Payment_Status == 0)
+                    {
+                        await ExpirePendingSubscriptions(
+                            existingTransaction.CompanyId,
+                            existingTransaction.SubscriptionId);
+
+                        existingTransaction.Status = "FAILED";
+                        await _context.SaveChangesAsync();
+                    }
+
                 }
             }
 
@@ -445,51 +448,54 @@ namespace XeniaRentalBackend.Repositories.Subscription
 
             if (existingTransaction != null)
             {
-                var gatewayResponse = await _paymentService.CheckSubTransactionStatusAsync(existingTransaction.PaymentRef);
-
-                if (gatewayResponse.ResponseMessage == "Transaction detail not found")
+                if (existingTransaction.PaymentRef != null)
                 {
-                    var minutesElapsed = (DateTime.Now - existingTransaction.CreatedOn.GetValueOrDefault()).TotalMinutes;
+                    var gatewayResponse = await _paymentService.CheckSubTransactionStatusAsync(existingTransaction.PaymentRef);
 
-                    if (minutesElapsed <= 15)
+                    if (gatewayResponse.ResponseMessage == "Transaction detail not found")
+                    {
+                        var minutesElapsed = (DateTime.Now - existingTransaction.CreatedOn.GetValueOrDefault()).TotalMinutes;
+
+                        if (minutesElapsed <= 15)
+                        {
+                            return new AddAddonResponseDto
+                            {
+                                TransactionId = existingTransaction.TransactionRefId,
+                                PaymentLink = existingTransaction.PaymentLink,
+                                PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
+                                Message = "A payment is already in progress. Please try after sometimes."
+                            };
+                        }
+                        else
+                        {
+                            return new AddAddonResponseDto
+                            {
+                                TransactionId = existingTransaction.TransactionRefId,
+                                PaymentLink = existingTransaction.PaymentLink,
+                                PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
+                                Message = "A payment is already generated. Please complete the existing transaction."
+                            };
+                        }
+                    }
+                    else if (gatewayResponse.Status == "PENDING")
                     {
                         return new AddAddonResponseDto
                         {
                             TransactionId = existingTransaction.TransactionRefId,
                             PaymentLink = existingTransaction.PaymentLink,
                             PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
-                            Message = "A payment is already in progress. Please try after sometimes."
+                            Message = "A payment is in pending. Please wait for confirmation."
                         };
                     }
-                    else
+                    else if (gatewayResponse.Status == "FAILED")
                     {
-                        return new AddAddonResponseDto
-                        {
-                            TransactionId = existingTransaction.TransactionRefId,
-                            PaymentLink = existingTransaction.PaymentLink,
-                            PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
-                            Message = "A payment is already generated. Please complete the existing transaction."
-                        };
-                    }
-                }
-                else if (gatewayResponse.Status == "PENDING")
-                {
-                    return new AddAddonResponseDto
-                    {
-                        TransactionId = existingTransaction.TransactionRefId,
-                        PaymentLink = existingTransaction.PaymentLink,
-                        PaymentStatus = gatewayResponse.ResponseMessage ?? gatewayResponse.Status,
-                        Message = "A payment is in pending. Please wait for confirmation."
-                    };
-                }
-                else if (gatewayResponse.Status == "FAILED")
-                {
-                    await ExpirePendingSubscriptions(
-                        existingTransaction.CompanyId,
-                        existingTransaction.SubscriptionId);
+                        await ExpirePendingSubscriptions(
+                            existingTransaction.CompanyId,
+                            existingTransaction.SubscriptionId);
 
-                    existingTransaction.Status = "FAILED";
-                    await _context.SaveChangesAsync();
+                        existingTransaction.Status = "FAILED";
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
 

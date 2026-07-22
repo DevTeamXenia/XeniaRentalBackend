@@ -5,6 +5,7 @@ using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.DTOs;
 using XeniaRentalBackend.Repositories.Subscription;
 using XeniaRentalBackend.Service.Common;
+using Stripe;
 
 namespace XeniaRentalBackend.Controllers
 {

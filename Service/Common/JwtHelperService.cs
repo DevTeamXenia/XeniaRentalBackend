@@ -19,7 +19,7 @@
                 return companyId;
             }
 
-            return 0; 
+            return 0;
         }
 
         public int GetUserId()
@@ -39,7 +39,7 @@
         public int GetCustomerId()
         {
             var customerIdClaim = _httpContextAccessor.HttpContext?.User.Claims
-                .FirstOrDefault(c => c.Type == "TenantId");
+                .FirstOrDefault(c => c.Type == "CustomerId");
 
             if (customerIdClaim != null && int.TryParse(customerIdClaim.Value, out int customerId))
             {
@@ -62,5 +62,4 @@
             return 0;
         }
     }
-
 }
