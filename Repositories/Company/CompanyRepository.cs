@@ -37,23 +37,51 @@ namespace XeniaRentalBackend.Repositories.Company
 
             if (company == null) return null;
 
+       
+            var companySettings = await _context.CompanySettings
+                .Where(cs => cs.CompanyId == companyId)
+                .Select(cs => new CompanySettingDto
+                {
+                    Id = cs.CompanySettingsId,
+                    KeyCode = cs.KeyCode,
+                    Value = cs.Value
+                })
+                .ToListAsync();
 
-            var subscription = await _context.CompanySubscription
+            var subscription = await _context.CompanySubscriptions
                 .Where(s => s.CompanyId == companyId && s.Status != "PENDING")
-                .OrderByDescending(s => s.SubscriptionStartDate)
+                .OrderByDescending(s => s.SubscriptionEndDate)
+                .ThenByDescending(s => s.SubscriptionStartDate)
                 .FirstOrDefaultAsync();
 
             SubscriptionDto? subscriptionDto = null;
-            PlanDto? planDto = null; 
+            PlanDto? planDto = null;
+            List<SubscriptionAddonDto> addonDtos = new();
 
             if (subscription != null)
             {
-                string status = subscription.Status.Trim().ToUpper();
+                string status = (subscription.Status ?? "").Trim().ToUpper();
 
-                if (status == "ACTIVE" && subscription.SubscriptionEndDate < currentDate)
+                var endDate = subscription.SubscriptionEndDate;
+
+                if ((status == "ACTIVE" || status == "SUCCESS") &&
+                    endDate.HasValue && endDate.Value < currentDate)
+                {
                     status = "EXPIRED";
-                else if (status == "TRIAL" && subscription.SubscriptionEndDate < currentDate)
-                    status = "TRIAL EXPIRED";
+                }
+                else if (status == "TRIAL" &&
+                         endDate.HasValue && endDate.Value < currentDate)
+                {
+                    status = "TRIAL_EXPIRED";
+                }
+                else if (status == "SUCCESS")
+                {
+                    status = "ACTIVE";
+                }
+
+                int? expireDays = endDate.HasValue
+                    ? Math.Max((endDate.Value.Date - currentDate.Date).Days, 0)
+                    : (int?)null;
 
                 subscriptionDto = new SubscriptionDto
                 {
@@ -63,6 +91,9 @@ namespace XeniaRentalBackend.Repositories.Company
                     SubscriptionEndDate = subscription.SubscriptionEndDate,
                     SubscriptionAmount = subscription.SubscriptionAmount,
                     SubscriptionDays = subscription.SubscriptionDays,
+                    SubscriptionUserCount = subscription.SubscriptionUserCount,
+                    RateType = subscription.RateType,
+                    ExpireDays = expireDays,
                     Status = status
                 };
 
@@ -76,13 +107,13 @@ namespace XeniaRentalBackend.Repositories.Company
                     planDto = new PlanDto
                     {
                         PlanId = plan.PlanId,
-                        PlanName = plan.PlanName,
+                        PlanName = plan.PlanName ?? string.Empty,
                         PlanDescription = plan.PlanDescription,
                         PlanPrice = plan.PlanPrice,
-                        //PlanDurationDays = plan.PlanDurationDays,
+                        PlanDurationDays = subscription.SubscriptionDays,
+                        PlanIsAddOn = plan.PlanIsAddOn,
                         PlanActive = plan.PlanActive
                     };
-
 
                     var modules = await (
                         from pm in _context.PlanModuleMap
@@ -100,34 +131,42 @@ namespace XeniaRentalBackend.Repositories.Company
 
                     planDto.Modules = modules;
                 }
+
+             
+                if (status == "ACTIVE" || status == "TRIAL")
+                {
+                    addonDtos = await (
+                        from a in _context.CompanySubscriptionAddon
+                        join p in _context.SubscribePlan on a.PlanId equals p.PlanId into planJoin
+                        from p in planJoin.DefaultIfEmpty()
+                        where a.CompanyId == companyId &&
+                              a.MainPlanId == subscription.SubId &&
+                              (a.Status == "SUCCESS" || a.Status == "ACTIVE")
+                        select new SubscriptionAddonDto
+                        {
+                            Id = a.Id,
+                            PlanId = a.PlanId,
+                            PlanName = p != null ? p.PlanName : null,
+                            Amount = a.Amount,
+                            DealerAmount = a.DealerAmount,
+                            RateType = a.RateType,
+                            UserCount = a.UserCount,
+                            Status = a.Status
+                        }).ToListAsync();
+                }
             }
 
             return new CompanyWithSubscriptionDto
             {
                 Company = company,
                 Subscription = subscriptionDto,
-                Plan = planDto
+                Plan = planDto,
+                Addons = addonDtos,
+                CompanySettings = companySettings
             };
         }
 
-        //public async Task<bool> UpdateCompany(int id, XRS_Company company)
-        //{
-        //    var updatedCompany = await _context.Company
-        //        .FirstOrDefaultAsync(u => u.companyID == id);
 
-        //    if (updatedCompany == null) return false;
-
-        //    updatedCompany.companyName = company.companyName;
-        //    updatedCompany.phoneNumber = company.phoneNumber;
-        //    updatedCompany.address = company.address;
-        //    updatedCompany.pin = company.pin;
-        //    updatedCompany.email = company.email;
-        //    updatedCompany.logo = company.logo;
-        //    updatedCompany.IsActive = company.IsActive;
-
-        //    await _context.SaveChangesAsync();
-        //    return true;
-        //}
         public async Task<XRS_Company> UpdateCompany(int id, CompanySettingUpdateDto request)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

@@ -77,7 +77,7 @@ namespace XeniaRentalBackend.Repositories.Subscription
                     PlanId = plan.PlanId,
                     PlanName = plan.PlanName ?? string.Empty,
                     PlanDescription = plan.PlanDescription ?? string.Empty,
-                    PlanUsers = plan.PlanUsers ?? 0,
+                    PlanUsers = plan.PlanUsers,
                     Durations = durations,
                     Modules = modules
                 });
@@ -105,8 +105,8 @@ namespace XeniaRentalBackend.Repositories.Subscription
                 {
                     PlanId = p.PlanId,
                     PlanName = p.PlanName ?? string.Empty,
-                    PlanUsers = p.PlanUsers ?? 0,
-                    PlanPrice = p.PlanPrice ?? 0,
+                    PlanUsers = p.PlanUsers ,
+                    PlanPrice = p.PlanPrice ,
                     PlanDPrice = p.PlanDPrice ?? 0,
                     PlanCPrice = specialRate != null ? specialRate.CustomRate : (p.PlanCPrice ?? 0)
                 };

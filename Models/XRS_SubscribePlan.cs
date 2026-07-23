@@ -16,7 +16,7 @@ namespace XeniaRentalBackend.Models
         [MaxLength(4000)]
         public string? PlanDescription { get; set; }
 
-        public int? PlanUsers { get; set; }
+        public int PlanUsers { get; set; }
         public decimal? PlanPrice { get; set; }
         public decimal? PlanDPrice { get; set; }
         public decimal? PlanCPrice { get; set; }
