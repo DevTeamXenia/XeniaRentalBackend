@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Stripe.V2;
 using XeniaRentalBackend.Dtos;
 using XeniaRentalBackend.Models;
 using XeniaRentalBackend.Service.Payment;
@@ -445,10 +446,15 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             //        Occurrences = occurrences
                             //    });
                             //}
-                            foreach (var charge in allCharges)
+
+
+                            
+
+                            int unitinterval = 0;
+                            foreach (var charge in allCharges) 
                             {
 
-                                int unitinterval = charge.Frequency?.ToLower() switch
+                                unitinterval = charge.Frequency?.ToLower() switch
                                 {
                                     "monthly" => 1,
                                     "2months" => 2,
@@ -457,22 +463,100 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                     "yearly" => 12,
                                     _ => 1
                                 };
+                                //Charge date checking
+                                if (charge.Amount > 0)
+                                {
+                                    var lastEntry = await (
+                                    from v in _context.Vouchers
+                                    join a in _context.TenantAssignemnts
+                                    on v.CrID equals a.tenantID
+                                    where v.CrID == tenant.tenantID
+                                    orderby v.VoucherDate descending
+                                    select new
+                                    {
+                                        v.VoucherDate,
+                                        v.Amount,
+                                        a.rentAmt
+                                    }
+                                    ).FirstOrDefaultAsync();
 
-                                chargeItems.Add(new
-                                {
-                                    charge.ChargeID,
-                                    charge.ChargeName,
-                                    Amount = (charge.Amount * unitinterval),
-                                    charge.IsVariable
-                                });
-                                
-                                basechargeItems.Add(new
-                                {
-                                    charge.ChargeID,
-                                    charge.ChargeName,
-                                    Amount = charge.Amount ,
-                                    charge.IsVariable
-                                });
+                                    if (lastEntry != null)
+                                    {
+                                        if (lastEntry.Amount > lastEntry.rentAmt)
+                                        {
+                                            DateTime voucherdate = lastEntry.VoucherDate;
+                                            DateTime today = DateTime.Today;
+
+                                            int months = (today.Year - voucherdate.Year) *
+                                   12
+                                                         + today.Month - voucherdate.Month;
+                                            if (months >=unitinterval)
+                                            {
+                                                chargeItems.Add(new
+                                                {
+                                                    charge.ChargeID,
+                                                    charge.ChargeName,
+                                                    Amount = (charge.Amount * unitinterval),
+                                                    charge.IsVariable
+                                                });
+
+                                                basechargeItems.Add(new
+                                                {
+                                                    charge.ChargeID,
+                                                    charge.ChargeName,
+                                                    Amount = charge.Amount,
+                                                    charge.IsVariable
+                                                });
+                                            }
+                                            else
+                                            {
+                                                basechargeItems.Add(new
+                                                {
+                                                    charge.ChargeID,
+                                                    charge.ChargeName,
+                                                    Amount = charge.Amount,
+                                                    charge.IsVariable
+                                                });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            chargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = (charge.Amount * unitinterval),
+                                                charge.IsVariable
+                                            });
+
+                                            basechargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = charge.Amount,
+                                                charge.IsVariable
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        chargeItems.Add(new
+                                        {
+                                            charge.ChargeID,
+                                            charge.ChargeName,
+                                            Amount = (charge.Amount * unitinterval),
+                                            charge.IsVariable
+                                        });
+
+                                        basechargeItems.Add(new
+                                        {
+                                            charge.ChargeID,
+                                            charge.ChargeName,
+                                            Amount = charge.Amount,
+                                            charge.IsVariable
+                                        });
+                                    }
+                                }
                             }
                         }
 
