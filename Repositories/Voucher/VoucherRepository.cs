@@ -392,7 +392,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
 
                         var chargeItems = new List<object>();
                         var basechargeItems = new List<object>();
-
+                        int flag = 0;
                         if (voucher != null)
                         {
                             if (voucherChargeDetailLookup.TryGetValue(voucher.VoucherID, out var invoicedCharges))
@@ -409,7 +409,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 }
                             }
 
-          
+
                             if (invoicedCharges != null)
                             {
                                 foreach (var vc in invoicedCharges)
@@ -448,12 +448,11 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             //}
 
 
-                            
+
 
                             int unitinterval = 0;
-                            foreach (var charge in allCharges) 
+                            foreach (var charge in allCharges)
                             {
-
                                 unitinterval = charge.Frequency?.ToLower() switch
                                 {
                                     "monthly" => 1,
@@ -466,60 +465,35 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                 //Charge date checking
                                 if (charge.Amount > 0)
                                 {
+                                    DateTime voucherdate;
                                     var lastEntry = await (
                                     from v in _context.Vouchers
                                     join a in _context.TenantAssignemnts
                                     on v.CrID equals a.tenantID
+                                    join d in _context.VoucherDetails
+                                    on v.VoucherID equals d.voucherId
                                     where v.CrID == tenant.tenantID
-                                    orderby v.VoucherDate descending
                                     select new
                                     {
                                         v.VoucherDate,
                                         v.Amount,
-                                        a.rentAmt
+                                        a.rentAmt,
+                                        d.amount
                                     }
                                     ).FirstOrDefaultAsync();
-
                                     if (lastEntry != null)
                                     {
-                                        if (lastEntry.Amount > lastEntry.rentAmt)
-                                        {
-                                            DateTime voucherdate = lastEntry.VoucherDate;
-                                            DateTime today = DateTime.Today;
+                                        voucherdate = lastEntry.VoucherDate;
+                                        DateTime lduedate = dueDate;
+                                        //DateTime today = DateTime.Today;
 
-                                            int months = (today.Year - voucherdate.Year) *
-                                   12
-                                                         + today.Month - voucherdate.Month;
-                                            if (months >=unitinterval)
-                                            {
-                                                chargeItems.Add(new
-                                                {
-                                                    charge.ChargeID,
-                                                    charge.ChargeName,
-                                                    Amount = (charge.Amount * unitinterval),
-                                                    charge.IsVariable
-                                                });
+                                        //int months = (today.Year - voucherdate.Year) * 12
+                                        //             + today.Month - voucherdate.Month;
 
-                                                basechargeItems.Add(new
-                                                {
-                                                    charge.ChargeID,
-                                                    charge.ChargeName,
-                                                    Amount = charge.Amount,
-                                                    charge.IsVariable
-                                                });
-                                            }
-                                            else
-                                            {
-                                                basechargeItems.Add(new
-                                                {
-                                                    charge.ChargeID,
-                                                    charge.ChargeName,
-                                                    Amount = charge.Amount,
-                                                    charge.IsVariable
-                                                });
-                                            }
-                                        }
-                                        else
+                                        int lvmonth = (lduedate.Year - voucherdate.Year) * 12
+                                                     + lduedate.Month - voucherdate.Month;
+
+                                        if (lvmonth == unitinterval)
                                         {
                                             chargeItems.Add(new
                                             {
@@ -537,28 +511,61 @@ namespace XeniaRentalBackend.Repositories.Voucher
                                                 charge.IsVariable
                                             });
                                         }
+                                        else
+                                        {
+                                            basechargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = charge.Amount,
+                                                charge.IsVariable
+                                            });
+                                        }
                                     }
                                     else
                                     {
-                                        chargeItems.Add(new
-                                        {
-                                            charge.ChargeID,
-                                            charge.ChargeName,
-                                            Amount = (charge.Amount * unitinterval),
-                                            charge.IsVariable
-                                        });
+                                        voucherdate = tenant.agreementStartDate;
+                                        DateTime lduedate = dueDate;
+                                        //DateTime today = DateTime.Today;
 
-                                        basechargeItems.Add(new
+                                        //int months = (today.Year - voucherdate.Year) * 12
+                                        //             + today.Month - voucherdate.Month;
+
+                                        int lvmonth = (lduedate.Year - voucherdate.Year) * 12
+                                                     + lduedate.Month - voucherdate.Month;
+                                        if (flag == 0)
                                         {
-                                            charge.ChargeID,
-                                            charge.ChargeName,
-                                            Amount = charge.Amount,
-                                            charge.IsVariable
-                                        });
+                                            chargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = (charge.Amount * unitinterval),
+                                                charge.IsVariable
+                                            });
+
+                                            basechargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = charge.Amount,
+                                                charge.IsVariable
+                                            });
+                                        }
+                                        else
+                                        {
+                                            basechargeItems.Add(new
+                                            {
+                                                charge.ChargeID,
+                                                charge.ChargeName,
+                                                Amount = charge.Amount,
+                                                charge.IsVariable
+                                            });
+                                        }
                                     }
                                 }
                             }
                         }
+
 
                         decimal fixedChargeAmount = chargeItems
                             .Where(x => !((dynamic)x).IsVariable)
@@ -602,6 +609,7 @@ namespace XeniaRentalBackend.Repositories.Voucher
                             Charges = basechargeItems,
                             Status = status
                         });
+                        flag = 1;
                     }
 
                     currentMonth = currentMonth.AddMonths(intervalMonths);
