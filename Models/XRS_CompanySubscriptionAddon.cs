@@ -10,14 +10,14 @@ namespace XeniaTenoraBackend.Models
         [Key]
         public int Id { get; set; }
 
-        public int? MainPlanId { get; set; }
+        public int MainPlanId { get; set; }
 
-        public int? PlanId { get; set; }
+        public int PlanId { get; set; }
 
         public int? CompanyId { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? DealerAmount { get; set; }
@@ -25,7 +25,7 @@ namespace XeniaTenoraBackend.Models
         [MaxLength(50)]
         public string? RateType { get; set; }
 
-        public int? UserCount { get; set; }
+        public int UserCount { get; set; }
 
         [MaxLength(50)]
         public string? Status { get; set; } = "ACTIVE";

@@ -63,8 +63,6 @@ namespace XeniaRentalBackend.Models
 
         public DbSet<XRS_CompanySubscriptionTransaction> CompanySubscriptionTransaction { get; set; }
         public DbSet<XRS_CompanySubscriptionSpecialRate> SubscriptionSpecialRate { get; set; }
-        //public DbSet<XRS_SubscriptionTransaction> SubcriptionTransaction { get; set; }
-
         public DbSet<XRS_Voucher> Vouchers { get; set; }
 
         public DbSet<XRS_PlanModuleMap> PlanModuleMap { get; set; }
