@@ -17,6 +17,7 @@ namespace XeniaRentalBackend.Models
         public int chargeId { get; set; }
 
         public decimal amount { get; set; }
+        public DateTime ChargeDate { get; set; }
 
         public virtual XRS_Voucher Voucher { get; set; }
         public virtual XRS_Charges Charge { get; set; }
