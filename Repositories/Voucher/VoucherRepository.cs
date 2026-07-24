@@ -2025,19 +2025,6 @@ namespace XeniaRentalBackend.Repositories.Voucher
                     .FirstOrDefaultAsync(x =>
                         x.voucherId == voucher.VoucherID &&
                         x.chargeId == charge.chargeID);
-
-                //Tent Assignment details
-              //  var assigmentdetails = await _context.TenantAssignemnts
-              //.Where(x =>
-              //    x.tenantID == voucher.CrID)
-              //.ToListAsync();
-              //  foreach (var tadetails in assigmentdetails)
-              //  {
-              //     var collectionType = tadetails.collectionType;
-
-              //  }
-
-
                 if (exists == null)
                 {
                     _context.VoucherDetails.Add(new XRS_VoucherDetails
