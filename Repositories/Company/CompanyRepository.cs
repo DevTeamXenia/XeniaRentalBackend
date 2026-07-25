@@ -37,7 +37,6 @@ namespace XeniaRentalBackend.Repositories.Company
 
             if (company == null) return null;
 
-       
             var companySettings = await _context.CompanySettings
                 .Where(cs => cs.CompanyId == companyId)
                 .Select(cs => new CompanySettingDto
@@ -57,6 +56,7 @@ namespace XeniaRentalBackend.Repositories.Company
             SubscriptionDto? subscriptionDto = null;
             PlanDto? planDto = null;
             List<SubscriptionAddonDto> addonDtos = new();
+            int totalUser = 0;
 
             if (subscription != null)
             {
@@ -97,7 +97,6 @@ namespace XeniaRentalBackend.Repositories.Company
                     Status = status
                 };
 
-             
                 var plan = await _context.SubscribePlan
                     .Where(p => p.PlanId == subscription.PlanId && p.PlanActive)
                     .FirstOrDefaultAsync();
@@ -132,7 +131,6 @@ namespace XeniaRentalBackend.Repositories.Company
                     planDto.Modules = modules;
                 }
 
-             
                 if (status == "ACTIVE" || status == "TRIAL")
                 {
                     addonDtos = await (
@@ -154,10 +152,15 @@ namespace XeniaRentalBackend.Repositories.Company
                             Status = a.Status
                         }).ToListAsync();
                 }
+
+
+                int addonUserCount = addonDtos.Sum(a => a.UserCount ?? 0);
+                totalUser = (subscription.SubscriptionUserCount ?? 0) + addonUserCount;
             }
 
             return new CompanyWithSubscriptionDto
             {
+                TotalUser = totalUser,
                 Company = company,
                 Subscription = subscriptionDto,
                 Plan = planDto,
@@ -165,7 +168,6 @@ namespace XeniaRentalBackend.Repositories.Company
                 CompanySettings = companySettings
             };
         }
-
 
         public async Task<XRS_Company> UpdateCompany(int id, CompanySettingUpdateDto request)
         {

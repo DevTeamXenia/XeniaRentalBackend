@@ -3,7 +3,8 @@
 namespace XeniaRentalBackend.Dtos
 {
      public class CompanyWithSubscriptionDto
-        {
+    {
+            public int TotalUser { get; set; }
             public CompanyDto Company { get; set; } = new();
             public SubscriptionDto? Subscription { get; set; }
             public PlanDto? Plan { get; set; }
