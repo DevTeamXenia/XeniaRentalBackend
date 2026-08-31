@@ -24,9 +24,9 @@ namespace XeniaRentalBackend.Controllers
 
 
         [HttpGet("all/{companyId}")]
-        public async Task<ActionResult<IEnumerable<XRS_Tenant>>> Get(int companyId, int? unitId = null)
+        public async Task<ActionResult<IEnumerable<XRS_Tenant>>> Get(int companyId)
         {
-            var tenants = await _tenantRepository.GetTenants(companyId, unitId);
+            var tenants = await _tenantRepository.GetTenants(companyId);
             if (tenants == null || !tenants.Any())
             {
                 return NotFound(new { Status = "Error", Message = "No tenants  found." });

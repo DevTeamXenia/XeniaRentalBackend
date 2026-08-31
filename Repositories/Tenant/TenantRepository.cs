@@ -21,51 +21,38 @@ namespace XeniaRentalBackend.Repositories.Tenant
             _jwtHelperService = jwtHelperService;
         }
 
-        public async Task<IEnumerable<XRS_Tenant>> GetTenants(int companyId, int? unitId = null)
+        public async Task<IEnumerable<XRS_Tenant>> GetTenants(int companyId)
         {
-            if (unitId.HasValue)
-            {
-                var query = from t in _context.Tenants.AsNoTracking()
-                            join a in _context.TenantAssignemnts.AsNoTracking()
-                                on t.tenantID equals a.tenantID
-                            where t.companyID == companyId
-                                  && a.unitID == unitId.Value
-                            select new XRS_Tenant
-                            {
-                                tenantID = t.tenantID,
-                                tenantName = t.tenantName,              
-                                companyID = t.companyID,
-                                phoneNumber = t.phoneNumber,
-                                email = t.email,
-                                emergencyContactNo = t.emergencyContactNo,
-                                concessionper = t.concessionper,
-                                note = t.note,
-                                address = t.address,
-                                isActive = t.isActive
-                            };
+            int userId = _jwtHelperService.GetUserId();
 
-                return await query.ToListAsync();
-            }
-            else
-            {
-                return await _context.Tenants
-                    .AsNoTracking()
-                    .Where(t => t.companyID == companyId)
-                    .Select(t => new XRS_Tenant
-                    {
-                        tenantID = t.tenantID,
-                        tenantName = t.tenantName,
-                        companyID = t.companyID,
-                        phoneNumber = t.phoneNumber,
-                        email = t.email,
-                        emergencyContactNo = t.emergencyContactNo,
-                        concessionper = t.concessionper,
-                        note = t.note,
-                        address = t.address,
-                        isActive = t.isActive
-                    })
-                    .ToListAsync();
-            }
+            var unitIds = await _context.UserMapping
+                .AsNoTracking()
+                .Where(m => m.UserID == userId && m.IsActive)
+                .Select(m => m.PropID)
+                .ToListAsync();
+
+   
+            var query = from t in _context.Tenants.AsNoTracking()
+                        where t.companyID == companyId
+                              && (
+                                  _context.TenantAssignemnts.Any(a => a.tenantID == t.tenantID && unitIds.Contains(a.unitID))
+                                  || !_context.TenantAssignemnts.Any(a => a.tenantID == t.tenantID)
+                              )
+                        select new XRS_Tenant
+                        {
+                            tenantID = t.tenantID,
+                            tenantName = t.tenantName,
+                            companyID = t.companyID,
+                            phoneNumber = t.phoneNumber,
+                            email = t.email,
+                            emergencyContactNo = t.emergencyContactNo,
+                            concessionper = t.concessionper,
+                            note = t.note,
+                            address = t.address,
+                            isActive = t.isActive
+                        };
+
+            return await query.ToListAsync();
         }
 
         public async Task<PagedResultDto<TenantGetDto>> GetTenantsByCompanyId( int companyId,bool? status = null,string? search = null,int pageNumber = 1, int pageSize = 10)
